@@ -1,0 +1,4 @@
+**/AutoBackups
+**/Objects
+*.meta
+API_KEY.txt
