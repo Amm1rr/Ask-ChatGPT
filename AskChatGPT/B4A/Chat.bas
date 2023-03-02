@@ -6,19 +6,19 @@ Version=8
 @EndOfDesignText@
 #IgnoreWarnings: 6
 Sub Class_Globals
-	Private xui As XUI
-	Private TextField As B4XFloatTextField
-	Private CLV As CustomListView
-	Private BBCodeView1 As BBCodeView
-	Private Engine As BCTextEngine
-	Private bc As BitmapCreator
-	Private ArrowWidth As Int = 10dip
-	Private Gap As Int = 6dip
-	Private pnlBottom As B4XView
-	Private LastUserLeft As Boolean = True
-	Private ime As IME2
-	Private lblSend As B4XView
-	Private lblSpeak As B4XView
+	Public 	TextField 		As B4XFloatTextField
+	Private CLV 			As CustomListView
+	Private LastUserLeft 	As Boolean = True
+	Private bc 				As BitmapCreator
+	Private Engine 			As BCTextEngine
+	Private ArrowWidth 		As Int = 10dip
+	Private Gap 			As Int = 6dip
+	Private BBCodeView1 	As BBCodeView
+	Private pnlBottom 		As B4XView
+	Private lblSend 		As B4XView
+	Private lblSpeak 		As B4XView
+	Private ime 			As IME2
+	Private xui 			As XUI
 End Sub
 
 Public Sub Initialize (Parent As B4XView)
@@ -29,7 +29,7 @@ Public Sub Initialize (Parent As B4XView)
 	ime.Initialize("")
 End Sub
 
-Private Sub lblSend_Click
+Public Sub lblSend_Click
 	If TextField.Text.Length > 0 Then
 		LastUserLeft = Not(LastUserLeft)
 '		AddItem(TextField.Text, LastUserLeft)
@@ -52,9 +52,8 @@ End Sub
 Private Sub lblSend_LongClick
 	ToastMessageShow(Application.LabelName & " build " & _
 					 Application.VersionCode & " " & _
-					 Application.VersionName & CRLF & "Coded by Amir", True)
+					 Application.VersionName & CRLF & "Coded by Am1r", True)
 End Sub
-
 
 Private Sub Ask(question As String)
 	
@@ -76,7 +75,7 @@ End Sub
 'Modifies the layout when the keyboard state changes.
 Public Sub HeightChanged (NewHeight As Int)
 	Dim c As B4XView = CLV.AsView
-	c.Height = NewHeight - pnlBottom.Height
+		c.Height = NewHeight - pnlBottom.Height
 	CLV.Base_Resize(c.Width, c.Height)
 	pnlBottom.Top = NewHeight - pnlBottom.Height
 	ScrollToLastItem
@@ -84,7 +83,7 @@ End Sub
 
 Private Sub AddItem (Text As String, Right As Boolean)
 	Dim p As B4XView = xui.CreatePanel("")
-	p.Color = xui.Color_Transparent
+		p.Color = xui.Color_Transparent
 	Dim User As String
 	If Right Then User = "You" Else User = "Answer"
 	BBCodeView1.ExternalRuns = BuildMessage(Text, User)
@@ -109,7 +108,7 @@ Private Sub AddItem (Text As String, Right As Boolean)
 		p.AddView(ivBG, 0, Gap, bmpBG.Width * xui.Scale, bmpBG.Height * xui.Scale)
 		p.AddView(ivText, Gap + ArrowWidth, 2 * Gap, TextWidth, TextHeight)
 	End If
-	CLV.Add(p, Null)
+	CLV.Add(p, Text)
 	ScrollToLastItem
 End Sub
 
@@ -160,11 +159,11 @@ End Sub
 
 Private Sub BuildMessage (Text As String, User As String) As List
 	Dim title As BCTextRun = Engine.CreateRun(User & CRLF)
-	title.TextFont  = BBCodeView1.ParseData.DefaultBoldFont
+		title.TextFont = BBCodeView1.ParseData.DefaultBoldFont
 	Dim TextRun As BCTextRun = Engine.CreateRun(Text & CRLF)
 	Dim time As BCTextRun = Engine.CreateRun(DateTime.Time(DateTime.Now))
-	time.TextFont = xui.CreateDefaultFont(10)
-	time.TextColor = xui.Color_Gray
+		time.TextFont = xui.CreateDefaultFont(10)
+		time.TextColor = xui.Color_Gray
 	Return Array(title, TextRun, time)
 End Sub
 
@@ -198,14 +197,6 @@ Private Sub RecognizeVoice As ResumableSub
 	Return ""
 End Sub
 
-Private Sub ShowKeyboard
-	ime.ShowKeyboard(TextField.mBase)
-End Sub
-
-Private Sub HideKeyboard
-	ime.HideKeyboard
-End Sub
-
 Private Sub lblSpeak_Click
 	Wait For (RecognizeVoice) Complete (Result As String)
 	If Result <> "" Then
@@ -222,7 +213,14 @@ Sub lblSend_MouseClicked (EventData As MouseEvent)
 End Sub
 
 Sub lblSpeak_MouseClicked (EventData As MouseEvent)
-	lblSpeaj_Click
+	lblSpeak_Click
 	EventData.Consume
 End Sub
 #end if
+
+Private Sub CLV_ItemLongClick (Index As Int, Value As Object)
+	LogColor(Value, Colors.Blue)
+	ToastMessageShow("Copied", False)
+	Dim cp As BClipboard
+		cp.setText(Value)
+End Sub

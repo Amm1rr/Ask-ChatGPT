@@ -1,26 +1,50 @@
 ﻿Build1=Default,b4a.example
-File1=Chat.bal
+File1=Acme-Regular.ttf
+File10=settings.png
+File11=voice.png
+File2=Chat.bal
+File3=clvAnswerRow.bal
+File4=clvQuestionRow.bal
+File5=gray-tipped.png
+File6=menu.png
+File7=message.png
+File8=puton.png
+File9=roboto-regular.ttf
 FileGroup1=Default Group
+FileGroup10=Default Group
+FileGroup11=Default Group
+FileGroup2=Default Group
+FileGroup3=Default Group
+FileGroup4=Default Group
+FileGroup5=Default Group
+FileGroup6=Default Group
+FileGroup7=Default Group
+FileGroup8=Default Group
+FileGroup9=Default Group
 Group=Default Group
 Library1=bctextengine
-Library2=core
-Library3=ime2
-Library4=json
-Library5=okhttputils2
-Library6=phone
-Library7=xcustomlistview
-Library8=xui views
-Library9=securemytext
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~
+Library10=xui views
+Library2=clipboard
+Library3=core
+Library4=ime2
+Library5=json
+Library6=okhttputils2
+Library7=phone
+Library8=securemytext
+Library9=xcustomlistview
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="25"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~
 Module1=Chat
 Module2=ChatGPT
-Module3=Starter
-NumberOfFiles=1
-NumberOfLibraries=9
-NumberOfModules=3
+Module3=ChatN
+Module4=ChatNew
+Module5=General
+Module6=Starter
+NumberOfFiles=11
+NumberOfLibraries=10
+NumberOfModules=6
 Version=12.2
 @EndOfDesignText@
-#Region  Project Attributes 
+#Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
 	#VersionCode: 1
 	#VersionName: Alpha
@@ -29,7 +53,7 @@ Version=12.2
 	#CanInstallToExternalStorage: False
 #End Region
 
-#Region  Activity Attributes 
+#Region Activity Attributes
 	#FullScreen: False
 	#IncludeTitle: False
 #End Region
@@ -37,19 +61,24 @@ Version=12.2
 '#BridgeLogger: True
 
 Sub Process_Globals
+	Public vr 					As VoiceRecognition
 	Public ActionBarHomeClicked As Boolean
-	Public vr As VoiceRecognition
+	Private OldIntent 			As Intent
 End Sub
 
 Sub Globals
-	Private chat1 As Chat
-	Private ime As IME2
+'	Private chat1 				As Chat
+	Private ChatNew1 			As ChatN
+	Private ime 				As IME2
+	Private lblClearText As B4XView
 End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
 	
-	chat1.Initialize(Activity)
+'	chat1.Initialize(Activity)
+	ChatNew1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
+	
 	vr.Initialize("vr")
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
@@ -57,11 +86,102 @@ Sub Activity_Create(FirstTime As Boolean)
 End Sub
 
 Sub IME_HeightChanged (NewHeight As Int, OldHeight As Int)
-	chat1.HeightChanged(NewHeight)
+'	chat1.HeightChanged(NewHeight)
 End Sub
 
 Sub Activity_Resume
+	ChatNew1.AdjustSize_Clv
+	ChatNew1.IME_HeightChanged(100%y, 0)
+	If IsRelevantIntent(Activity.GetStartingIntent) Then
+		Dim intent As JavaObject = Activity.GetStartingIntent
+		
+		Dim cType As String = intent.RunMethod("getType", Null)
+		If Not (cType.Contains("text")) Then Return
+		
+		Dim intnew As Intent = Activity.GetStartingIntent
+		Dim sharedText As String = intnew.GetExtra("android.intent.extra.TEXT")	'Get the shared text
+		
+		ChatNew1.txtQuestion.Text = sharedText
+		ChatNew1.imgSend_Click
+'		chat1.TextField.Text = sharedText
+'		chat1.lblSend_Click
+		
+'		' It's Image
+'		Dim uri As String = intent.RunMethod("getParcelableExtra", Array("android.intent.extra.STREAM"))
+'		Dim flag As Boolean
+'		Try
+'			Log("Loading bitmap from: " & uri)
+'			Dim bmp As Bitmap = LoadBitmapResize("ContentDir", uri, 100%x, 100%y,flag)
+'			Activity.SetBackgroundImage(bmp)
+'		Catch
+'			Log(LastException)
+'		End Try
+	End If
+End Sub
 
+'Share Text
+Private Sub IsRelevantIntent(in As Intent) As Boolean
+	If in.IsInitialized And in <> OldIntent And in.Action = in.ACTION_SEND Then
+		OldIntent = in
+		Return True
+	End If
+	Return False
+End Sub
+
+Private Sub ShareText(text As String)
+	Dim in As Intent
+		in.Initialize(in.ACTION_SEND, "")
+		in.PutExtra("android.intent.extra.TEXT", text)
+		in.SetType("text/plain")
+		in.WrapAsIntentChooser("Share Via")
+	StartActivity(in)
+End Sub
+
+Private Sub SendToInstagram(text As String)
+'	Dim u As Uri 'ContentResolver library
+'	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
+'	Dim inten As Intent
+'	Dim tmpt As String = "your text"
+'	inten.Initialize(inten.ACTION_SEND,"")
+'	inten.SetType("image/*")
+'	inten.PutExtra("android.intent.extra.STREAM",u)
+'	inten.PutExtra("android.intent.extra.TEXT",tmpt)
+'	inten.SetComponent("com.instagram.android/com.instagram.share.handleractivity.ShareHandlerActivity")
+'	StartActivity(inten)
+End Sub
+
+Private Sub SendToTwitter(text As String)
+'	Dim u As Uri 'ContentResolver library
+'	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
+'	Dim inten As Intent
+'	Dim tmpt As String = "your text"
+'	inten.Initialize(inten.ACTION_SEND,"")
+'	inten.SetType("image/*")
+'	inten.PutExtra("android.intent.extra.STREAM",u)
+'	inten.PutExtra("android.intent.extra.TEXT",tmpt)
+'	inten.SetComponent("com.twitter.android/com.twitter.composer.ComposerActivity")
+'	StartActivity(inten)
+
+
+'	Dim IntentInstagram As String
+'	Dim IntentTwitter As String
+'	Dim pm As PackageManager
+'    
+'	For Each cn As String In pm.QueryIntentActivities(inten)
+'		'Instagram
+'		If cn.SubString2(0,19) = "com.twitter.android" Then
+'			IntentTwitter = cn
+'			Exit
+'		End If
+'
+'		'OR
+'
+'		'Twitter
+'		If cn.SubString2(0,21) = "com.instagram.android" Then
+'			IntentInstagram = cn
+'			Exit
+'		End If
+'	Next
 End Sub
 
 Sub Activity_Pause (UserClosed As Boolean)
