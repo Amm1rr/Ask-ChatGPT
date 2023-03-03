@@ -18,8 +18,8 @@ Sub Class_Globals
 
 	'CHAT
 	Public txtQuestion As EditText
+	Public imgSend As ImageView
 	Private clvMessages As CustomListView
-	Private imgSend As ImageView
 	Private pnlBottom As Panel
 	Private pTopMenu As Panel
 	Private lblTitleTopMenu As Label
@@ -245,7 +245,7 @@ Public Sub About
 End Sub
 
 Public Sub imgSend_Click
-	If imgSend.Tag = "text" Then
+	If (imgSend.Tag = "text") Then
 		Private sText As String = txtQuestion.Text.Trim
 		WriteQuestion(sText)
 		txtQuestion.Text = ""
@@ -256,7 +256,7 @@ Public Sub imgSend_Click
 		Log("Voice")
 		
 		Wait For (RecognizeVoice) Complete (Result As String)
-		If Result <> "" Then
+		If (Result <> "") Then
 			LogColor(Result, Colors.Blue)
 			txtQuestion.Text = Result
 			If (AUTOSENDVOICE) Then

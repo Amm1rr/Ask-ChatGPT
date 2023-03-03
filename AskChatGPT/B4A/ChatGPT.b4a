@@ -90,23 +90,25 @@ Sub IME_HeightChanged (NewHeight As Int, OldHeight As Int)
 End Sub
 
 Sub Activity_Resume
+	
 	ChatNew1.AdjustSize_Clv
 	ChatNew1.IME_HeightChanged(100%y, 0)
+	
 	If IsRelevantIntent(Activity.GetStartingIntent) Then
+		
 		Dim intent As JavaObject = Activity.GetStartingIntent
 		
 		Dim cType As String = intent.RunMethod("getType", Null)
 		If Not (cType.Contains("text")) Then Return
 		
-		Dim intnew As Intent = Activity.GetStartingIntent
-		Dim sharedText As String = intnew.GetExtra("android.intent.extra.TEXT")	'Get the shared text
+		Dim intnew 		As Intent = Activity.GetStartingIntent
+		Dim sharedText 	As String = intnew.GetExtra("android.intent.extra.TEXT") 'Get the shared text
 		
 		ChatNew1.txtQuestion.Text = sharedText
+		Sleep(0)
 		ChatNew1.imgSend_Click
-'		chat1.TextField.Text = sharedText
-'		chat1.lblSend_Click
 		
-'		' It's Image
+'		'### It's Image
 '		Dim uri As String = intent.RunMethod("getParcelableExtra", Array("android.intent.extra.STREAM"))
 '		Dim flag As Boolean
 '		Try
