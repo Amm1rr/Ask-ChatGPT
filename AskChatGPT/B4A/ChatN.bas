@@ -81,8 +81,38 @@ Public Sub Initialize(Parent As B4XView)
 	IME_HeightChanged(100%y,0)
 	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 6 'After 6 lines, the EditText will increase, and after that, the scroll will appear
 	
+	
+	LoadCLVSetup
+	
+	
+End Sub
 
-	WriteAnswer("Hi there, How are you?")
+Private Sub LoadCLVSetup
+	
+	Dim myStrings As List
+		myStrings.Initialize
+		myStrings.Add("Hey, What whould you like to know ?")
+		myStrings.Add("Hi there, How are you?")
+		myStrings.Add("How can I help?")
+		myStrings.Add("💻")
+		myStrings.Add("👩")
+		myStrings.Add("👨‍🏫")
+		myStrings.Add("🧑")
+		myStrings.Add("🤖")
+		myStrings.Add("📚")
+		myStrings.Add("🤔")
+		myStrings.Add("💡")
+		myStrings.Add("Just Ask... 🤔")
+		myStrings.Add("I know all languages that might you know 😀")
+		myStrings.Add("Try me in Farsi...بیا فارسی صحبت کنیم 😉")
+		myStrings.Add("Try me in German...Versuchen wir es mit Deutsch 🇩🇪")
+		myStrings.Add("I can correct your english, just ask")
+	
+	Dim index As Int
+	index = Rnd(0, myStrings.Size - 1)
+	
+	WriteAnswer(myStrings.Get(index))
+	
 End Sub
 
 public Sub AdjustSize_Clv
