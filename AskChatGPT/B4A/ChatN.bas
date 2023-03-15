@@ -44,7 +44,7 @@ Sub Class_Globals
 	Private lblVersionName As B4XView
 	Private lblVersionText As B4XView
 	
-	Private AUTOSENDVOICE As Boolean
+	Private AUTOSENDVOICE As Boolean = False
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
