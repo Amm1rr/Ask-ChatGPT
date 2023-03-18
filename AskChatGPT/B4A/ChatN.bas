@@ -44,7 +44,11 @@ Sub Class_Globals
 	Private lblVersionName As B4XView
 	Private lblVersionText As B4XView
 	
-	Private AUTOSENDVOICE As Boolean = False
+	Public AUTOSENDVOICE As Boolean = False
+	Private chkCorrectEnglish As B4XView
+	Private chkTranslate As CheckBox
+	Private DisableCheckboxChecked As Boolean
+	
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -104,6 +108,8 @@ Private Sub LoadCLVSetup
 		myStrings.Add("💡")
 		myStrings.Add("Just Ask... 🤔")
 		myStrings.Add("I know all languages that might you know 😀")
+		myStrings.Add("Try me in Farsi...فارسی بپرس")
+		myStrings.Add("Try me in Farsi...با هر زبانی که میخوای ازم سوال بپرس")
 		myStrings.Add("Try me in Farsi...بیا فارسی صحبت کنیم 😉")
 		myStrings.Add("Try me in German...Versuchen wir es mit Deutsch 🇩🇪")
 		myStrings.Add("I can correct your english, just ask")
@@ -260,14 +266,14 @@ End Sub
 
 Private Sub imgSend_LongClick
 	AUTOSENDVOICE = Not(AUTOSENDVOICE)
-	ToastMessageShow("Auto Send on Voice: " & AUTOSENDVOICE, False)
+	ToastMessageShow("Auto Send " & AUTOSENDVOICE, False)
 End Sub
 
 Public Sub About
 	
 	lblVersionName.Text = Application.LabelName
-	lblVersionNumber.Text = Application.VersionName & " " & Application.VersionCode
-	lblVersionText.Text = "Coded by Amir"
+	lblVersionNumber.Text = "Build " & Application.VersionCode & " " & Application.VersionName
+	lblVersionText.Text = "Coded by github.com/@Soheyl"
 	
 	pnlBackground.Visible = True
 	pnlAbout.Visible = True
@@ -276,7 +282,15 @@ End Sub
 
 Public Sub imgSend_Click
 	If (imgSend.Tag = "text") Then
-		Private sText As String = txtQuestion.Text.Trim
+		Private sText As String
+		If (chkCorrectEnglish.Checked) Then
+			sText = "Correct and Improve English:"
+		End If
+		If (chkTranslate.Checked) Then
+			sText = "Translate to English:"
+		End If
+		
+		sText = sText & "\" & CRLF & txtQuestion.Text.Trim & CRLF & "\"
 		WriteQuestion(sText)
 		txtQuestion.Text = ""
 		Ask(sText)
@@ -458,4 +472,13 @@ End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
 	If Not (HasFocus) Then HideKeyboard
+End Sub
+
+
+Private Sub chkCorrectEnglish_CheckedChange(Checked As Boolean)
+	If (Checked = True) Then chkTranslate.Checked = False : Return
+End Sub
+
+Private Sub chkTranslate_CheckedChange(Checked As Boolean)
+	If (Checked = True) Then chkCorrectEnglish.Checked = False:Return
 End Sub

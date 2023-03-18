@@ -1,18 +1,20 @@
 ﻿Build1=Default,com.ask.chatgpt
 File1=Acme-Regular.ttf
-File10=settings.png
-File11=voice.png
-File2=Chat.bal
-File3=clvAnswerRow.bal
-File4=clvQuestionRow.bal
-File5=gray-tipped.png
-File6=menu.png
-File7=message.png
-File8=puton.png
-File9=roboto-regular.ttf
+File10=roboto-regular.ttf
+File11=settings.png
+File12=voice.png
+File2=Changelog.txt
+File3=Chat.bal
+File4=clvAnswerRow.bal
+File5=clvQuestionRow.bal
+File6=gray-tipped.png
+File7=menu.png
+File8=message.png
+File9=puton.png
 FileGroup1=Default Group
 FileGroup10=Default Group
 FileGroup11=Default Group
+FileGroup12=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
@@ -39,15 +41,15 @@ Module3=ChatN
 Module4=ChatNew
 Module5=General
 Module6=Starter
-NumberOfFiles=11
+NumberOfFiles=12
 NumberOfLibraries=10
 NumberOfModules=6
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 1
-	#VersionName: Alpha
+	#VersionCode: 2
+	#VersionName: Development
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
@@ -106,7 +108,8 @@ Sub Activity_Resume
 		
 		ChatNew1.txtQuestion.Text = sharedText
 		Sleep(0)
-		ChatNew1.imgSend_Click
+		If (ChatNew1.AUTOSENDVOICE) Then _
+			ChatNew1.imgSend_Click
 		
 '		'### It's Image
 '		Dim uri As String = intent.RunMethod("getParcelableExtra", Array("android.intent.extra.STREAM"))

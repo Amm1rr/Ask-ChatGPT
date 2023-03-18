@@ -1,0 +1,9 @@
+Build 2 Dev
+-----
++ Added Translate to English
++ Added Correct English
+* Added Auto-Send Enable/Disable Option
+
+Build 1 Dev
+-----
+First Release
