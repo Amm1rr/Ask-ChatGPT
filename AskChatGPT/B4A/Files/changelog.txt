@@ -1,3 +1,7 @@
+Build 3 Dev
+-----
+* Solve buggy new features
+
 Build 2 Dev
 -----
 + Added Translate to English
