@@ -26,6 +26,7 @@ FileGroup9=Default Group
 Group=Default Group
 Library1=bctextengine
 Library10=xui views
+Library11=as_textfieldadvanced
 Library2=clipboard
 Library3=core
 Library4=ime2
@@ -42,7 +43,7 @@ Module4=ChatNew
 Module5=General
 Module6=Starter
 NumberOfFiles=12
-NumberOfLibraries=10
+NumberOfLibraries=11
 NumberOfModules=6
 Version=12.2
 @EndOfDesignText@
@@ -72,7 +73,6 @@ Sub Globals
 '	Private chat1 				As Chat
 	Private ChatNew1 			As ChatN
 	Private ime 				As IME2
-	Private lblClearText As B4XView
 End Sub
 
 Sub Activity_Create(FirstTime As Boolean)

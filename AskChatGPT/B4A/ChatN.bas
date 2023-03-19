@@ -7,7 +7,7 @@ Version=12.2
 
 Sub Class_Globals
 	
-	Type textMessage (message As String, assistant As Boolean)
+	Type textMessage (message As String, assistant As Boolean, messageshow As String)
 	Private su As StringUtils
 	
 	'KEYBOARD
@@ -284,14 +284,14 @@ Public Sub imgSend_Click
 	If (imgSend.Tag = "text") Then
 		Private sText As String
 		If (chkCorrectEnglish.Checked) Then
-			sText = "Correct and Improve English:"
+			sText = "Check, Correct and Improve English This:" & CRLF
 		End If
 		If (chkTranslate.Checked) Then
-			sText = "Translate to English:"
+			sText = "Translate to English:" & CRLF
 		End If
 		
-		sText = sText & """ txtQuestion.Text.Trim """
-		WriteQuestion(sText)
+		Dim question As String = sText & " '" & txtQuestion.Text.Trim & "'"
+		WriteQuestion(question, sText)
 		txtQuestion.Text = ""
 		Ask(sText)
 		
@@ -343,11 +343,12 @@ End Sub
 
 
 
-Sub WriteQuestion(message As String) 'Right Side
+Sub WriteQuestion(message As String, showmessage As String) 'Right Side
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
 		m.assistant = False
+		m.messageshow = showmessage
 	Dim p As Panel
 		p.Initialize("p")
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
