@@ -51,7 +51,7 @@ Public Sub Query(query_string As String) As ResumableSub
         '"stop": "None"
         'an optional setting to control response generation
 
-        '"model": "text-davinci-003"
+		'"model": "text-davinci-003" : "gpt-3.5-turbo"
         'model to be used
         'see https://beta.openai.com/docs/models/gpt-3
  
@@ -64,7 +64,7 @@ Public Sub Query(query_string As String) As ResumableSub
         'creative applications, and 0 for ones with a well-defined answer
 		
         Dim m As Map = CreateMap("n": 1, "stop": "None", "model": "text-davinci-003", _
-                                 "prompt": query_string, "max_tokens": 350, "temperature": 0.5)
+                                 "prompt": query_string, "max_tokens": 4000, "temperature": 0.5)
 		
         Dim js As JSONGenerator
         	js.Initialize(m)

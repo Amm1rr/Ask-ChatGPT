@@ -1,6 +1,7 @@
 Build 3 Dev
 -----
 * Solve buggy new features
+* Incress response to 4092 that support log text in farsi and arabic
 
 Build 2 Dev
 -----
