@@ -290,7 +290,7 @@ Public Sub imgSend_Click
 			sText = "Translate to English:"
 		End If
 		
-		sText = sText & "\" & CRLF & txtQuestion.Text.Trim & CRLF & "\"
+		sText = sText & """ txtQuestion.Text.Trim """
 		WriteQuestion(sText)
 		txtQuestion.Text = ""
 		Ask(sText)
