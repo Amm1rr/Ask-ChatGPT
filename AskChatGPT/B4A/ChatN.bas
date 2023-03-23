@@ -20,7 +20,7 @@ Sub Class_Globals
 	Public txtQuestion As EditText
 	Public imgSend As ImageView
 	Private clvMessages As CustomListView
-	Private pnlBottom As Panel
+	Private panBottom As Panel
 	Private pTopMenu As Panel
 	Private lblTitleTopMenu As Label
 	Private icMenuTopMenu As ImageView
@@ -50,6 +50,7 @@ Sub Class_Globals
 	Private chkCorrectEnglish As B4XView
 	Private chkTranslate As CheckBox
 	
+	Private panToolbar As B4XView
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -74,7 +75,7 @@ Public Sub Initialize(Parent As B4XView)
 
 	Private cc As ColorDrawable
 	cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
-	pnlBottom.Background = cc
+	panBottom.Background = cc
 	txtQuestion.Background = Null
 	General.setPadding(txtQuestion,0,0,0,0) 'REMOVE PADDING DO EDITTEXT
 	
@@ -125,7 +126,7 @@ End Sub
 public Sub AdjustSize_Clv
 	Try
 		clvMessages.AsView.Top = 0 + pTopMenu.Height
-		clvMessages.AsView.Height = pnlBottom.Top - pTopMenu.Height - 1%y
+		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - 1%y
 		clvMessages.Base_Resize(clvMessages.AsView.Width,clvMessages.AsView.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
@@ -143,7 +144,7 @@ Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int
 				
 				Dim m As textMessage = clvMessages.GetValue(i)
 				
-				If m.assistant Then
+				If (m.assistant) Then
 		
 					p.LoadLayout("clvAnswerRow")
 					lblAnswer.Text = m.message
@@ -239,9 +240,9 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
 	If i > 7%y Then 'It is small, we are going to increase to the limit
-		pnlBottom.Height = i
+		panBottom.Height = i
 		txtQuestion.Height = i
-		pnlBottom.Top = heightKeyboard - pnlBottom.Height - 1%y
+		panBottom.Top = heightKeyboard - panBottom.Height - 1%y
 		AdjustSize_Clv
 	End If
 	
@@ -251,8 +252,10 @@ End Sub
 
 Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	heightKeyboard = NewHeight
-	pnlBottom.SetLayout(pnlBottom.Left, heightKeyboard - pnlBottom.Height - 1%y, pnlBottom.Width, pnlBottom.Height)
+	panBottom.SetLayout(panBottom.Left, heightKeyboard - panBottom.Height - 1%y, panBottom.Width, panBottom.Height)
 	imgSend.SetLayout(imgSend.Left, heightKeyboard - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
+	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
+'	panToolbar.Top = NewHeight - panToolbar.Height - 200
 	AdjustSize_Clv
 End Sub
 
@@ -393,7 +396,7 @@ End Sub
 
 Sub HideKeyboard
 	txtQuestion.Text = ""
-	pnlBottom.Height = 7%y
+	panBottom.Height = 7%y
 	txtQuestion.Height = 7%y
 	ime.HideKeyboard
 End Sub
