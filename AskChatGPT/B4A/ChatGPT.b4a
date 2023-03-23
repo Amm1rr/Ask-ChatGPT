@@ -49,7 +49,7 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 3
+	#VersionCode: 4
 	#VersionName: Development
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
@@ -64,9 +64,9 @@ Version=12.2
 '#BridgeLogger: True
 
 Sub Process_Globals
-	Public vr 					As VoiceRecognition
-	Public ActionBarHomeClicked As Boolean
-	Private OldIntent 			As Intent
+	Public 	vr 						As VoiceRecognition
+	Public 	ActionBarHomeClicked 	As Boolean
+	Private OldIntent 				As Intent
 End Sub
 
 Sub Globals

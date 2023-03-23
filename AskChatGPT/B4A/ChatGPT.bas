@@ -63,8 +63,12 @@ Public Sub Query(query_string As String) As ResumableSub
         'a higher value means model will take more risks, try 0.9 for more
         'creative applications, and 0 for ones with a well-defined answer
 		
-        Dim m As Map = CreateMap("n": 1, "stop": "None", "model": "text-davinci-003", _
-                                 "prompt": query_string, "max_tokens": 4000, "temperature": 0.5)
+        Dim m As Map = CreateMap("n": 1, _
+								 "stop": "None", _
+								 "model": "text-davinci-003", _
+                                 "prompt": query_string, _
+								 "max_tokens": 4000, _
+								 "temperature": 0.5)
 		
         Dim js As JSONGenerator
         	js.Initialize(m)

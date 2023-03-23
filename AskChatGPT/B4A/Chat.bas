@@ -52,7 +52,7 @@ End Sub
 Private Sub lblSend_LongClick
 	ToastMessageShow(Application.LabelName & " build " & _
 					 Application.VersionCode & " " & _
-					 Application.VersionName & CRLF & "Coded by Am1r", True)
+					 Application.VersionName & CRLF & "Dev by Am1r", True)
 End Sub
 
 Private Sub Ask(question As String)

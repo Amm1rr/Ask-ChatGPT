@@ -1,3 +1,7 @@
+Build 4 Dev
+-----
+* Fixed send multiple time isse
+
 Build 3 Dev
 -----
 * Solve buggy new features

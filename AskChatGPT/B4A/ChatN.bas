@@ -47,7 +47,6 @@ Sub Class_Globals
 	Public AUTOSENDVOICE As Boolean = False
 	Private chkCorrectEnglish As B4XView
 	Private chkTranslate As CheckBox
-	Private DisableCheckboxChecked As Boolean
 	
 End Sub
 
@@ -122,11 +121,15 @@ Private Sub LoadCLVSetup
 End Sub
 
 public Sub AdjustSize_Clv
-	clvMessages.AsView.Top = 0 + pTopMenu.Height
-	clvMessages.AsView.Height = pnlBottom.Top - pTopMenu.Height - 1%y
-	clvMessages.Base_Resize(clvMessages.AsView.Width,clvMessages.AsView.Height)
-	Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
-	If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
+	Try
+		clvMessages.AsView.Top = 0 + pTopMenu.Height
+		clvMessages.AsView.Height = pnlBottom.Top - pTopMenu.Height - 1%y
+		clvMessages.Base_Resize(clvMessages.AsView.Width,clvMessages.AsView.Height)
+		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
+		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
+	Catch
+		LogColor(LastException, Colors.Red)
+	End Try
 End Sub
 
 Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int)
@@ -273,7 +276,7 @@ Public Sub About
 	
 	lblVersionName.Text = Application.LabelName
 	lblVersionNumber.Text = "Build " & Application.VersionCode & " " & Application.VersionName
-	lblVersionText.Text = "Coded by github.com/@Soheyl"
+	lblVersionText.Text = "Dev by github.com/@Soheyl"
 	
 	pnlBackground.Visible = True
 	pnlAbout.Visible = True
@@ -282,7 +285,9 @@ End Sub
 
 Public Sub imgSend_Click
 	
-	txtQuestion.Enabled = False
+	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+'	LogColor(clvMessages.Size & " - " & msg.message, Colors.Magenta)
+	If (msg.message = "Typing...") Then Return
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -323,8 +328,6 @@ Public Sub imgSend_Click
 		IME_HeightChanged(100%y, 0)
 		
 	End If
-	
-	txtQuestion.Enabled = True
 	
 '	#if B4J
 '		Dim ta As TextArea = txtQuestion
@@ -428,11 +431,21 @@ Public Sub Ask(question As String)
 		Return
 	End If
 	
-	Dim msg As textMessage
-		msg.Initialize
-		msg.message = question
-		msg.assistant = False
-	clvMessages.AddTextItem("Typing...", msg)
+'	Dim msg As textMessage
+'		msg.Initialize
+'		msg.message = question
+'		msg.assistant = False
+'	clvMessages.AddTextItem("Typing...", msg)
+	
+	Dim m As textMessage
+		m.Initialize
+		m.message = "Typing..."
+		m.assistant = True
+	Dim p As Panel
+		p.Initialize("p")
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+	clvMessages.Add(p, m)
+	
 	AdjustSize_Clv
 	
 	Wait For (wrk_chat.Query(question)) Complete (response As String)
