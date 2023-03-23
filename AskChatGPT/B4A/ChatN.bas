@@ -26,6 +26,8 @@ Sub Class_Globals
 	Private icMenuTopMenu As ImageView
 	Private icConfigTopMenu As ImageView
 	
+	Private WaitingText As String = "Proccessing..."
+	
 	
 	'CLV Answer
 	Private lblAnswer As Label
@@ -287,7 +289,7 @@ Public Sub imgSend_Click
 	
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
 '	LogColor(clvMessages.Size & " - " & msg.message, Colors.Magenta)
-	If (msg.message = "Typing...") Then Return
+	If (msg.message = WaitingText) Then Return
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -383,7 +385,7 @@ Sub WriteAnswer(message As String) 'Left Side
 '	If (clvMessages.Size > 0) Then
 '		clvMessages.ReplaceAt(clvMessages.Size - 1, p, clvMessages.AsView.Width, m)
 '	Else
-'		m.message = "Typing..."
+'		m.message = WaitingText
 		clvMessages.Add(p, m)
 '	End If
 	AdjustSize_Clv
@@ -395,30 +397,6 @@ Sub HideKeyboard
 	txtQuestion.Height = 7%y
 	ime.HideKeyboard
 End Sub
-
-
-
-
-
-
-'BOT RESPONSES
-Sub Answer
-	If clvMessages.Size = 2 Then
-		Sleep(1200)
-		WriteAnswer("Wow, that's great, man! What do you want to do today?")
-	else if clvMessages.Size = 4 Then
-		Sleep(1200)
-		WriteAnswer("Hahaha, but again? 🤔")
-	else if clvMessages.Size = 6 Then
-		Sleep(1200)
-		WriteAnswer("So let's go.... 🍺🍺🍺🍻🍻")
-	else if clvMessages.Size = 8 Then
-		Sleep(1200)
-		WriteAnswer("wtf???")
-	End If
-End Sub
-
-
 
 Public Sub Ask(question As String)
 	
@@ -434,12 +412,12 @@ Public Sub Ask(question As String)
 '	Dim msg As textMessage
 '		msg.Initialize
 '		msg.message = question
-'		msg.assistant = False
-'	clvMessages.AddTextItem("Typing...", msg)
+'		msg.assistant = True
+'	clvMessages.AddTextItem(WaitingText, msg)
 	
 	Dim m As textMessage
 		m.Initialize
-		m.message = "Typing..."
+		m.message = WaitingText '"Proccessing..."
 		m.assistant = True
 	Dim p As Panel
 		p.Initialize("p")
