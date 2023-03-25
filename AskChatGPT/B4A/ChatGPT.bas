@@ -67,7 +67,7 @@ Public Sub Query(query_string As String) As ResumableSub
 								 "stop": "None", _
 								 "model": "text-davinci-003", _
                                  "prompt": query_string, _
-								 "max_tokens": 2048, _
+								 "max_tokens": 3072, _
 								 "temperature": 0.5)
 		
         Dim js As JSONGenerator
