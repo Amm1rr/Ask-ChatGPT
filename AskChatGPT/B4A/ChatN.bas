@@ -49,14 +49,17 @@ Sub Class_Globals
 	Public AUTOSENDVOICE As Boolean = False
 	Private chkCorrectEnglish As B4XView
 	Private chkTranslate As CheckBox
-	
+	Private chkToFarsi As CheckBox
 	Private panToolbar As B4XView
+	
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize(Parent As B4XView)
 	
-	General.Set_StatusBarColor(Colors.RGB(89,89,89))
+'	General.Set_StatusBarColor(Colors.RGB(89,89,89))
+'	General.Set_StatusBarColor(Colors.RGB(51,129,232))
+	General.Set_StatusBarColor(0xFF74A5FF)
 	Parent.LoadLayout("Chat")
 	
 	ime.Initialize("ime")
@@ -66,7 +69,7 @@ Public Sub Initialize(Parent As B4XView)
 	'TOP MENU
 	Private csTitle As CSBuilder
 	csTitle.Initialize
-	csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.RGB(99,171,255)).Append("GPT").PopAll
+	csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
 	lblTitleTopMenu.Text = csTitle
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
 	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
@@ -126,8 +129,9 @@ End Sub
 public Sub AdjustSize_Clv
 	Try
 		clvMessages.AsView.Top = 0 + pTopMenu.Height
-		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - 1%y
+		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - panToolbar.Height - 1%y
 		clvMessages.Base_Resize(clvMessages.AsView.Width,clvMessages.AsView.Height)
+		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
 	Catch
@@ -254,7 +258,7 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	heightKeyboard = NewHeight
 	panBottom.SetLayout(panBottom.Left, heightKeyboard - panBottom.Height - 1%y, panBottom.Width, panBottom.Height)
 	imgSend.SetLayout(imgSend.Left, heightKeyboard - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
-	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
+'	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 '	panToolbar.Top = NewHeight - panToolbar.Height - 200
 	AdjustSize_Clv
 End Sub
@@ -281,11 +285,19 @@ Public Sub About
 	
 	lblVersionName.Text = Application.LabelName
 	lblVersionNumber.Text = "Build " & Application.VersionCode & " " & Application.VersionName
-	lblVersionText.Text = "Dev by github.com/@Soheyl"
+	
+	Dim csTitle As CSBuilder
+		csTitle.Initialize
+		csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Append("github.com/").Color(Colors.Yellow).Clickable("csTitle", 1).Underline.Append("Amm1rr").PopAll
+	lblVersionText.Text = csTitle
 	
 	pnlBackground.Visible = True
 	pnlAbout.Visible = True
 	
+End Sub
+
+Private Sub csTitle_Click (Tag As Object)
+	LogColor("Click: " & Tag, Colors.Blue)
 End Sub
 
 Public Sub imgSend_Click
@@ -300,12 +312,17 @@ Public Sub imgSend_Click
 		Dim question As String
 		
 		If (chkCorrectEnglish.Checked) Then
-			sText = "Check, Correct and Improve this English sentenc:" & CRLF
+			sText = "Check Grammer, Correct and Improve this English sentenc:" & CRLF
 		Else If (chkTranslate.Checked) Then
 			sText = "Translate to English this:" & CRLF
+		Else If (chkToFarsi.Checked) Then
+			sText = "Translate to Farsi this:" & CRLF
 		End If
 		
-		If (chkCorrectEnglish.Checked = False) And (chkTranslate.Checked = False) Then
+		If (chkCorrectEnglish.Checked = False) And _
+			(chkTranslate.Checked = False) And _
+			(chkToFarsi.Checked = False) Then
+			
 			sText = txtQuestion.Text.Trim
 			question = sText
 		Else
@@ -483,9 +500,24 @@ End Sub
 
 
 Private Sub chkCorrectEnglish_CheckedChange(Checked As Boolean)
-	If (Checked = True) Then chkTranslate.Checked = False : Return
+	If (Checked = True) Then
+		chkTranslate.Checked = False
+		chkToFarsi.Checked = False
+		Return
+	End If
 End Sub
 
 Private Sub chkTranslate_CheckedChange(Checked As Boolean)
-	If (Checked = True) Then chkCorrectEnglish.Checked = False:Return
+	If (Checked = True) Then
+		chkCorrectEnglish.Checked = False
+		chkToFarsi.Checked = False
+		Return
+	End If
+End Sub
+
+Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
+	If (Checked = True) Then
+		chkCorrectEnglish.Checked = False
+		chkTranslate.Checked = False
+	End If
 End Sub

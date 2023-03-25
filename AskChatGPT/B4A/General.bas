@@ -16,7 +16,6 @@ Sub Size_textVertical(lb As Label,text As String) As Int
 End Sub
 
 
-
 Sub Set_StatusBarColor(clr As Int)
 	Dim p As Phone
 	If p.SdkVersion >= 21 Then

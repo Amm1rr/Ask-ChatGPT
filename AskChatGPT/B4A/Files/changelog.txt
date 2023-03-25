@@ -1,5 +1,11 @@
 Build 4 Dev
 -----
++ Added Translate to Farsi
++ Added Toolbar
+* Improve UI
+
+Build 4 Dev
+-----
 * Fixed send multiple time isse
 
 Build 3 Dev

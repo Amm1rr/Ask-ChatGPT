@@ -67,14 +67,14 @@ Public Sub Query(query_string As String) As ResumableSub
 								 "stop": "None", _
 								 "model": "text-davinci-003", _
                                  "prompt": query_string, _
-								 "max_tokens": 4000, _
+								 "max_tokens": 2048, _
 								 "temperature": 0.5)
 		
         Dim js As JSONGenerator
         	js.Initialize(m)
 		
 		'Uncomment this if you want to see raw JSON string generated
-		'Log(js.ToString)
+'		LogColor(js.ToString, Colors.Green)
  		
 		Dim response As String
  		
@@ -100,46 +100,45 @@ Public Sub Query(query_string As String) As ResumableSub
         req.GetRequest.SetHeader("OpenAI-Organization", "")
  
         req.GetRequest.SetContentType("application/json")
- 
+		req.GetRequest.SetContentEncoding("UTF8")
+		
         Wait For (req) JobDone(req As HttpJob)
- 
+		
         If req.Success Then
-  
+			
             'Uncomment this line if you want to see raw JSON response
-            'Log(req.GetString)
-  
+'			LogColor(req.GetString, Colors.Blue)
+			
             Dim parser As JSONParser
-  
-            parser.Initialize(req.GetString)
-  
+            	parser.Initialize(req.GetString)
+				
             Dim jRoot As Map = parser.NextObject
-  
+			
             Dim choices As List = jRoot.Get("choices")
-  
+			
             For Each colchoices As Map In choices
-      
+				
                 Dim text As String = colchoices.Get("text")
-      
+				
                 If response <> "" Then response = response & CRLF
-      
                 response = response & text.Trim
-      
+					
             Next
- 
+			
         Else
-  
+			
             response = "ERROR: " & req.ErrorMessage
- 
+			
         End If
- 
+		
         req.Release
- 
+		
     Catch
- 
+		
         response = "ERROR: " & LastException
- 
+		
     End Try
- 
+	
     Return response
-
+	
 End Sub
