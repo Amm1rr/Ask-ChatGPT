@@ -48,7 +48,7 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 5
+	#VersionCode: 6
 	#VersionName: Development
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
@@ -63,7 +63,7 @@ Version=12.2
 '#BridgeLogger: True
 
 Sub Process_Globals
-	Public 	vr 						As VoiceRecognition
+	Public 	voicer 						As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
 	Private OldIntent 				As Intent
 End Sub
@@ -80,7 +80,7 @@ Sub Activity_Create(FirstTime As Boolean)
 	ChatNew1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
 	
-	vr.Initialize("vr")
+	voicer.Initialize("vr")
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
@@ -110,6 +110,7 @@ Sub Activity_Resume
 		If (ChatNew1.AUTOSENDVOICE) Then _
 			ChatNew1.imgSend_Click
 		
+		#Region Shared a Image
 '		'### It's Image
 '		Dim uri As String = intent.RunMethod("getParcelableExtra", Array("android.intent.extra.STREAM"))
 '		Dim flag As Boolean
@@ -120,6 +121,7 @@ Sub Activity_Resume
 '		Catch
 '			Log(LastException)
 '		End Try
+		#End Region
 	End If
 End Sub
 

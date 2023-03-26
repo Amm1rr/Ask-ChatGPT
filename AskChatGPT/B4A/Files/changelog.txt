@@ -1,4 +1,9 @@
-Build 4 Dev
+Build 6 Dev
+-----
++ Added remember conversation
+* Improve Ask Method
+
+Build 5 Dev
 -----
 + Added Translate to Farsi
 + Added Toolbar

@@ -27,7 +27,7 @@ Sub Class_Globals
 	Private icConfigTopMenu As ImageView
 	
 	Private WaitingText As String = "Proccessing..."
-	
+	Private History As String
 	
 	'CLV Answer
 	Private lblAnswer As Label
@@ -65,6 +65,7 @@ Public Sub Initialize(Parent As B4XView)
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
+	History = "dynamic history of my and your replys in the chat: "
 	
 	'TOP MENU
 	Private csTitle As CSBuilder
@@ -135,7 +136,7 @@ public Sub AdjustSize_Clv
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
 	Catch
-		LogColor(LastException, Colors.Red)
+		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
 End Sub
 
@@ -209,7 +210,7 @@ End Sub
 
 
 Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
-	LogColor(Value, Colors.Blue)
+	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
 	ToastMessageShow("Copied", False)
 	Dim cp As BClipboard
 	Dim vl As textMessage = Value
@@ -297,26 +298,32 @@ Public Sub About
 End Sub
 
 Private Sub csTitle_Click (Tag As Object)
-	LogColor("Click: " & Tag, Colors.Blue)
+	LogColor("csTitle_Click:" & Tag, Colors.Blue)
 End Sub
 
 Public Sub imgSend_Click
 	
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-'	LogColor(clvMessages.Size & " - " & msg.message, Colors.Magenta)
+'	LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 	If (msg.message = WaitingText) Then Return
 	
 	If (imgSend.Tag = "text") Then
 		
 		Dim sText As String
 		Dim question As String
+		Dim sAssistant As String
 		
 		If (chkCorrectEnglish.Checked) Then
-			sText = "Check Grammer, Correct and Improve this English sentenc:" & CRLF
+			sText = "Check Grammer, Correct and Improve English Text:" & CRLF
+			sAssistant = "You are a helpful Grammer and Proof Checker assistant."
 		Else If (chkTranslate.Checked) Then
-			sText = "Translate to English this:" & CRLF
+			sText = "Translate the following text to English:" & CRLF
+			sAssistant = "You are a helpful assistant that translates any language to English."
 		Else If (chkToFarsi.Checked) Then
-			sText = "Translate to Farsi this:" & CRLF
+			sText = "Translate the following text to Farsi:" & CRLF
+			sAssistant = "You are a helpful assistant that translates any language to Farsi."
+		Else
+			sAssistant = "You are a helpful assistant."
 		End If
 		
 		If (chkCorrectEnglish.Checked = False) And _
@@ -331,15 +338,14 @@ Public Sub imgSend_Click
 		End If
 		WriteQuestion(sText)
 		txtQuestion.Text = ""
-		Ask(question)
+		Ask(question, sAssistant)
 		
 	Else
-		Log(imgSend.Tag)
-		Log("Voice")
+		Log("imgSend_Click: Voice" & imgSend.Tag)
 		
 		Wait For (RecognizeVoice) Complete (Result As String)
 		If (Result <> "") Then
-			LogColor(Result, Colors.Blue)
+			LogColor("Voice:" & Result, Colors.Blue)
 			txtQuestion.Text = Result
 			If (AUTOSENDVOICE) Then
 				imgSend_Click
@@ -366,7 +372,7 @@ End Sub
 
 
 Private Sub RecognizeVoice As ResumableSub
-	Main.vr.Listen
+	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then
 		Return Texts.Get(0)
@@ -418,7 +424,7 @@ Sub HideKeyboard
 	ime.HideKeyboard
 End Sub
 
-Public Sub Ask(question As String)
+Public Sub Ask(question As String, assistant As String)
 	
 	Dim wrk_chat As ChatGPT
 		wrk_chat.Initialize
@@ -446,12 +452,14 @@ Public Sub Ask(question As String)
 	
 	AdjustSize_Clv
 	
-	Wait For (wrk_chat.Query(question)) Complete (response As String)
+	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
+	History = History & CRLF & "Me: " 	& question
+	History = History & CRLF & "You: " 	& response
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv
 	
-	Log(response)
+'	Log("Ask:" & response)
 	WriteAnswer(response)
 	
 	Return

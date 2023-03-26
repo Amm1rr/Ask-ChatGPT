@@ -1,0 +1,11 @@
+Private api_key As String = "YOUR_API_KEY_HERE"
+Private engine As String = "gpt-3.5-turbo"
+Private proxy As String
+Private timeout As Float
+Private max_tokens As Int
+Private temperature As Float = 0.5
+Private top_p As Float = 1.0
+Private presence_penalty As Float = 0.0
+Private frequency_penalty As Float = 0.0
+Private reply_count As Int = 1
+Private system_prompt As String = "You are ChatGPT, a large language model trained by OpenAI. Respond conversationally"
