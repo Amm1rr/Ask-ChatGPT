@@ -46,12 +46,12 @@ Sub Class_Globals
 	Private lblVersionName As B4XView
 	Private lblVersionText As B4XView
 	
-	Public AUTOSENDVOICE As Boolean = False
-	Private chkCorrectEnglish As B4XView
-	Private chkTranslate As CheckBox
-	Private chkToFarsi As CheckBox
-	Private panToolbar As B4XView
-	
+	Public AUTOSENDVOICE 		As Boolean = False
+	Private panToolbar 			As B4XView
+	Private chkCorrectEnglish 	As B4XView
+	Private chkTranslate 		As CheckBox
+	Private chkToFarsi 			As CheckBox
+	Private chkVoiceLang 		As B4XView
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -75,8 +75,7 @@ Public Sub Initialize(Parent As B4XView)
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
 	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
 	
-
-
+	
 	Private cc As ColorDrawable
 	cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
 	panBottom.Background = cc
@@ -314,14 +313,14 @@ Public Sub imgSend_Click
 		Dim sAssistant As String
 		
 		If (chkCorrectEnglish.Checked) Then
-			sText = "Check Grammer, Correct and Improve English Text:" & CRLF
-			sAssistant = "You are a helpful Grammer and Proof Checker assistant."
+			sText = "Check and Correct Grammer and Improve English Text:" & CRLF
+			sAssistant = "You are a helpful Grammer, Translates and Proof Checker assistant."
 		Else If (chkTranslate.Checked) Then
 			sText = "Translate the following text to English:" & CRLF
-			sAssistant = "You are a helpful assistant that translates any language to English."
+			sAssistant = "You are a translates."
 		Else If (chkToFarsi.Checked) Then
 			sText = "Translate the following text to Farsi:" & CRLF
-			sAssistant = "You are a helpful assistant that translates any language to Farsi."
+			sAssistant = "You are a translates."
 		Else
 			sAssistant = "You are a helpful assistant."
 		End If
@@ -372,6 +371,7 @@ End Sub
 
 
 Private Sub RecognizeVoice As ResumableSub
+	If (chkVoiceLang.Checked) Then Main.voicer.Language = "fa"
 	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then

@@ -147,7 +147,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
         req.GetRequest.SetHeader("OpenAI-Organization", "")
         req.GetRequest.SetContentType("application/json")
 		req.GetRequest.SetContentEncoding("UTF8")
-		req.GetRequest.Timeout = 60000 '1 min
+		req.GetRequest.Timeout = 30000 '30 Sec
 		
         Wait For (req) JobDone(req As HttpJob)
 		
