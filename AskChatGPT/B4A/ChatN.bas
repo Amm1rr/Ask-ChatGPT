@@ -120,7 +120,7 @@ Private Sub LoadCLVSetup
 		myStrings.Add("Try me in Farsi...با هر زبانی که میخوای ازم سوال بپرس")
 		myStrings.Add("Try me in Farsi...بیا فارسی صحبت کنیم 😉")
 		myStrings.Add("Try me in German...Versuchen wir es mit Deutsch 🇩🇪")
-		myStrings.Add("I can correct your english, just ask")
+		myStrings.Add("I can correct your English, just ask")
 	
 	Dim index As Int
 	index = Rnd(0, myStrings.Size - 1)
@@ -429,7 +429,7 @@ End Sub
 
 Public Sub Ask(question As String, assistant As String)
 	
-	If Not (wrk_chat.IsInitialized) Then wrk_chat.Initialize
+'	If Not (wrk_chat.IsInitialized) Then wrk_chat.Initialize
 	
 	If (question = "") Then
 		txtQuestion.RequestFocus

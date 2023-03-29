@@ -35,15 +35,16 @@ Library6=okhttputils2
 Library7=phone
 Library8=securemytext
 Library9=xcustomlistview
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~
-Module1=ChatGPT
-Module2=ChatN
-Module3=ChatNew
-Module4=General
-Module5=Starter
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~
+Module1=ACTION_PROCESS_TEXT
+Module2=ChatGPT
+Module3=ChatN
+Module4=ChatNew
+Module5=General
+Module6=Starter
 NumberOfFiles=12
 NumberOfLibraries=11
-NumberOfModules=5
+NumberOfModules=6
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -65,6 +66,7 @@ Version=12.2
 Sub Process_Globals
 	Public 	voicer 						As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
+	Public 	strActoinTextSelected	As String
 	Private OldIntent 				As Intent
 End Sub
 
@@ -122,6 +124,14 @@ Sub Activity_Resume
 '			Log(LastException)
 '		End Try
 		#End Region
+		
+	Else If (strActoinTextSelected <> "") Then
+		
+		ChatNew1.txtQuestion.Text = strActoinTextSelected
+		Sleep(0)
+		If (ChatNew1.AUTOSENDVOICE) Then _
+			ChatNew1.imgSend_Click
+		
 	End If
 End Sub
 
