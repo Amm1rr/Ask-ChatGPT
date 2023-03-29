@@ -311,6 +311,8 @@ Public Sub imgSend_Click
 	
 	If (imgSend.Tag = "text") Then
 		
+		If (txtQuestion.Text.Trim.Length < 1) Then Return
+		
 		Dim sText As String
 		Dim question As String
 		Dim sAssistant As String
@@ -374,7 +376,13 @@ End Sub
 
 
 Private Sub RecognizeVoice As ResumableSub
-	If (chkVoiceLang.Checked) Then Main.voicer.Language = "fa"
+	If (chkVoiceLang.Checked) Then
+		Main.voicer.Language = "fa"
+		Main.voicer.Prompt = "صحبت کنید"
+	Else
+		Main.voicer.Language = "en"
+		Main.voicer.Prompt = "Speak Now"
+	End If
 	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then
@@ -410,7 +418,7 @@ Sub WriteAnswer(message As String) 'Left Side
 		m.assistant = True
 	Dim p As Panel
 		p.Initialize("p")
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 100%y)
 '	If (clvMessages.Size > 0) Then
 '		clvMessages.ReplaceAt(clvMessages.Size - 1, p, clvMessages.AsView.Width, m)
 '	Else
