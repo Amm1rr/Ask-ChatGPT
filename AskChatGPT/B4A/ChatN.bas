@@ -66,7 +66,7 @@ Public Sub Initialize(Parent As B4XView)
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
-	History = "dynamic history of my and your replys in the chat: "
+	History = "You are a helpful assistant."
 	
 	'TOP MENU
 	Private csTitle As CSBuilder
@@ -464,8 +464,9 @@ Public Sub Ask(question As String, assistant As String)
 	AdjustSize_Clv
 	
 	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
-	History = History & CRLF & "Me: " 	& question
-	History = History & CRLF & "You: " 	& response
+'	History = History & CRLF & "Me: " 	& question
+'	History = History & CRLF & "You: " 	& response
+	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv

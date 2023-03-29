@@ -90,7 +90,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
-			json.Put("stop", "None")
+			json.Put("stop", "stop")
 '			json.Put("prompt", query_string)
 			json.Put("max_tokens", 2048)
 			json.Put("temperature", 0.5)
@@ -159,14 +159,16 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			Dim parser As JSONParser
 			parser.Initialize(req.GetString)
 				
-			Dim text As String  = ParseJson(req.GetString)
-					
+			Dim text As String  = ParseJson(req.GetString, False)
+			Dim endofconv As String = ParseJson(req.GetString, True)
 			If response <> "" Then response = response & CRLF
 			response = response & text.Trim
 			
+			If (endofconv <> "stop") Then response = response & CRLF & "»»"
+			
         Else
 			
-            response = "ERROR: " & req.ErrorMessage
+            response = "ERROR Unsuccess: " & req.ErrorMessage
 			
         End If
 		
@@ -189,7 +191,7 @@ End Sub
 'and it responded with this - except it used a variable named "object" which
 'B4A objected to that I had to change to "object_string"
 'I also had to change the management of the variable "content" so the subroutine would return a result
-Private Sub ParseJson(json As String) As String
+Private Sub ParseJson(json As String, CheckEndOfConv As Boolean) As String
 	Dim parser As JSONParser
 	parser.Initialize(json)
 	Dim root As Map
@@ -225,6 +227,8 @@ Private Sub ParseJson(json As String) As String
 		content = content & message.Get("content")
 		Dim finishReason As String
 		finishReason = choice.Get("finish_reason")
+		If (CheckEndOfConv) Then _
+			content = finishReason
 		Log("Choice " & choiceIndex)
 		Log("Role: " & role)
 		Log("Content: " & content)
