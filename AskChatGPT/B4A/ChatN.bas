@@ -9,6 +9,7 @@ Sub Class_Globals
 	
 	Type textMessage (message As String, assistant As Boolean)
 	Private su As StringUtils
+	Private wrk_chat As ChatGPT
 	
 	'KEYBOARD
 	Private ime As IME
@@ -92,6 +93,8 @@ Public Sub Initialize(Parent As B4XView)
 	
 	
 	LoadCLVSetup
+	
+	wrk_chat.Initialize
 	
 	
 End Sub
@@ -313,16 +316,16 @@ Public Sub imgSend_Click
 		Dim sAssistant As String
 		
 		If (chkCorrectEnglish.Checked) Then
-			sText = "Check and Correct Grammer and Improve English Text:" & CRLF
-			sAssistant = "You are a helpful Grammer, Translates and Proof Checker assistant."
+			sText = "Correct Grammer and convert to  Fluent English Text:" & CRLF
+			sAssistant = "You are an English grammar sentence corrector."
 		Else If (chkTranslate.Checked) Then
 			sText = "Translate the following text to English:" & CRLF
-			sAssistant = "You are a translates."
+			sAssistant = "You are a translator."
 		Else If (chkToFarsi.Checked) Then
 			sText = "Translate the following text to Farsi:" & CRLF
-			sAssistant = "You are a translates."
+			sAssistant = "You are a translator."
 		Else
-			sAssistant = "You are a helpful assistant."
+			sAssistant = "" '"You are a helpful assistant."
 		End If
 		
 		If (chkCorrectEnglish.Checked = False) And _
@@ -349,7 +352,7 @@ Public Sub imgSend_Click
 			If (AUTOSENDVOICE) Then
 				imgSend_Click
 			Else
-				txtQuestion.SelectAll
+'				txtQuestion.SelectAll
 			End If
 		End If
 		IME_HeightChanged(100%y, 0)
@@ -426,8 +429,7 @@ End Sub
 
 Public Sub Ask(question As String, assistant As String)
 	
-	Dim wrk_chat As ChatGPT
-		wrk_chat.Initialize
+	If Not (wrk_chat.IsInitialized) Then wrk_chat.Initialize
 	
 	If (question = "") Then
 		txtQuestion.RequestFocus
@@ -500,6 +502,12 @@ End Sub
 Private Sub lblClearText_Click
 	txtQuestion.Text = ""
 	ShowKeyboard
+End Sub
+
+Private Sub lblClearText_LongClick
+	wrk_chat.Initialize
+	History = "dynamic history of my and your replys in the chat: "
+	ToastMessageShow("Session Reset.", False)
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
