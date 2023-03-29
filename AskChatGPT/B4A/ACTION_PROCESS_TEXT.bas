@@ -31,7 +31,7 @@ Sub Activity_Create(FirstTime As Boolean)
 			StartActivity(Main)
 		End If
 	Catch
-		Log(LastException)
+		LogColor("ACTION_PROCESS_TEXT - Activity_Create:" & CRLF & LastException, Colors.Red)
 	End Try
 	Activity.Finish
 End Sub
