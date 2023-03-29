@@ -318,12 +318,15 @@ Public Sub imgSend_Click
 		Dim sAssistant As String
 		
 		If (chkCorrectEnglish.Checked) Then
+			ResetAI
 			sText = "Correct Grammer and convert to  Fluent English Text:" & CRLF
 			sAssistant = "You are an English grammar sentence corrector."
 		Else If (chkTranslate.Checked) Then
+			ResetAI
 			sText = "Translate the following text to English:" & CRLF
 			sAssistant = "You are a translator."
 		Else If (chkToFarsi.Checked) Then
+			ResetAI
 			sText = "Translate the following text to Farsi:" & CRLF
 			sAssistant = "You are a translator."
 		Else
@@ -437,8 +440,6 @@ End Sub
 
 Public Sub Ask(question As String, assistant As String)
 	
-'	If Not (wrk_chat.IsInitialized) Then wrk_chat.Initialize
-	
 	If (question = "") Then
 		txtQuestion.RequestFocus
 		ShowKeyboard
@@ -513,9 +514,13 @@ Private Sub lblClearText_Click
 End Sub
 
 Private Sub lblClearText_LongClick
+	ResetAI
+	ToastMessageShow("Session Reset.", False)
+End Sub
+
+Public Sub ResetAI
 	wrk_chat.Initialize
 	History = "dynamic history of my and your replys in the chat: "
-	ToastMessageShow("Session Reset.", False)
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
