@@ -534,8 +534,11 @@ Public Sub Ask(question As String, assistant As String)
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv
 	
-	If (response = wrk_chat.TimeoutText) And (txtQuestion.Text.Length < 1) Then _
+	If (response = wrk_chat.TimeoutText) And (txtQuestion.Text.Length < 1) Then
 		txtQuestion.Text = question
+	Else If (response = wrk_chat.OpenApiHostError) And (txtQuestion.Text.Length < 1) Then
+		txtQuestion.Text = question
+	End If
 	
 '	Log("Ask:" & response)
 	WriteAnswer(response)

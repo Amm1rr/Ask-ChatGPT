@@ -15,8 +15,9 @@ Version=12.2
 'All basically for my own education - many thanks to Abdull for doing all
 'original research
 Sub Class_Globals
-	Private API_KEY 	As String
-	Public TimeoutText 	As String = "Timeout, Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
+	Private API_KEY 			As String
+	Public TimeoutText 			As String = "Timeout, Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
+	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -170,8 +171,10 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			If (endofconv <> "stop") Then response = response & CRLF & "»»"
 			
         Else
-			If (req.ErrorMessage.Trim = "java.net.SocketTimeoutException: timeout".Trim) Then
+			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
 				response = TimeoutText
+			Else If (req.ErrorMessage = "java.net.UnknownHostException Unable To resolve host ""api.openai.com"": No address associated with hostname") Then
+				response = OpenApiHostError
 			Else
 				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
 			End If
