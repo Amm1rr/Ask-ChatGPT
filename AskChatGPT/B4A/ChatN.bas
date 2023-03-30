@@ -169,27 +169,31 @@ Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int
 					Dim t As Int
 '					t = General.Size_textVertical(lblAnswer, text)
 					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
-					LogColor("Length: " & text.Length, Colors.DarkGray)
-					LogColor("V: " & t, Colors.Blue)
+					LogColor("Length: " & text.Length, Colors.Blue)
+					LogColor("H: " & t, Colors.Blue)
 '					If (t > 150) Then
 					webAnswer.Top = TopMargin + 1%y
-					webAnswer.Height = t
+					If (t > 80%y) Then
+						webAnswer.Height = 70%y
+					Else
+						webAnswer.Height = t + 2%y
+					End If
 '					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.Text) + BottomMargin
 '					lblAnswer.Top = TopMargin + 1%y
 					
 					'ADJUST HORIZONTAL
 					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
 					LogColor("H: " & t, Colors.Magenta)
-					If (t < 120) Then
-						webAnswer.Width = 45%x
+					If (t < 130) Then
+						webAnswer.Width = 50%x
 						pnlAnswer.Width = webAnswer.Width + 4%x
-						LogColor("H is smaller of 120", Colors.Cyan)
+						LogColor("W is smaller of 120", Colors.Cyan)
 					Else If (t < 82%x) Then
 '						lblAnswer.Width = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
 '						lblAnswer.SingleLine = True
 						webAnswer.Width = t
 						pnlAnswer.Width = (webAnswer.Width + 4%x)
-						LogColor("H is more than of 82%x", Colors.Yellow)
+						LogColor("W is more than of 82%x", Colors.Yellow)
 					Else
 						webAnswer.Width = 90%x
 						pnlAnswer.Width = webAnswer.Width + 4%x
@@ -315,8 +319,8 @@ Public Sub About
 	
 	Dim csTitle As CSBuilder
 		csTitle.Initialize
+		csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Clickable("csTitle", "site").Append("github.com/").Pop.Color(Colors.Yellow).Clickable("csTitle", "name").Underline.Append("Amm1rr").PopAll
 		csTitle.EnableClickEvents(lblVersionText)
-	csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Append("github.com/").Clickable("csTitle", "site").Color(Colors.Yellow).Clickable("csTitle", "name").Underline.Append("Amm1rr").PopAll
 	lblVersionText.Text = csTitle
 	
 	pnlBackground.Visible = True
@@ -343,6 +347,12 @@ Private Sub csTitle_Click (Tag As Object)
 '				i.Initialize("i.ACTION_VIEW", "https://github.com/Amm1rr/")
 '			StartActivity(i)
 	End Select
+End Sub
+
+Sub setScrollBarEnabled(v As View, vertical As Boolean, horizontal As Boolean)
+	Dim jo = v As JavaObject
+		jo.RunMethod("setVerticalScrollBarEnabled"  , Array As Object (vertical  ))
+		jo.RunMethod("setHorizontalScrollBarEnabled", Array As Object (horizontal))
 End Sub
 
 Public Sub imgSend_Click
