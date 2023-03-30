@@ -46,6 +46,8 @@ Sub Class_Globals
 	Private lblVersionNumber As B4XView
 	Private lblVersionName As B4XView
 	Private lblVersionText As B4XView
+	Private webAnswer As WebView
+	Private md As md2html
 	
 	Public AUTOSENDVOICE 		As Boolean = False
 	Private panToolbar 			As B4XView
@@ -66,7 +68,7 @@ Public Sub Initialize(Parent As B4XView)
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
-	History = "You are a helpful assistant."
+'	History = "You are a helpful assistant."
 	
 	'TOP MENU
 	Private csTitle As CSBuilder
@@ -95,7 +97,6 @@ Public Sub Initialize(Parent As B4XView)
 	LoadCLVSetup
 	
 	wrk_chat.Initialize
-	
 	
 End Sub
 
@@ -155,24 +156,47 @@ Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int
 		
 					p.LoadLayout("clvAnswerRow")
 					lblAnswer.Text = m.message
-	
+					webAnswer.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
+					
 					imgAnswer.Height = 3%y
 					imgAnswer.Top = 0
 					imgAnswer.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Puton.png", imgAnswer.Width, imgAnswer.Height, False)).Gravity = Gravity.CENTER
 					
 					'ADJUST VERTICAL
-					Private TopMargin As Int = 1%y : Private BottomMargin As Int = 1%y
-					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.Text)
-					lblAnswer.Top = 0%y + TopMargin
+					Private TopMargin, BottomMargin As Int = 2%y
+					Dim text As String = lblAnswer.Text
+'					If (text.Length > 45) Then text = text & CRLF
+					Dim t As Int
+'					t = General.Size_textVertical(lblAnswer, text)
+					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
+					LogColor("Length: " & text.Length, Colors.DarkGray)
+					LogColor("V: " & t, Colors.Blue)
+'					If (t > 150) Then
+					webAnswer.Top = TopMargin + 1%y
+					webAnswer.Height = t
+'					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.Text) + BottomMargin
+'					lblAnswer.Top = TopMargin + 1%y
 					
 					'ADJUST HORIZONTAL
-					If General.Size_textHorizontal(lblAnswer,lblAnswer.Text) < 82%x Then
-						lblAnswer.Width = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
-						lblAnswer.SingleLine = True
-						pnlAnswer.Width = lblAnswer.Width +4%x
+					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
+					LogColor("H: " & t, Colors.Magenta)
+					If (t < 120) Then
+						webAnswer.Width = 45%x
+						pnlAnswer.Width = webAnswer.Width + 4%x
+						LogColor("H is smaller of 120", Colors.Cyan)
+					Else If (t < 82%x) Then
+'						lblAnswer.Width = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
+'						lblAnswer.SingleLine = True
+						webAnswer.Width = t
+						pnlAnswer.Width = (webAnswer.Width + 4%x)
+						LogColor("H is more than of 82%x", Colors.Yellow)
+					Else
+						webAnswer.Width = 90%x
+						pnlAnswer.Width = webAnswer.Width + 4%x
+						LogColor("Else Horizontal", Colors.Green)
 					End If
 					
-					pnlAnswer.Height = lblAnswer.Height + TopMargin + BottomMargin
+					pnlAnswer.Height = webAnswer.Height + TopMargin + BottomMargin
 					clvMessages.ResizeItem(i,pnlAnswer.Height)
 				
 				Else
@@ -291,23 +315,45 @@ Public Sub About
 	
 	Dim csTitle As CSBuilder
 		csTitle.Initialize
-		csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Append("github.com/").Color(Colors.Yellow).Clickable("csTitle", 1).Underline.Append("Amm1rr").PopAll
+		csTitle.EnableClickEvents(lblVersionText)
+	csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Append("github.com/").Clickable("csTitle", "site").Color(Colors.Yellow).Clickable("csTitle", "name").Underline.Append("Amm1rr").PopAll
 	lblVersionText.Text = csTitle
 	
 	pnlBackground.Visible = True
 	pnlAbout.Visible = True
-	
 End Sub
 
 Private Sub csTitle_Click (Tag As Object)
-	LogColor("csTitle_Click:" & Tag, Colors.Blue)
+	
+	' If the user clicked on
+	' the word "Amm1rr" Tag is 1.
+
+	Dim clicked As String = Tag.As(String)
+	
+	Select clicked
+		Case "name":
+			Dim x As XUI
+				x.MsgboxAsync("Coded by M.Khani", ": )")
+		
+		Case "site":
+			Dim p As PhoneIntents
+			StartActivity(p.OpenBrowser("https://github.com/Amm1rr/"))
+		'-- OR another way
+'			Dim i As Intent
+'				i.Initialize("i.ACTION_VIEW", "https://github.com/Amm1rr/")
+'			StartActivity(i)
+	End Select
 End Sub
 
 Public Sub imgSend_Click
 	
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
 '	LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
-	If (msg.message = WaitingText) Then Return
+	If (msg.message = WaitingText) Then
+		General.Size_textVertical(lblAnswer, lblAnswer.Text)
+		General.Size_textHorizontal(lblAnswer, lblAnswer.Text)
+		Return
+	End If
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -321,6 +367,7 @@ Public Sub imgSend_Click
 			ResetAI
 			sText = "Correct Grammer and convert to  Fluent English Text:" & CRLF
 			sAssistant = "You are an English grammar sentence corrector."
+'			sAssistant = "Grammar Fix"
 		Else If (chkTranslate.Checked) Then
 			ResetAI
 			sText = "Translate the following text to English:" & CRLF
@@ -432,7 +479,6 @@ Sub WriteAnswer(message As String) 'Left Side
 End Sub
 
 Sub HideKeyboard
-	txtQuestion.Text = ""
 	panBottom.Height = 7%y
 	txtQuestion.Height = 7%y
 	ime.HideKeyboard
@@ -446,6 +492,7 @@ Public Sub Ask(question As String, assistant As String)
 		Return
 	End If
 	
+	
 '	Dim msg As textMessage
 '		msg.Initialize
 '		msg.message = question
@@ -458,18 +505,21 @@ Public Sub Ask(question As String, assistant As String)
 		m.assistant = True
 	Dim p As Panel
 		p.Initialize("p")
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 5%x, 15%y)
 	clvMessages.Add(p, m)
 	
 	AdjustSize_Clv
 	
 	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
-'	History = History & CRLF & "Me: " 	& question
-'	History = History & CRLF & "You: " 	& response
-	History = "You are a helpful assistant."
+''	History = History & CRLF & "Me: " 	& question
+''	History = History & CRLF & "You: " 	& response
+'	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv
+	
+	If (response = wrk_chat.TimeoutText) And (txtQuestion.Text.Length < 1) Then _
+		txtQuestion.Text = question
 	
 '	Log("Ask:" & response)
 	WriteAnswer(response)

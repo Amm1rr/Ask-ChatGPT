@@ -24,27 +24,30 @@ FileGroup7=Default Group
 FileGroup8=Default Group
 FileGroup9=Default Group
 Group=Default Group
-Library1=bctextengine
-Library10=xui views
-Library11=as_textfieldadvanced
-Library2=clipboard
-Library3=core
-Library4=ime2
-Library5=json
-Library6=okhttputils2
-Library7=phone
-Library8=securemytext
-Library9=xcustomlistview
+Library1=as_textfieldadvanced
+Library10=securemytext
+Library11=xcustomlistview
+Library12=xui views
+Library13=viewsex
+Library2=bctextengine
+Library3=clipboard
+Library4=core
+Library5=ime2
+Library6=json
+Library7=md2html4a.11
+Library8=okhttputils2
+Library9=phone
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~
 Module1=ACTION_PROCESS_TEXT
 Module2=ChatGPT
 Module3=ChatN
 Module4=ChatNew
-Module5=General
-Module6=Starter
+Module5=CLVNested
+Module6=General
+Module7=Starter
 NumberOfFiles=12
-NumberOfLibraries=11
-NumberOfModules=6
+NumberOfLibraries=13
+NumberOfModules=7
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -74,10 +77,11 @@ Sub Globals
 '	Private chat1 				As Chat
 	Private ChatNew1 			As ChatN
 	Private ime 				As IME2
+	Private nestedCLV As CLVNested
 End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
-	
+
 '	chat1.Initialize(Activity)
 	ChatNew1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
@@ -85,6 +89,10 @@ Sub Activity_Create(FirstTime As Boolean)
 	voicer.Initialize("vr")
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
+	
+'	nestedCLV.Initialize(Activity)
+'	nestedCLV.base.LoadLayout("1")
+'	nestedCLV.CLV = CustomListView1
 	
 End Sub
 

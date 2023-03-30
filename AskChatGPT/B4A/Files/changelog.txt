@@ -1,3 +1,7 @@
+Build 7 Dev
+-----
++ Added support of HTML and MD
+
 Build 6 Dev
 -----
 + Added remember conversation

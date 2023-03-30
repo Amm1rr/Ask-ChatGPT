@@ -15,7 +15,8 @@ Version=12.2
 'All basically for my own education - many thanks to Abdull for doing all
 'original research
 Sub Class_Globals
-	Private API_KEY As String
+	Private API_KEY 	As String
+	Public TimeoutText 	As String = "Timeout, Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -120,7 +121,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			js.Initialize(json)
 		
 		'Raw JSON String Generated
-		LogColor("Param: " & js.ToString, Colors.Magenta)
+'		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
 		Dim response As String
  		
@@ -154,7 +155,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
         If req.Success Then
 			
             'Raw JSON Response
-			LogColor("Res: " & req.GetString, Colors.Blue)
+			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 			Dim parser As JSONParser
 			parser.Initialize(req.GetString)
@@ -167,8 +168,11 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			If (endofconv <> "stop") Then response = response & CRLF & "»»"
 			
         Else
-			
-            response = "ERROR Unsuccess: " & req.ErrorMessage
+			If (req.ErrorMessage.Trim = "java.net.SocketTimeoutException: timeout".Trim) Then
+				response = TimeoutText
+			Else
+				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
+			End If
 			
         End If
 		
@@ -176,7 +180,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 		
     Catch
 		
-		response = "ERROR: " & LastException
+		response = "ChatGPT:Query-> ERROR: " & LastException
 		
 	End Try
 	
