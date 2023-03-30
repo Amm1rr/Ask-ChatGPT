@@ -485,7 +485,9 @@ Sub WriteAnswer(message As String) 'Left Side
 '		m.message = WaitingText
 		clvMessages.Add(p, m)
 '	End If
+	
 	AdjustSize_Clv
+	
 End Sub
 
 Sub HideKeyboard
