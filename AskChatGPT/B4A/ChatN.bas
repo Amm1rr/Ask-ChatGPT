@@ -265,7 +265,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 	If New.Length > 0 Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Message.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "text"
-	Else
+	Else if (Main.voicer.IsSupported) Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
 	End If
@@ -375,19 +375,19 @@ Public Sub imgSend_Click
 		
 		If (chkCorrectEnglish.Checked) Then
 			ResetAI
-			sText = "Correct Grammer and convert to  Fluent English Text:" & CRLF
-			sAssistant = "You are an English grammar sentence corrector."
-'			sAssistant = "Grammar Fix"
+'			sText = "Correct Grammar improve to fluent English, and in output just show corrected text:" & CRLF
+			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
+'			sAssistant = "You are an English grammar check and corrector."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
-			sText = "Translate the following text to English:" & CRLF
-			sAssistant = "You are a translator."
+'			sText = "Translate the following text to English:" & CRLF
+			sAssistant = "You are a translator to English language."
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
-			sText = "Translate the following text to Farsi:" & CRLF
-			sAssistant = "You are a translator."
+'			sText = "Translate the following text to Farsi:" & CRLF
+			sAssistant = "You are a translator of the Farsi language, Translate the inputted text into Farsi and show only the correct result in the output."
 		Else
-			sAssistant = "" '"You are a helpful assistant."
+			sAssistant = Null '"You are a helpful assistant."
 		End If
 		
 		If (chkCorrectEnglish.Checked = False) And _
@@ -404,7 +404,7 @@ Public Sub imgSend_Click
 		txtQuestion.Text = ""
 		Ask(question, sAssistant)
 		
-	Else
+	Else If Main.voicer.IsSupported Then	
 		Log("imgSend_Click: Voice" & imgSend.Tag)
 		
 		Wait For (RecognizeVoice) Complete (Result As String)
@@ -418,7 +418,11 @@ Public Sub imgSend_Click
 			End If
 		End If
 		IME_HeightChanged(100%y, 0)
-		
+	
+	Else
+		LogColor("imgSend_Click: ELSE condition=> Voice:" & Result, Colors.Blue)
+		imgSend.Tag = "text"
+		imgSend_Click
 	End If
 	
 '	#if B4J
@@ -583,7 +587,8 @@ End Sub
 
 Public Sub ResetAI
 	wrk_chat.Initialize
-	History = "dynamic history of my and your replys in the chat: "
+	History = Null
+'	History = "dynamic history of my and your replys in the chat: "
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)

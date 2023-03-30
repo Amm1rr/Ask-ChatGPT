@@ -87,6 +87,7 @@ Sub Activity_Create(FirstTime As Boolean)
 	Activity.Title = "Ask ChatGPT"
 	
 	voicer.Initialize("vr")
+	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	

@@ -21,6 +21,8 @@ End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize
+	
+	
 	Dim secure As SecureMyText
 		secure.Initialize("", "datacode")
 '	Dim enc As String = secure.EncryptToFinalTransferText("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAAA") 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
