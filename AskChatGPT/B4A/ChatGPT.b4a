@@ -26,9 +26,10 @@ FileGroup9=Default Group
 Group=Default Group
 Library1=as_textfieldadvanced
 Library10=securemytext
-Library11=xcustomlistview
-Library12=xui views
-Library13=viewsex
+Library11=viewsex
+Library12=xcustomlistview
+Library13=xui views
+Library14=webviewextras2
 Library2=bctextengine
 Library3=clipboard
 Library4=core
@@ -46,7 +47,7 @@ Module5=CLVNested
 Module6=General
 Module7=Starter
 NumberOfFiles=12
-NumberOfLibraries=13
+NumberOfLibraries=14
 NumberOfModules=7
 Version=12.2
 @EndOfDesignText@
@@ -64,7 +65,7 @@ Version=12.2
 	#IncludeTitle: False
 #End Region
 
-'#BridgeLogger: True
+#BridgeLogger: True
 
 Sub Process_Globals
 	Public 	voicer 						As VoiceRecognition
@@ -75,25 +76,20 @@ End Sub
 
 Sub Globals
 '	Private chat1 				As Chat
-	Private ChatNew1 			As ChatN
+	Private ChatN1 			As ChatN
 	Private ime 				As IME2
-	Private nestedCLV As CLVNested
 End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
 
 '	chat1.Initialize(Activity)
-	ChatNew1.Initialize(Activity)
+	ChatN1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
 	
 	voicer.Initialize("vr")
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
-	
-'	nestedCLV.Initialize(Activity)
-'	nestedCLV.base.LoadLayout("1")
-'	nestedCLV.CLV = CustomListView1
 	
 End Sub
 
@@ -103,8 +99,8 @@ End Sub
 
 Sub Activity_Resume
 	
-	ChatNew1.AdjustSize_Clv
-	ChatNew1.IME_HeightChanged(100%y, 0)
+	ChatN1.AdjustSize_Clv
+	ChatN1.IME_HeightChanged(100%y, 0)
 	
 	If IsRelevantIntent(Activity.GetStartingIntent) Then
 		
@@ -116,10 +112,10 @@ Sub Activity_Resume
 		Dim intnew 		As Intent = Activity.GetStartingIntent
 		Dim sharedText 	As String = intnew.GetExtra("android.intent.extra.TEXT") 'Get the shared text
 		
-		ChatNew1.txtQuestion.Text = sharedText
+		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
-		If (ChatNew1.AUTOSENDVOICE) Then _
-			ChatNew1.imgSend_Click
+		If (ChatN1.AUTOSENDVOICE) Then _
+			ChatN1.imgSend_Click
 		
 		#Region Shared a Image
 '		'### It's Image
@@ -136,10 +132,10 @@ Sub Activity_Resume
 		
 	Else If (strActoinTextSelected <> "") Then
 		
-		ChatNew1.txtQuestion.Text = strActoinTextSelected
+		ChatN1.txtQuestion.Text = strActoinTextSelected
 		Sleep(0)
-		If (ChatNew1.AUTOSENDVOICE) Then _
-			ChatNew1.imgSend_Click
+		If (ChatN1.AUTOSENDVOICE) Then _
+			ChatN1.imgSend_Click
 		
 	End If
 End Sub

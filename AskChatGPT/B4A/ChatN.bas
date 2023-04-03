@@ -20,7 +20,7 @@ Sub Class_Globals
 	'CHAT
 	Public txtQuestion As EditText
 	Public imgSend As ImageView
-	Private clvMessages As CustomListView
+	Public clvMessages As CustomListView
 	Private panBottom As Panel
 	Private pTopMenu As Panel
 	Private lblTitleTopMenu As Label
@@ -28,7 +28,7 @@ Sub Class_Globals
 	Private icConfigTopMenu As ImageView
 	
 	Private WaitingText As String = "Proccessing..."
-	Private History As String
+	Private History 	As String
 	
 	'CLV Answer
 	Private lblAnswer As Label
@@ -48,6 +48,9 @@ Sub Class_Globals
 	Private lblVersionText As B4XView
 	Private webAnswer As WebView
 	Private md As md2html
+	
+	Private webAnswerExtra As WebViewExtras
+	Private jsi As DefaultJavascriptInterface
 	
 	Public AUTOSENDVOICE 		As Boolean = False
 	Private panToolbar 			As B4XView
@@ -104,7 +107,7 @@ Private Sub LoadCLVSetup
 	
 	Dim myStrings As List
 		myStrings.Initialize
-		myStrings.Add("Hey, What whould you like to know ?")
+		myStrings.Add("What whould you like to know?")
 		myStrings.Add("Hi there, How are you?")
 		myStrings.Add("How can I help?")
 		myStrings.Add("💻")
@@ -141,6 +144,21 @@ public Sub AdjustSize_Clv
 	Catch
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
+End Sub
+
+Sub webAnswer_PageFinished (Url As String)
+	LogColor("PageFinished", Colors.Blue)	
+	webAnswerExtra.ExecuteJavascript("B4A.CallSub('SetWVHeight',true, document.documentElement.scrollHeight);")
+End Sub
+
+Sub SetWVHeight(height As String)
+	LogColor("SetWVHeight: " & height & " : " & DipToCurrent(height), Colors.Green)
+	
+	If (DipToCurrent(height) > webAnswer.Height) Then
+		webAnswerExtra.Height = DipToCurrent(height) + 1000
+		webAnswer.Height = DipToCurrent(height) + 1000
+	End If
+	
 End Sub
 
 Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int)
@@ -202,6 +220,12 @@ Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int
 					
 					pnlAnswer.Height = webAnswer.Height + TopMargin + BottomMargin
 					clvMessages.ResizeItem(i,pnlAnswer.Height)
+					
+					webAnswerExtra.Initialize(webAnswer)
+					jsi.Initialize
+					webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
+					pnlAnswer.Height = webAnswer.Height + 1000
+					clvMessages.ResizeItem(i, pnlAnswer.Height)
 				
 				Else
 					
@@ -527,17 +551,21 @@ Public Sub Ask(question As String, assistant As String)
 	AdjustSize_Clv
 	
 	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
-''	History = History & CRLF & "Me: " 	& question
-''	History = History & CRLF & "You: " 	& response
+'	History = History & CRLF & question 	'Me:
+'	History = History & CRLF & response		'You:
+	History = History & CRLF & question & CRLF & response		'You:
 '	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv
 	
-	If (response = wrk_chat.TimeoutText) And (txtQuestion.Text.Length < 1) Then
-		txtQuestion.Text = question
-	Else If (response = wrk_chat.OpenApiHostError) And (txtQuestion.Text.Length < 1) Then
-		txtQuestion.Text = question
+	If (txtQuestion.Text.Length < 1) Then
+		Select response
+			Case wrk_chat.TimeoutText:
+				txtQuestion.Text = question
+			Case wrk_chat.OpenApiHostError:
+				txtQuestion.Text = question
+		End Select
 	End If
 	
 '	Log("Ask:" & response)

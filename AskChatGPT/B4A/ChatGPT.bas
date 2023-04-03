@@ -161,11 +161,11 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
 			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 			Dim parser As JSONParser
-			parser.Initialize(req.GetString)
+				parser.Initialize(req.GetString)
 				
-			Dim text As String  = ParseJson(req.GetString, False)
-			Dim endofconv As String = ParseJson(req.GetString, True)
-			If response <> "" Then response = response & CRLF
+			Dim text 		As String  	= ParseJson(req.GetString, False)
+			Dim endofconv 	As String 	= ParseJson(req.GetString, True)
+			If (response <> "") Then response = response & CRLF
 			response = response & text.Trim
 			
 			If (endofconv <> "stop") Then response = response & CRLF & "»»"
@@ -202,40 +202,40 @@ End Sub
 'I also had to change the management of the variable "content" so the subroutine would return a result
 Private Sub ParseJson(json As String, CheckEndOfConv As Boolean) As String
 	Dim parser As JSONParser
-	parser.Initialize(json)
+		parser.Initialize(json)
 	Dim root As Map
-	root = parser.NextObject
+		root = parser.NextObject
 	Dim id As String
-	id = root.Get("id")
+		id = root.Get("id")
 	Dim object_string As String
-	object_string = root.Get("object")
+		object_string = root.Get("object")
 	Dim created As Long
-	created = root.Get("created")
+		created = root.Get("created")
 	Dim model As String
-	model = root.Get("model")
+		model = root.Get("model")
 	Dim usage As Map
-	usage = root.Get("usage")
+		usage = root.Get("usage")
 	Dim promptTokens As Int
-	promptTokens = usage.Get("prompt_tokens")
+		promptTokens = usage.Get("prompt_tokens")
 	Dim completionTokens As Int
-	completionTokens = usage.Get("completion_tokens")
+		completionTokens = usage.Get("completion_tokens")
 	Dim totalTokens As Int
-	totalTokens = usage.Get("total_tokens")
+		totalTokens = usage.Get("total_tokens")
 	Dim choices As List
 	choices = root.Get("choices")
 	Dim choiceIndex As Int
 	Dim content As String
 	For choiceIndex = 0 To choices.Size - 1
 		Dim choice As Map
-		choice = choices.Get(choiceIndex)
+			choice = choices.Get(choiceIndex)
 		Dim message As Map
-		message = choice.Get("message")
+			message = choice.Get("message")
 		Dim role As String
-		role = message.Get("role")
+			role = message.Get("role")
 		If content <> "" Then content = content & CRLF
-		content = content & message.Get("content")
+			content = content & message.Get("content")
 		Dim finishReason As String
-		finishReason = choice.Get("finish_reason")
+			finishReason = choice.Get("finish_reason")
 		If (CheckEndOfConv) Then _
 			content = finishReason
 		Log("Choice " & choiceIndex)
