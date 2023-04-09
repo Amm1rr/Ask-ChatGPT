@@ -10,6 +10,7 @@ Sub Class_Globals
 	Type textMessage (message As String, assistant As Boolean)
 	Private su As StringUtils
 	Private wrk_chat As ChatGPT
+	Private xui As XUI
 	
 	'KEYBOARD
 	Private ime As IME
@@ -21,8 +22,10 @@ Sub Class_Globals
 	Public txtQuestion As EditText
 	Public imgSend As ImageView
 	Public clvMessages As CustomListView
+	Private clvNested As CustomListView
+	Private nested As CLVNested
 	Private panBottom As Panel
-	Private pTopMenu As Panel
+	Public pTopMenu As Panel
 	Private lblTitleTopMenu As Label
 	Private icMenuTopMenu As ImageView
 	Private icConfigTopMenu As ImageView
@@ -58,15 +61,25 @@ Sub Class_Globals
 	Private chkTranslate 		As CheckBox
 	Private chkToFarsi 			As CheckBox
 	Private chkVoiceLang 		As B4XView
+	Private webQuestion As WebView
+	Private btnMore As Button
+	
+	'Touch Handler
+	Private base As B4XView
+	Private Scrolled As Boolean
+	Private StartOffset As Float
+	Private ScrollPosition As Float
+	Public panMain As Panel
+	Private lastY As Float
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
-Public Sub Initialize(Parent As B4XView)
+Public Sub Initialize(parent As B4XView)
 	
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
 	General.Set_StatusBarColor(0xFF74A5FF)
-	Parent.LoadLayout("Chat")
+	parent.LoadLayout("Chat")
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
@@ -96,11 +109,154 @@ Public Sub Initialize(Parent As B4XView)
 	IME_HeightChanged(100%y,0)
 	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 6 'After 6 lines, the EditText will increase, and after that, the scroll will appear
 	
-	
 	LoadCLVSetup
 	
 	wrk_chat.Initialize
 	
+End Sub
+
+Sub LocationOnScreen(View As View) As List
+	If View.IsInitialized Then
+		Dim Parent As View = View.Parent
+		Dim Top As Int = View.Top
+		Dim Left As Int = View.Left
+		
+		Dim lst As List
+			lst.Initialize
+			
+			Top = Top + Parent.Top - Parent.Top
+			Left = Left + Parent.Left - Parent.Left
+			Parent = Parent.Parent
+			
+'			Do While Parent.IsInitialized
+''				If (Parent <> "(ExtendedBALayout): Layout not available") Then
+'					Top = Top + Parent.Top - Parent.Top
+'					Left = Left + Parent.Left - Parent.Left
+'					Parent = Parent.Parent
+''				End If
+'			Loop
+'			
+'			If Top = Null Then Top = 0
+'			If Left = Null Then Left = 0
+			
+			lst.Add(Left)
+			lst.Add(Top)
+
+		
+		Return lst
+	End If
+End Sub
+
+Private Sub tpc_OnTouchEvent (Action As Int, X As Float, Y As Float, MotionEvent As Object) As Boolean
+	
+	' pass touch event to parent view
+	Dim parent As List = panMain.Parent.As(Panel).GetAllViewsRecursive
+	
+	' find view at touch position
+	Dim views As View = parent
+	Dim touchedView As View
+	For Each view As View In panMain.Parent.As(Panel).GetAllViewsRecursive
+		If view.Visible = True And view.Enabled = True Then
+			Dim lst As List
+				lst.Initialize
+				lst = LocationOnScreen(view)
+			If X >= lst.Get(0) And X <= lst.Get(0) + view.Width And _
+               Y >= lst.Get(1) And Y <= lst.Get(1) + view.Height Then
+				' view is touched
+				touchedView = view
+				Exit
+			End If
+		End If
+	Next
+    
+	If touchedView.IsInitialized Then
+		' do something with touched view
+		Log("Touched view: " & touchedView)
+	End If
+    
+	Return True
+	
+	
+'		LogColor("OnTouchEvent: " & Action & " - " & MotionEvent, Colors.Blue)
+	Select Action
+		Case base.TOUCH_ACTION_MOVE
+			Dim deltaOffset As Float = (Y - StartOffset) * 1.5
+			If Scrolled = False Then
+				If Abs(deltaOffset) > 10dip Then Scrolled = True
+			End If
+			
+			LogColor("tpc_OnTouchEvent_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
+			
+			If (Y > lastY) Then			'Movign Down
+				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
+			Else If (Y < lastY) Then	'Moving Up
+				webAnswerExtra.FlingScroll(0, ScrollPosition - Y * 1.5)
+			End If
+			
+			lastY = Y
+			
+		Case base.TOUCH_ACTION_UP
+			LogColor("tpc_OnTouchEvent_ACTION_UP", Colors.Blue)
+			Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
+			Dim item As CLVItem = clvMessages.GetRawListItem(index)
+'			Dim innerIndex As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY - item.Offset + clvMessages.sv.ScrollViewOffsetY)
+'			LogColor("tpc_OnTouchEvent_ACTION_UP: " & index & CRLF & ":" & CRLF & item & CRLF & ":" & CRLF & innerIndex, Colors.Blue)
+'				
+			If Scrolled = False Then
+				LogColor("tpc_OnTouchEvent_Click", Colors.Blue)
+'				CallSub(Me, "btnMore_Click") 'ignore
+				Return False
+'				btnMore_Click
+			End If
+'			ScrollingCLV = Null
+	End Select
+	
+	Return True 'ScrollingCLV <> Null
+End Sub
+
+Private Sub panMain_Touch_OLD (Action As Int, X As Float, Y As Float) As Boolean
+	LogColor("panMain_Touch: " & Action, Colors.Red)
+	Select Action
+		Case base.TOUCH_ACTION_MOVE
+			Dim deltaOffset As Float = (Y - StartOffset) * 1.5
+			If Scrolled = False Then
+				If Abs(deltaOffset) > 10dip Then Scrolled = True
+			End If
+			If Scrolled Then
+				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
+			End If
+			LogColor("panMain_Touch_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
+		Case base.TOUCH_ACTION_UP
+				LogColor("panMain_Touch_ACTION_UP", Colors.Blue)
+				Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
+				Dim item As CLVItem = clvMessages.GetRawListItem(index)
+'				Dim innerIndex As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY - item.Offset + clvMessages.sv.ScrollViewOffsetY)
+'				LogColor("panMain_Touch_ACTION_UP: " & index & CRLF & ":" & CRLF & item & CRLF & ":" & CRLF & innerIndex, Colors.Blue)
+'				
+			If Scrolled = False Then
+				LogColor("panMain_Touch_Click", Colors.Blue)
+				btnMore_Click
+'				CallSub2(ScrollingCLV, "Panel" & "ClickHandler", ScrollingCLV.GetRawListItem(innerIndex).Panel) 'ignore
+			End If
+'			ScrollingCLV = Null
+'			Return False
+	End Select
+	
+	Return True
+End Sub
+
+Private Sub tpc_OnInterceptTouchEvent (Action As Int, X As Float, Y As Float, MotionEvent As Object) As Boolean
+	Log("OnIntercept: " & Action & ":" & MotionEvent)
+	If Action = base.TOUCH_ACTION_DOWN Then
+'		Dim inner As CustomListView = GetInnerCLVFromTouch(X, Y)
+'		If inner <> Null Then
+			StartOffset = Y
+			Scrolled = False
+			ScrollPosition =  clvMessages.sv.ScrollViewOffsetY
+			Return True
+'		End If
+	End If
+	Return True
 End Sub
 
 Private Sub LoadCLVSetup
@@ -133,35 +289,7 @@ Private Sub LoadCLVSetup
 	
 End Sub
 
-public Sub AdjustSize_Clv
-	Try
-		clvMessages.AsView.Top = 0 + pTopMenu.Height
-		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - panToolbar.Height - 1%y
-		clvMessages.Base_Resize(clvMessages.AsView.Width,clvMessages.AsView.Height)
-		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
-		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
-		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
-	Catch
-		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
-	End Try
-End Sub
-
-Sub webAnswer_PageFinished (Url As String)
-	LogColor("PageFinished", Colors.Blue)	
-	webAnswerExtra.ExecuteJavascript("B4A.CallSub('SetWVHeight',true, document.documentElement.scrollHeight);")
-End Sub
-
-Sub SetWVHeight(height As String)
-	LogColor("SetWVHeight: " & height & " : " & DipToCurrent(height), Colors.Green)
-	
-	If (DipToCurrent(height) > webAnswer.Height) Then
-		webAnswerExtra.Height = DipToCurrent(height) + 1000
-		webAnswer.Height = DipToCurrent(height) + 1000
-	End If
-	
-End Sub
-
-Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int)
+Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int)
 	Dim ExtraSize As Int = 2
 	For i = 0 To clvMessages.Size - 1
 		Dim p As Panel = clvMessages.GetPanel(i)
@@ -224,7 +352,7 @@ Private Sub clvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As Int
 					webAnswerExtra.Initialize(webAnswer)
 					jsi.Initialize
 					webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
-					pnlAnswer.Height = webAnswer.Height + 1000
+					pnlAnswer.Height = webAnswer.Height + 100
 					clvMessages.ResizeItem(i, pnlAnswer.Height)
 				
 				Else
@@ -302,7 +430,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		panBottom.Height = i
 		txtQuestion.Height = i
 		panBottom.Top = heightKeyboard - panBottom.Height - 1%y
-		AdjustSize_Clv
+		AdjustSize_Clv(0)
 	End If
 	
 End Sub
@@ -310,12 +438,24 @@ End Sub
 
 
 Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
+	
 	heightKeyboard = NewHeight
 	panBottom.SetLayout(panBottom.Left, heightKeyboard - panBottom.Height - 1%y, panBottom.Width, panBottom.Height)
 	imgSend.SetLayout(imgSend.Left, heightKeyboard - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 '	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 '	panToolbar.Top = NewHeight - panToolbar.Height - 200
-	AdjustSize_Clv
+	
+	AdjustSize_Clv(0)
+	
+	LogColor("IME_HeightChanged: " & NewHeight, Colors.Red)
+	
+'	Dim tpc As TouchPanelCreator
+'	base = tpc.CreateTouchPanel("tpc")
+'	panMain.RemoveAllViews
+'	panMain.Color = Colors.Transparent
+'	panMain.Top = pTopMenu.Height
+'	panMain.Height = clvMessages.sv.Height
+'	panMain.AddView (base, panMain.Left, panMain.Top, panMain.Width, panMain.Height)
 End Sub
 
 
@@ -424,8 +564,9 @@ Public Sub imgSend_Click
 			question = sText & " '" & txtQuestion.Text.Trim & "'"
 			sText = txtQuestion.Text.Trim
 		End If
-		WriteQuestion(sText)
+		
 		txtQuestion.Text = ""
+		WriteQuestion(sText)
 		Ask(question, sAssistant)
 		
 	Else If Main.voicer.IsSupported Then	
@@ -481,32 +622,92 @@ End Sub
 
 
 
+public Sub AdjustSize_Clv(height As Int)
+	Try
+		clvMessages.AsView.Top = pTopMenu.Height
+		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - panToolbar.Height - 1%y
+		clvMessages.Base_Resize(clvMessages.AsView.Width, clvMessages.AsView.Height + height)
+		If (height > 0) Then clvMessages.ResizeItem(clvMessages.Size - 1, height + panToolbar.Height + panBottom.Height)
+		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
+		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
+		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
+	Catch
+		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
+	End Try
+End Sub
 
+Sub webAnswer_PageFinished (Url As String)
+	LogColor("PageFinished: " & Url, Colors.Blue)
+	webAnswerExtra.ExecuteJavascript("B4A.CallSub('SetWVHeight',true, document.documentElement.scrollHeight);")
+End Sub
 
+Sub SetWVHeight(height As String)
+	LogColor("SetWVHeight= webAnswer: " & webAnswer.Height & CRLF & "webAnswerExtra: " & webAnswerExtra.GetContentHeight & CRLF & "height : " & height & " => " & DipToCurrent(height), Colors.Blue)
+	
+	AdjustSize_Clv(height)
+	Dim h As Int = DipToCurrent(height)
+'	If (DipToCurrent(height) > webAnswer.Height) Then
+		webAnswer.Height = h
+		pnlAnswer.Height = h + 100dip
+'	End If
+End Sub
 
-
+Private Sub ChangeHeight(height As Int)
+	Dim y As Int = DipToCurrent(webAnswerExtra.GetContentHeight) * webAnswerExtra.GetScale / 100
+	webAnswerExtra.FlingScroll(0, y * 100)
+	pnlAnswer.Height = webAnswerExtra.GetContentHeight
+	webAnswer.Height = webAnswerExtra.GetContentHeight
+	LogColor(webAnswerExtra.GetContentHeight, Colors.Magenta)
+End Sub
 
 Sub WriteQuestion(message As String) 'Right Side
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
 		m.assistant = False
-	Dim p As Panel
-		p.Initialize("p")
+	Dim p As B4XView = xui.CreatePanel("")
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+		p.LoadLayout("clvQuestionRow")
+		p.Tag = webQuestion
+	
+	lblQuestion.Text = message
+	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+'	
+'	webQuestionExtra.Initialize(webQuestion)
+'	jsi.Initialize
+'	webQuestionExtra.AddJavascriptInterface(jsi,"B4A")
+	
 	clvMessages.Add(p, m)
-	AdjustSize_Clv
+	AdjustSize_Clv(0)
+	
+'	setScrollBarEnabled(webAnswer.As(View), True, True)
+	
 End Sub
 
 
 Sub WriteAnswer(message As String) 'Left Side
+	
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
 		m.assistant = True
-	Dim p As Panel
-		p.Initialize("p")
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 100%y)
+	Dim p As B4XView = xui.CreatePanel("")
+'		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+		p.LoadLayout("clvAnswerRow")
+		p.Tag = webAnswer
+	
+	lblAnswer.Text = message
+	Dim h As Int = General.Size_textVertical(lblAnswer, message)
+	h = h + panBottom.Height + panToolbar.Height
+		pnlAnswer.Height = h + 100dip
+		lblAnswer.Height = pnlAnswer.Height
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
+	
+'	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+'	webAnswerExtra.Initialize(webAnswer)
+'	jsi.Initialize
+'	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
+	
 '	If (clvMessages.Size > 0) Then
 '		clvMessages.ReplaceAt(clvMessages.Size - 1, p, clvMessages.AsView.Width, m)
 '	Else
@@ -514,7 +715,9 @@ Sub WriteAnswer(message As String) 'Left Side
 		clvMessages.Add(p, m)
 '	End If
 	
-	AdjustSize_Clv
+	AdjustSize_Clv(0)
+	
+'	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
 End Sub
 
@@ -543,12 +746,17 @@ Public Sub Ask(question As String, assistant As String)
 		m.Initialize
 		m.message = WaitingText '"Proccessing..."
 		m.assistant = True
-	Dim p As Panel
-		p.Initialize("p")
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 5%x, 15%y)
+'	Dim p As Panel
+	Dim p As B4XView = xui.CreatePanel("")
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
+		p.LoadLayout("clvQuestionRow")
+		p.Tag = webQuestion
+	lblQuestion.Text = m.message
+'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
+	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 	clvMessages.Add(p, m)
 	
-	AdjustSize_Clv
+	AdjustSize_Clv(0)
 	
 	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
 '	History = History & CRLF & question 	'Me:
@@ -557,7 +765,7 @@ Public Sub Ask(question As String, assistant As String)
 '	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
-	AdjustSize_Clv
+	AdjustSize_Clv(0)
 	
 	If (txtQuestion.Text.Length < 1) Then
 		Select response
@@ -648,4 +856,12 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 		chkCorrectEnglish.Checked = False
 		chkTranslate.Checked = False
 	End If
+End Sub
+
+
+Private Sub btnMore_Click
+'	Dim y As Int = webAnswerExtra.GetContentHeight * webAnswerExtra.GetScale / 100
+'	ChangeHeight(y)
+	webAnswer.Height = pnlAnswer.Height * pnlAnswer.Height
+	pnlAnswer.Height = webAnswer.Height
 End Sub

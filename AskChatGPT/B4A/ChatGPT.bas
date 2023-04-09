@@ -16,7 +16,7 @@ Version=12.2
 'original research
 Sub Class_Globals
 	Private API_KEY 			As String
-	Public TimeoutText 			As String = "Timeout, Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
+	Public TimeoutText 			As String = "Timeout" & CRLF & "Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
 End Sub
 

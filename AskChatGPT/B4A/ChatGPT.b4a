@@ -1,8 +1,9 @@
 ﻿Build1=Default,com.ask.chatgpt
 File1=Acme-Regular.ttf
-File10=roboto-regular.ttf
-File11=settings.png
-File12=voice.png
+File10=puton.png
+File11=roboto-regular.ttf
+File12=settings.png
+File13=voice.png
 File2=Changelog.txt
 File3=Chat.bal
 File4=clvAnswerRow.bal
@@ -10,11 +11,12 @@ File5=clvQuestionRow.bal
 File6=gray-tipped.png
 File7=menu.png
 File8=message.png
-File9=puton.png
+File9=Nested.bal
 FileGroup1=Default Group
 FileGroup10=Default Group
 FileGroup11=Default Group
 FileGroup12=Default Group
+FileGroup13=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
@@ -46,7 +48,7 @@ Module4=ChatNew
 Module5=CLVNested
 Module6=General
 Module7=Starter
-NumberOfFiles=12
+NumberOfFiles=13
 NumberOfLibraries=14
 NumberOfModules=7
 Version=12.2
@@ -86,10 +88,14 @@ Sub Activity_Create(FirstTime As Boolean)
 	ChatN1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
 	
+	
 	voicer.Initialize("vr")
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
+	
+'	ChatN1.panMain.RemoveAllViews
+'	Activity.AddView(ChatN1.panMain, 0, ChatN1.pTopMenu.Height, Activity.Width, ChatN1.clvMessages.sv.Height)
 	
 End Sub
 
@@ -99,7 +105,7 @@ End Sub
 
 Sub Activity_Resume
 	
-	ChatN1.AdjustSize_Clv
+	ChatN1.AdjustSize_Clv(0)
 	ChatN1.IME_HeightChanged(100%y, 0)
 	
 	If IsRelevantIntent(Activity.GetStartingIntent) Then
