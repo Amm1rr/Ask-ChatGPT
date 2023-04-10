@@ -64,6 +64,7 @@ Sub Class_Globals
 	Private chkVoiceLang 		As B4XView
 	Private webQuestion As WebView
 	Private btnMore As Button
+	Private AnwerClickCount As Boolean
 	
 	'Touch Handler
 	Private base As B4XView
@@ -543,7 +544,7 @@ Public Sub imgSend_Click
 			ResetAI
 '			sText = "Correct Grammar improve to fluent English, and in output just show corrected text:" & CRLF
 '			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
-			sAssistant = "You are an English language teacher who corrects the textual errors I give you and writes the correct sentence. "
+			sAssistant = "You are an language teacher who corrects the textual errors I give you and writes the correct sentence."
 '			sAssistant = "You are an English grammar check and corrector."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
@@ -702,8 +703,14 @@ Sub WriteAnswer(message As String) 'Left Side
 		p.Tag = webAnswer
 	
 	lblAnswer.Text = message
-	Dim h As Int = General.Size_textVertical(lblAnswer, message) * 2
-	h = h' + panBottom.Height + panToolbar.Height
+	Dim h As Int = General.Size_textVertical(lblAnswer, message)
+	LogColor("h: " & h, Colors.Red)
+	If (1 < 100) Then
+		h = h * 2 ' + panBottom.Height + panToolbar.Height
+	Else
+		h = h * 1.1 ' + panBottom.Height + panToolbar.Height
+	End If
+	LogColor("h> " & h, Colors.Red)
 		pnlAnswer.Height = h + 100dip
 		lblAnswer.Height = h
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
@@ -880,7 +887,16 @@ End Sub
 
 
 Private Sub lblAnswer_Click
-	
+	Dim lbl As Label = Sender
+	If (AnwerClickCount) Then
+		AnwerClickCount = False
+	' center the text horizontally and vertically
+		lbl.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+	Else
+		AnwerClickCount = True
+	' center the text horizontally and vertically
+		lbl.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+	End If
 End Sub
 
 'Example:
