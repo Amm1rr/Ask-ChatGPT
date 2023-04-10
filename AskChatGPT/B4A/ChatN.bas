@@ -74,6 +74,7 @@ Sub Class_Globals
 	Private ScrollPosition As Float
 	Public panMain As Panel
 	Private lastY As Float
+	Private lblPaste As Label
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -403,8 +404,19 @@ Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
 	ToastMessageShow("Copied", False)
 	Dim cp As BClipboard
-	Dim vl As textMessage = Value
-	cp.setText(vl.message)
+	Dim msg As textMessage = Value
+	cp.setText(String_Remove_DoubleQuot(msg.message))
+End Sub
+
+'Remove first and last Double Quotation charachters
+'from text argumant
+Private Sub String_Remove_DoubleQuot(text As String) As String
+	If (text.Length < 2) Then Return ""
+	If (text.CharAt(0) = """") And (text.CharAt(text.Length - 1) = """") Then
+		text = text.SubString(1)
+		text = text.SubString2(0, text.Length - 1)
+	End If
+	Return text
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
@@ -426,9 +438,17 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 	If New.Length > 0 Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Message.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "text"
+		Dim cp As BClipboard
+		If (New.Trim.Length < 20) And (cp.hasText) Then
+			lblPaste.Visible = True
+		Else
+			lblPaste.Visible = False
+		End If
 	Else if (Main.voicer.IsSupported) Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
+		Dim cp As BClipboard
+		If (cp.hasText) Then lblPaste.Visible = True
 	End If
 	
 	
@@ -530,17 +550,15 @@ End Sub
 
 Public Sub imgSend_Click
 	IsWorking = True
-'	LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
+	
 	
 	If (imgSend.Tag = "text") Then
 		
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-		If (msg.message = WaitingText) Then
-'			General.Size_textVertical(lblAnswer, lblAnswer.Text)
-'			General.Size_textHorizontal(lblAnswer, lblAnswer.Text)
-			Return
-		End If
+		If (msg.message = WaitingText) Or (IsWorking = True) Then Return
 		
+'		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
+
 		If (txtQuestion.Text.Trim.Length < 1) Then Return
 		
 		Dim sText As String
@@ -719,9 +737,9 @@ Sub WriteAnswer(message As String) 'Left Side
 	lblAnswer.Text = message
 	
 	Dim h As Int = General.Size_textVertical(lblAnswer, message)
-	LogColor("h: " & h, Colors.Red)
+	LogColor("lbl Height : " & h, Colors.Red)
 	If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
-	LogColor("h> " & h, Colors.Red)
+		LogColor("lbl Height > " & h, Colors.Red)
 		pnlAnswer.Height = h + 100dip
 		lblAnswer.Height = h
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
@@ -741,6 +759,7 @@ Sub WriteAnswer(message As String) 'Left Side
 	AdjustSize_Clv(0)
 	
 	IsWorking = False
+	
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
@@ -959,3 +978,11 @@ End Sub
 '		Log(LastException)
 '	End Try
 'End Sub
+
+
+Private Sub lblPaste_Click
+	Dim cp As BClipboard
+	If (txtQuestion.Text.Trim.Length < 1) And (cp.hasText) Then
+		txtQuestion.Text = cp.getText
+	End If
+End Sub

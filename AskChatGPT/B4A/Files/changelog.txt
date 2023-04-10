@@ -1,6 +1,20 @@
+Build 10 Dev
+-----
++ Added Paste button
+
+Build 9 Dev
+-----
++ Change background color
++ Change UI
++ Solve height issue
+
+Build 8 Dev
+-----
++ Rollback to use label to show results
+
 Build 7 Dev
 -----
-+ Added support of HTML and MD
++ Added support of HTML and MD just to core
 
 Build 6 Dev
 -----

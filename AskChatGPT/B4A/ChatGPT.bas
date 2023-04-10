@@ -158,7 +158,7 @@ Public Sub Query(system_string As String, query_string As String, assistant_stri
         If req.Success Then
 			
             'Raw JSON Response
-			LogColor("Respose: " & req.GetString, Colors.Blue)
+'			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
