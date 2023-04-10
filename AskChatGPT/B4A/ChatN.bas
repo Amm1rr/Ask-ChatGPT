@@ -529,10 +529,12 @@ Private Sub csTitle_Click (Tag As Object)
 	
 	Select clicked
 		Case "name":
+			ClickSimulation
 			Dim x As XUI
 				x.MsgboxAsync("Coded by M.Khani", ": )")
 		
 		Case "site":
+			ClickSimulation
 			Dim p As PhoneIntents
 			StartActivity(p.OpenBrowser("https://github.com/Amm1rr/"))
 		'-- OR another way
@@ -549,8 +551,8 @@ Sub setScrollBarEnabled(v As View, vertical As Boolean, horizontal As Boolean)
 End Sub
 
 Public Sub imgSend_Click
-	IsWorking = True
 	
+	IsWorking = True
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -560,6 +562,8 @@ Public Sub imgSend_Click
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 
 		If (txtQuestion.Text.Trim.Length < 1) Then Return
+		
+		ClickSimulation
 		
 		Dim sText As String
 		Dim question As String
@@ -601,6 +605,7 @@ Public Sub imgSend_Click
 	Else If Main.voicer.IsSupported Then	
 		Log("imgSend_Click: Voice" & imgSend.Tag)
 		
+		ClickSimulation
 		Wait For (RecognizeVoice) Complete (Result As String)
 		If (Result <> "") Then
 			LogColor("Voice:" & Result, Colors.Blue)
@@ -832,6 +837,7 @@ Public Sub ShowKeyboard
 End Sub
 
 Private Sub icConfigTopMenu_Click
+	ClickSimulation
 	HideKeyboard
 	About
 End Sub
@@ -849,6 +855,7 @@ End Sub
 
 
 Private Sub btnCloseAbout_Click
+	ClickSimulation
 	pnlBackground.Visible = False
 	pnlAbout.Visible = False
 End Sub
@@ -858,12 +865,23 @@ Private Sub pnlBackground_Touch (Action As Int, X As Float, Y As Float)
 	
 End Sub
 
+Public Sub ClickSimulation
+	Try
+		XUIViewsUtils.PerformHapticFeedback(Sender)
+	Catch
+		XUIViewsUtils.PerformHapticFeedback(panMain)
+		LogColor("ClickSimulation: It's a Handaled Runtime Exeption. It's Ok, Leave It." & CRLF & TAB & TAB & LastException.Message, Colors.LightGray)
+	End Try
+End Sub
+
 Private Sub lblClearText_Click
+	ClickSimulation
 	txtQuestion.Text = ""
 	ShowKeyboard
 End Sub
 
 Private Sub lblClearText_LongClick
+	ClickSimulation
 	ResetAI
 	ToastMessageShow("Session Reset.", False)
 End Sub
@@ -885,6 +903,7 @@ End Sub
 
 
 Private Sub chkCorrectEnglish_CheckedChange(Checked As Boolean)
+	ClickSimulation
 	If (Checked = True) Then
 		chkTranslate.Checked = False
 		chkToFarsi.Checked = False
@@ -893,6 +912,7 @@ Private Sub chkCorrectEnglish_CheckedChange(Checked As Boolean)
 End Sub
 
 Private Sub chkTranslate_CheckedChange(Checked As Boolean)
+	ClickSimulation
 	If (Checked = True) Then
 		chkCorrectEnglish.Checked = False
 		chkToFarsi.Checked = False
@@ -901,6 +921,7 @@ Private Sub chkTranslate_CheckedChange(Checked As Boolean)
 End Sub
 
 Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
+	ClickSimulation
 	If (Checked = True) Then
 		chkCorrectEnglish.Checked = False
 		chkTranslate.Checked = False
@@ -941,6 +962,7 @@ End Sub
 
 
 Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
+	ClickSimulation
 	AnswerRtl = Checked
 	Try
 		Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size - 1)
@@ -981,6 +1003,7 @@ End Sub
 
 
 Private Sub lblPaste_Click
+	ClickSimulation
 	Dim cp As BClipboard
 	If (txtQuestion.Text.Trim.Length < 1) And (cp.hasText) Then
 		txtQuestion.Text = cp.getText
