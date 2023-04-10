@@ -588,7 +588,16 @@ Public Sub imgSend_Click
 			sAssistant = "You are a translator of the Farsi language, Translate the inputted text into Farsi and show only the correct result in the output."
 		Else if (chkChat.Checked) Then
 			ResetAI
-			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+'			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+'			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+			sText = "I want you to act as a spoken English teacher and improver. " & _
+					"I will speak to you in English and you will reply to me in English To practice my spoken English. " & _
+					"I want you To keep your reply neat, " & _
+					"limiting the reply To 100 words. " & _
+					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
+					"I want you To Ask Me a question in your reply. " & _
+					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
+					"reply correct sentence when answer." & CRLF
 			sAssistant = "Act as a Spoken English Teacher and Improver."
 		Else
 			
