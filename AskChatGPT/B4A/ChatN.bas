@@ -666,22 +666,26 @@ Private Sub ChangeHeight(height As Int)
 End Sub
 
 Sub WriteQuestion(message As String) 'Right Side
+	
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
 		m.assistant = False
+		
 	Dim p As B4XView = xui.CreatePanel("")
+	
+		lblQuestion.Text = message
+		Dim h As Int = General.Size_textVertical(lblQuestion, message)
+		If (1 < 100) Then h = h * 2 Else h = h * 1.1
+		
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
 		p.LoadLayout("clvQuestionRow")
 		p.Tag = webQuestion
 	
-	lblQuestion.Text = message
-	
-'	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
-'	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
 '	webQuestionExtra.AddJavascriptInterface(jsi,"B4A")
+'	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	clvMessages.Add(p, m)
 	AdjustSize_Clv(0)
@@ -698,18 +702,13 @@ Sub WriteAnswer(message As String) 'Left Side
 		m.message = message
 		m.assistant = True
 	Dim p As B4XView = xui.CreatePanel("")
-'		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
 		p.LoadLayout("clvAnswerRow")
 		p.Tag = webAnswer
 	
 	lblAnswer.Text = message
 	Dim h As Int = General.Size_textVertical(lblAnswer, message)
 	LogColor("h: " & h, Colors.Red)
-	If (1 < 100) Then
-		h = h * 2 ' + panBottom.Height + panToolbar.Height
-	Else
-		h = h * 1.1 ' + panBottom.Height + panToolbar.Height
-	End If
+	If (1 < 100) Then h = h * 2 Else h = h * 1.1 ' + panBottom.Height + panToolbar.Height
 	LogColor("h> " & h, Colors.Red)
 		pnlAnswer.Height = h + 100dip
 		lblAnswer.Height = h
@@ -720,13 +719,7 @@ Sub WriteAnswer(message As String) 'Left Side
 '	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
-'	If (clvMessages.Size > 0) Then
-'		clvMessages.ReplaceAt(clvMessages.Size - 1, p, clvMessages.AsView.Width, m)
-'	Else
-'		m.message = WaitingText
-		clvMessages.Add(p, m)
-'	End If
-	
+	clvMessages.Add(p, m)
 	AdjustSize_Clv(0)
 	
 	IsWorking = False
