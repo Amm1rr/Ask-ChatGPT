@@ -61,10 +61,11 @@ Sub Class_Globals
 	Private chkCorrectEnglish 	As B4XView
 	Private chkTranslate 		As CheckBox
 	Private chkToFarsi 			As CheckBox
-	Private chkVoiceLang 		As B4XView
+	Private chkVoiceLang 		As CheckBox
 	Private webQuestion As WebView
 	Private btnMore As Button
-	Private AnwerClickCount As Boolean
+	Private AnswerRtl As Boolean = False
+	Private dd 	As DDD
 	
 	'Touch Handler
 	Private base As B4XView
@@ -82,6 +83,11 @@ Public Sub Initialize(parent As B4XView)
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
 	General.Set_StatusBarColor(0xFF74A5FF)
 	parent.LoadLayout("Chat")
+	
+	dd.Initialize
+	'The designer script calls the DDD class. A new class instance will be created if needed.
+	'In this case we want to create it ourselves as we want to access it in our code.
+	xui.RegisterDesignerClass(dd)
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
@@ -413,6 +419,7 @@ End Sub
 
 
 
+
 Sub txtQuestion_TextChanged (Old As String, New As String)
 	
 	'Voice to Text Icon
@@ -672,15 +679,17 @@ Sub WriteQuestion(message As String) 'Right Side
 		m.message = message
 		m.assistant = False
 		
-	Dim p As B4XView = xui.CreatePanel("")
 	
-		lblQuestion.Text = message
-		Dim h As Int = General.Size_textVertical(lblQuestion, message)
-		If (1 < 100) Then h = h * 2 Else h = h * 1.1
-		
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, 15%y)
+	Dim p As B4XView = xui.CreatePanel("")
 		p.LoadLayout("clvQuestionRow")
 		p.Tag = webQuestion
+		
+		lblQuestion.Text = message
+		lblQuestion.TextColor = Colors.DarkGray
+		
+		Dim h As Int = General.Size_textVertical(lblQuestion, message)
+		If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
+		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
 	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
@@ -701,18 +710,27 @@ Sub WriteAnswer(message As String) 'Left Side
 		m.Initialize
 		m.message = message
 		m.assistant = True
+		
+	
 	Dim p As B4XView = xui.CreatePanel("")
 		p.LoadLayout("clvAnswerRow")
 		p.Tag = webAnswer
 	
 	lblAnswer.Text = message
+	
 	Dim h As Int = General.Size_textVertical(lblAnswer, message)
 	LogColor("h: " & h, Colors.Red)
-	If (1 < 100) Then h = h * 2 Else h = h * 1.1 ' + panBottom.Height + panToolbar.Height
+	If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
 	LogColor("h> " & h, Colors.Red)
 		pnlAnswer.Height = h + 100dip
 		lblAnswer.Height = h
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
+	
+		If (AnswerRtl) Then
+			lblAnswer.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+		Else
+			lblAnswer.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+		End If
 	
 '	webAnswerExtra.Initialize(webAnswer)
 '	jsi.Initialize
@@ -878,20 +896,6 @@ Private Sub btnMore_Click
 	pnlAnswer.Height = webAnswer.Height
 End Sub
 
-
-Private Sub lblAnswer_Click
-	Dim lbl As Label = Sender
-	If (AnwerClickCount) Then
-		AnwerClickCount = False
-	' center the text horizontally and vertically
-		lbl.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-	Else
-		AnwerClickCount = True
-	' center the text horizontally and vertically
-		lbl.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-	End If
-End Sub
-
 'Example:
 'SetShadow(Pane1, 4dip, 0xFF757575)
 'SetShadow(Button1, 4dip, 0xFF757575)
@@ -915,3 +919,43 @@ Public Sub SetShadow (View As B4XView, Offset As Double, Color As Int)
     View.As(View).SetShadow(Color, Offset, Offset, 0.5, False)
     #End If
 End Sub
+
+
+Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
+	AnswerRtl = Checked
+	Try
+		Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size - 1)
+		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
+		
+		If (Checked) Then
+			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+		Else
+			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+		End If
+		
+	Catch
+		Log(LastException)
+	End Try
+	
+End Sub
+
+
+'Private Sub lblAnswer_Click
+'	Try
+'		Dim index As Int = clvMessages.GetItemFromView(Sender)
+'		Dim pnl As B4XView = clvMessages.GetPanel(index)
+'		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
+'		
+'		If (AnswerRtl) Then
+'			AnswerRtl = False
+'			' center the text horizontally and vertically
+'			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+'		Else
+'			AnswerRtl = True
+'			' center the text horizontally and vertically
+'			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+'		End If
+'	Catch
+'		Log(LastException)
+'	End Try
+'End Sub
