@@ -68,6 +68,7 @@ Sub Class_Globals
 	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
 	Private dd 	As DDD
+	Private Drawer As B4XDrawerAdvanced
 	
 	'Touch Handler
 	Private base As B4XView
@@ -86,6 +87,13 @@ Public Sub Initialize(parent As B4XView)
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
 	General.Set_StatusBarColor(0xFF74A5FF)
 	parent.LoadLayout("Chat")
+	
+	Drawer.Initialize(Me, "Drawer", parent, 300dip)
+	Drawer.CenterPanel.LoadLayout("Chat")
+	
+	Drawer.LeftPanel.LoadLayout("leftDrawer")
+'	Drawer.RightPanel.LoadLayout("LeftDrawer")
+'	Drawer.RightPanelEnabled = True
 	
 	dd.Initialize
 	'The designer script calls the DDD class. A new class instance will be created if needed.
@@ -1047,4 +1055,9 @@ End Sub
 
 Private Sub chkChat_CheckedChange(Checked As Boolean)
 	ChatConversation = Checked
+End Sub
+
+
+Private Sub icMenuTopMenu_Click
+	Drawer.LeftOpen = Not (Drawer.LeftOpen)
 End Sub
