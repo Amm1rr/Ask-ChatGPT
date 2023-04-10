@@ -11,7 +11,7 @@ File5=clvQuestionRow.bal
 File6=gray-tipped.png
 File7=menu.png
 File8=message.png
-File9=Nested.bal
+File9=PROMPTS.md
 FileGroup1=Default Group
 FileGroup10=Default Group
 FileGroup11=Default Group
@@ -78,8 +78,7 @@ Sub Process_Globals
 End Sub
 
 Sub Globals
-'	Private chat1 				As Chat
-	Private ChatN1 			As ChatN
+	Private ChatN1 				As ChatN
 	Private ime 				As IME2
 End Sub
 

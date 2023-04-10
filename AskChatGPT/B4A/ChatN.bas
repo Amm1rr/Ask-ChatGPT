@@ -33,6 +33,7 @@ Sub Class_Globals
 	Private WaitingText As String = "Proccessing..."
 	Private History 	As String
 	Public IsWorking As Boolean
+	Private ChatConversation As Boolean = False
 	
 	'CLV Answer
 	Private lblAnswer As Label
@@ -58,10 +59,11 @@ Sub Class_Globals
 	
 	Public AUTOSENDVOICE 		As Boolean = False
 	Private panToolbar 			As B4XView
-	Private chkCorrectEnglish 	As B4XView
+	Private chkGrammar 	As B4XView
 	Private chkTranslate 		As CheckBox
 	Private chkToFarsi 			As CheckBox
 	Private chkVoiceLang 		As CheckBox
+	Private chkChat As CheckBox
 	Private webQuestion As WebView
 	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
@@ -557,7 +559,7 @@ Public Sub imgSend_Click
 	If (imgSend.Tag = "text") Then
 		
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-		If (msg.message = WaitingText) Or (IsWorking = True) Then Return
+		If (msg.message = WaitingText) Then Return
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 
@@ -569,12 +571,13 @@ Public Sub imgSend_Click
 		Dim question As String
 		Dim sAssistant As String
 		
-		If (chkCorrectEnglish.Checked) Then
+		If (chkGrammar.Checked) Then
 			ResetAI
 '			sText = "Correct Grammar improve to fluent English, and in output just show corrected text:" & CRLF
 '			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
-			sAssistant = "You are an language teacher who corrects the textual errors I give you and writes the correct sentence."
 '			sAssistant = "You are an English grammar check and corrector."
+'			sAssistant = "You are an language teacher who corrects the textual errors I give you and writes the correct sentence."
+			sAssistant = "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
 '			sText = "Translate the following text to English:" & CRLF
@@ -583,24 +586,37 @@ Public Sub imgSend_Click
 			ResetAI
 '			sText = "Translate the following text to Farsi:" & CRLF
 			sAssistant = "You are a translator of the Farsi language, Translate the inputted text into Farsi and show only the correct result in the output."
+		Else if (chkChat.Checked) Then
+			ResetAI
+			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+			sAssistant = "Act as a Spoken English Teacher and Improver."
 		Else
+			
 			sAssistant = Null '"You are a helpful assistant."
 		End If
 		
-		If (chkCorrectEnglish.Checked = False) And _
+		If (chkGrammar.Checked = False) And _
 			(chkTranslate.Checked = False) And _
-			(chkToFarsi.Checked = False) Then
+			(chkToFarsi.Checked = False) And (chkChat.Checked = True) Then
+			
+			question = sText & CRLF & txtQuestion.Text.Trim
+			
+		Else If (chkGrammar.Checked = False) And _
+			(chkTranslate.Checked = False) And _
+			(chkToFarsi.Checked = False) And _
+			(chkChat.Checked = False) Then
 			
 			sText = txtQuestion.Text.Trim
 			question = sText
+			
 		Else
 			question = sText & " '" & txtQuestion.Text.Trim & "'"
 			sText = txtQuestion.Text.Trim
 		End If
 		
+		WriteQuestion(txtQuestion.Text)
+		Ask(question, sAssistant, txtQuestion.Text)
 		txtQuestion.Text = ""
-		WriteQuestion(sText)
-		Ask(question, sAssistant)
 		
 	Else If Main.voicer.IsSupported Then	
 		Log("imgSend_Click: Voice" & imgSend.Tag)
@@ -737,30 +753,39 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	Dim p As B4XView = xui.CreatePanel("")
 		p.LoadLayout("clvAnswerRow")
-		p.Tag = webAnswer
+	p.Tag = webAnswer
 	
 	lblAnswer.Text = message
+	
+'	'ADJUST VERTICAL
+'	Private TopMargin, BottomMargin As Int = 2%y
+'	Dim text As String = lblAnswer.Text
+'	lblAnswer.Height = General.Size_textVertical(lblAnswer, text) + BottomMargin
+'	lblAnswer.Top = TopMargin + 1%y
+'	pnlAnswer.Height = lblAnswer.Height + TopMargin + BottomMargin
+	
 	
 	Dim h As Int = General.Size_textVertical(lblAnswer, message)
 	LogColor("lbl Height : " & h, Colors.Red)
 	If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
-		LogColor("lbl Height > " & h, Colors.Red)
-		pnlAnswer.Height = h + 100dip
-		lblAnswer.Height = h
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
+	LogColor("lbl Height > " & h, Colors.Red)
+	pnlAnswer.Height = h + 100dip
+	lblAnswer.Height = pnlAnswer.Height
+	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
 	
-		If (AnswerRtl) Then
-			lblAnswer.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-		Else
-			lblAnswer.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-		End If
-	
+	If (AnswerRtl) Then
+		lblAnswer.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+	Else
+		lblAnswer.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+	End If
+		
 '	webAnswerExtra.Initialize(webAnswer)
 '	jsi.Initialize
 '	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	clvMessages.Add(p, m)
+'	clvMessages.ResizeItem(clvMessages.Size - 1,pnlAnswer.Height)
 	AdjustSize_Clv(0)
 	
 	IsWorking = False
@@ -776,7 +801,7 @@ Sub HideKeyboard
 	ime.HideKeyboard
 End Sub
 
-Public Sub Ask(question As String, assistant As String)
+Public Sub Ask(question As String, assistant As String, questionHolder As String)
 	
 	If (question = "") Then
 		txtQuestion.RequestFocus
@@ -819,9 +844,9 @@ Public Sub Ask(question As String, assistant As String)
 	If (txtQuestion.Text.Length < 1) Then
 		Select response
 			Case wrk_chat.TimeoutText:
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 			Case wrk_chat.OpenApiHostError:
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 		End Select
 	End If
 	
@@ -914,7 +939,7 @@ End Sub
 Private Sub chkTranslate_CheckedChange(Checked As Boolean)
 	ClickSimulation
 	If (Checked = True) Then
-		chkCorrectEnglish.Checked = False
+		chkGrammar.Checked = False
 		chkToFarsi.Checked = False
 		Return
 	End If
@@ -923,7 +948,7 @@ End Sub
 Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 	ClickSimulation
 	If (Checked = True) Then
-		chkCorrectEnglish.Checked = False
+		chkGrammar.Checked = False
 		chkTranslate.Checked = False
 	End If
 End Sub
@@ -1008,4 +1033,9 @@ Private Sub lblPaste_Click
 	If (txtQuestion.Text.Trim.Length < 1) And (cp.hasText) Then
 		txtQuestion.Text = cp.getText
 	End If
+End Sub
+
+
+Private Sub chkChat_CheckedChange(Checked As Boolean)
+	ChatConversation = Checked
 End Sub
