@@ -32,6 +32,7 @@ Sub Class_Globals
 	
 	Private WaitingText As String = "Proccessing..."
 	Private History 	As String
+	Public IsWorking As Boolean
 	
 	'CLV Answer
 	Private lblAnswer As Label
@@ -520,16 +521,17 @@ Sub setScrollBarEnabled(v As View, vertical As Boolean, horizontal As Boolean)
 End Sub
 
 Public Sub imgSend_Click
-	
-	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+	IsWorking = True
 '	LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
-	If (msg.message = WaitingText) Then
-		General.Size_textVertical(lblAnswer, lblAnswer.Text)
-		General.Size_textHorizontal(lblAnswer, lblAnswer.Text)
-		Return
-	End If
 	
 	If (imgSend.Tag = "text") Then
+		
+		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+		If (msg.message = WaitingText) Then
+'			General.Size_textVertical(lblAnswer, lblAnswer.Text)
+'			General.Size_textHorizontal(lblAnswer, lblAnswer.Text)
+			Return
+		End If
 		
 		If (txtQuestion.Text.Trim.Length < 1) Then Return
 		
@@ -540,7 +542,8 @@ Public Sub imgSend_Click
 		If (chkCorrectEnglish.Checked) Then
 			ResetAI
 '			sText = "Correct Grammar improve to fluent English, and in output just show corrected text:" & CRLF
-			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
+'			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
+			sAssistant = "You are an English language teacher who corrects the textual errors I give you and writes the correct sentence. "
 '			sAssistant = "You are an English grammar check and corrector."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
@@ -612,6 +615,7 @@ Private Sub RecognizeVoice As ResumableSub
 		Main.voicer.Language = "en"
 		Main.voicer.Prompt = "Speak Now"
 	End If
+	
 	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then
@@ -644,8 +648,8 @@ End Sub
 Sub SetWVHeight(height As String)
 	LogColor("SetWVHeight= webAnswer: " & webAnswer.Height & CRLF & "webAnswerExtra: " & webAnswerExtra.GetContentHeight & CRLF & "height : " & height & " => " & DipToCurrent(height), Colors.Blue)
 	
-	AdjustSize_Clv(height)
 	Dim h As Int = DipToCurrent(height)
+	AdjustSize_Clv(height)
 '	If (DipToCurrent(height) > webAnswer.Height) Then
 		webAnswer.Height = h
 		pnlAnswer.Height = h + 100dip
@@ -671,7 +675,8 @@ Sub WriteQuestion(message As String) 'Right Side
 		p.Tag = webQuestion
 	
 	lblQuestion.Text = message
-	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+	
+'	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 '	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
@@ -697,16 +702,16 @@ Sub WriteAnswer(message As String) 'Left Side
 		p.Tag = webAnswer
 	
 	lblAnswer.Text = message
-	Dim h As Int = General.Size_textVertical(lblAnswer, message)
-	h = h + panBottom.Height + panToolbar.Height
+	Dim h As Int = General.Size_textVertical(lblAnswer, message) * 2
+	h = h' + panBottom.Height + panToolbar.Height
 		pnlAnswer.Height = h + 100dip
-		lblAnswer.Height = pnlAnswer.Height
+		lblAnswer.Height = h
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
 	
-'	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 '	webAnswerExtra.Initialize(webAnswer)
 '	jsi.Initialize
 '	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
+'	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 '	If (clvMessages.Size > 0) Then
 '		clvMessages.ReplaceAt(clvMessages.Size - 1, p, clvMessages.AsView.Width, m)
@@ -716,6 +721,8 @@ Sub WriteAnswer(message As String) 'Left Side
 '	End If
 	
 	AdjustSize_Clv(0)
+	
+	IsWorking = False
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
@@ -826,8 +833,13 @@ End Sub
 
 Public Sub ResetAI
 	wrk_chat.Initialize
+	IsWorking = False
 	History = Null
 '	History = "dynamic history of my and your replys in the chat: "
+	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+	If (msg.message = WaitingText) Then
+		clvMessages.RemoveAt(clvMessages.Size - 1)
+	End If
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
@@ -864,4 +876,33 @@ Private Sub btnMore_Click
 '	ChangeHeight(y)
 	webAnswer.Height = pnlAnswer.Height * pnlAnswer.Height
 	pnlAnswer.Height = webAnswer.Height
+End Sub
+
+
+Private Sub lblAnswer_Click
+	
+End Sub
+
+'Example:
+'SetShadow(Pane1, 4dip, 0xFF757575)
+'SetShadow(Button1, 4dip, 0xFF757575)
+'
+Public Sub SetShadow (View As B4XView, Offset As Double, Color As Int)
+    #if B4J
+    Dim DropShadow As JavaObject
+	'You might prefer to ignore panels as the shadow is different.
+	'If View Is Pane Then Return
+    DropShadow.InitializeNewInstance(IIf(View Is Pane, "javafx.scene.effect.InnerShadow", "javafx.scene.effect.DropShadow"), Null)
+    DropShadow.RunMethod("setOffsetX", Array(Offset))
+    DropShadow.RunMethod("setOffsetY", Array(Offset))
+    DropShadow.RunMethod("setRadius", Array(Offset))
+    Dim fx As JFX
+    DropShadow.RunMethod("setColor", Array(fx.Colors.From32Bit(Color)))
+    View.As(JavaObject).RunMethod("setEffect", Array(DropShadow))
+    #Else If B4A
+	Offset = Offset * 2
+	View.As(JavaObject).RunMethod("setElevation", Array(Offset.As(Float)))
+    #Else If B4i
+    View.As(View).SetShadow(Color, Offset, Offset, 0.5, False)
+    #End If
 End Sub

@@ -28,10 +28,10 @@ FileGroup9=Default Group
 Group=Default Group
 Library1=as_textfieldadvanced
 Library10=securemytext
-Library11=viewsex
+Library11=webviewextras2
 Library12=xcustomlistview
 Library13=xui views
-Library14=webviewextras2
+Library14=viewsex
 Library2=bctextengine
 Library3=clipboard
 Library4=core
@@ -55,7 +55,7 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 8
+	#VersionCode: 9
 	#VersionName: Development
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
@@ -117,6 +117,7 @@ Sub Activity_Resume
 		
 		Dim intnew 		As Intent = Activity.GetStartingIntent
 		Dim sharedText 	As String = intnew.GetExtra("android.intent.extra.TEXT") 'Get the shared text
+'		LogColor("Here: " & sharedText, Colors.Red)
 		
 		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
@@ -138,7 +139,9 @@ Sub Activity_Resume
 		
 	Else If (strActoinTextSelected <> "") Then
 		
+'		LogColor("Sec: " & strActoinTextSelected, Colors.Magenta)
 		ChatN1.txtQuestion.Text = strActoinTextSelected
+		strActoinTextSelected = ""
 		Sleep(0)
 		If (ChatN1.AUTOSENDVOICE) Then _
 			ChatN1.imgSend_Click
