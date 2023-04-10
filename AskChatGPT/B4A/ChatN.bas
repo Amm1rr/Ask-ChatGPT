@@ -22,8 +22,6 @@ Sub Class_Globals
 	Public txtQuestion As EditText
 	Public imgSend As ImageView
 	Public clvMessages As CustomListView
-	Private clvNested As CustomListView
-	Private nested As CLVNested
 	Private panBottom As Panel
 	Public pTopMenu As Panel
 	Private lblTitleTopMenu As Label
@@ -45,12 +43,6 @@ Sub Class_Globals
 	Private pnlQuestion As Panel
 	Private imgQuestion As ImageView
 	
-	Private btnCloseAbout As B4XView
-	Private pnlAbout As B4XView
-	Private pnlBackground As B4XView
-	Private lblVersionNumber As B4XView
-	Private lblVersionName As B4XView
-	Private lblVersionText As B4XView
 	Private webAnswer As WebView
 	Private md As md2html
 	
@@ -63,21 +55,25 @@ Sub Class_Globals
 	Private chkTranslate 		As CheckBox
 	Private chkToFarsi 			As CheckBox
 	Private chkVoiceLang 		As CheckBox
+	Private lblPaste As Label
+	Private UpDown1Drawer As UpDown
+	Private lblVersionTextDrawer As Label
+	Private lblVersionNameDrawer As Label
+	Public panMain As Panel
 	Private chkChat As CheckBox
 	Private webQuestion As WebView
 	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
 	Private dd 	As DDD
 	Private Drawer As B4XDrawerAdvanced
+	Private Temperature As Double = 0.5
 	
 	'Touch Handler
 	Private base As B4XView
 	Private Scrolled As Boolean
 	Private StartOffset As Float
 	Private ScrollPosition As Float
-	Public panMain As Panel
 	Private lastY As Float
-	Private lblPaste As Label
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -132,6 +128,32 @@ Public Sub Initialize(parent As B4XView)
 	
 	wrk_chat.Initialize
 	
+	UpDown1Drawer.MinValue = 0
+	UpDown1Drawer.MaxValue = 9
+	UpDown1Drawer.StepIncremental = 1
+'	UpDown1Drawer.Value = Temperature * 10
+	
+	Dim csAppVersion As CSBuilder
+		csAppVersion.Initialize
+		csAppVersion.Color(Colors.DarkGray).Size(13).Append(Application.LabelName & CRLF).Pop
+		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB} Build ${Application.VersionCode} ${CRLF}${TAB} ${Application.VersionName}"$).Pop
+		csAppVersion.PopAll
+	lblVersionNameDrawer.Text = csAppVersion
+	
+	Dim csTitle As CSBuilder
+		csTitle.Initialize
+'		csTitle.Color(Colors.Gray).Size(10).Append("Dev by ").Pop
+		csTitle.Color(Colors.DarkGray).Size(18).Clickable("csTitle", "site").Append(Chr(0xF092)).Pop
+'		csTitle.Color(Colors.Gray).Size(10).Clickable("csTitle", "name").Append(" Amm1rr").Pop
+		csTitle.PopAll
+		csTitle.EnableClickEvents(lblVersionTextDrawer)
+	lblVersionTextDrawer.Text = csTitle
+	
+End Sub
+
+Private Sub Drawer_StateChanged (Open As Boolean)
+	If (Open) Then UpDown1Drawer.Value = Temperature * 10
+	LogColor("State: " & Open, Colors.Cyan)
 End Sub
 
 Sub LocationOnScreen(View As View) As List
@@ -515,21 +537,6 @@ Private Sub imgSend_LongClick
 	ToastMessageShow("Auto Send " & AUTOSENDVOICE, False)
 End Sub
 
-Public Sub About
-	
-	lblVersionName.Text = Application.LabelName
-	lblVersionNumber.Text = "Build " & Application.VersionCode & " " & Application.VersionName
-	
-	Dim csTitle As CSBuilder
-		csTitle.Initialize
-		csTitle.Color(Colors.White).Append("Dev by ").Color(Colors.LightGray).Clickable("csTitle", "site").Append("github.com/").Pop.Color(Colors.Yellow).Clickable("csTitle", "name").Underline.Append("Amm1rr").PopAll
-		csTitle.EnableClickEvents(lblVersionText)
-	lblVersionText.Text = csTitle
-	
-	pnlBackground.Visible = True
-	pnlAbout.Visible = True
-End Sub
-
 Private Sub csTitle_Click (Tag As Object)
 	
 	' If the user clicked on
@@ -849,7 +856,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	
 	AdjustSize_Clv(0)
 	
-	Wait For (wrk_chat.Query(assistant, question, History)) Complete (response As String)
+	Wait For (wrk_chat.Query(assistant, question, History, temperature)) Complete (response As String)
 '	History = History & CRLF & question 	'Me:
 '	History = History & CRLF & response		'You:
 	History = History & CRLF & question & CRLF & response		'You:
@@ -880,8 +887,7 @@ End Sub
 
 Private Sub icConfigTopMenu_Click
 	ClickSimulation
-	HideKeyboard
-	About
+	Drawer.LeftOpen = Not (Drawer.LeftOpen)
 End Sub
 
 #if B4J
@@ -894,18 +900,6 @@ Sub icConfigTopMenu_MouseClicked (EventData As MouseEvent)
 	EventData.Consume
 End Sub
 #end if
-
-
-Private Sub btnCloseAbout_Click
-	ClickSimulation
-	pnlBackground.Visible = False
-	pnlAbout.Visible = False
-End Sub
-
-
-Private Sub pnlBackground_Touch (Action As Int, X As Float, Y As Float)
-	
-End Sub
 
 Public Sub ClickSimulation
 	Try
@@ -1060,4 +1054,15 @@ End Sub
 
 Private Sub icMenuTopMenu_Click
 	Drawer.LeftOpen = Not (Drawer.LeftOpen)
+End Sub
+
+
+Private Sub UpDown1Drawer_ChangeValue
+	Temperature = (UpDown1Drawer.Value / 10)
+End Sub
+
+Private Sub lblTemperatureDrawer_LongClick
+	ClickSimulation
+	UpDown1Drawer.Value = 5
+	ToastMessageShow("Critivity Reset to Default.", False)
 End Sub
