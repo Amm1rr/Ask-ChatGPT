@@ -75,6 +75,7 @@ Sub Class_Globals
 	Private ScrollPosition As Float
 	Private lastY As Float
 	Private lblClearText As Label
+	Private panTextToolbar As Panel
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -149,6 +150,9 @@ Public Sub Initialize(parent As B4XView)
 		csTitle.PopAll
 		csTitle.EnableClickEvents(lblVersionTextDrawer)
 	lblVersionTextDrawer.Text = csTitle
+	
+	Dim cp As BClipboard
+	lblPaste.Visible = cp.hasText
 	
 End Sub
 
@@ -481,7 +485,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
 		Dim cp As BClipboard
-		If (cp.hasText) Then lblPaste.Visible = True
+		lblPaste.Visible = cp.hasText
 	End If
 	
 	
@@ -710,8 +714,7 @@ public Sub AdjustSize_Clv(height As Int)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
-		lblClearText.Top = txtQuestion.Height - lblClearText.Height
-		lblPaste.Top = lblClearText.Top
+		panTextToolbar.SetLayout(txtQuestion.Width - 20%x, txtQuestion.Height - 5%x, 77%x, 11%y)
 	Catch
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
