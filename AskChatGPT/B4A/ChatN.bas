@@ -588,31 +588,32 @@ Public Sub imgSend_Click
 		
 		If (chkGrammar.Checked) Then
 			ResetAI
-'			sText = "Correct Grammar improve to fluent English, and in output just show corrected text:" & CRLF
+			sText = "I want you to strictly correct my grammar mistakes, typos, and factual errors: " & CRLF
 '			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
 '			sAssistant = "You are an English grammar check and corrector."
 '			sAssistant = "You are an language teacher who corrects the textual errors I give you and writes the correct sentence."
-			sAssistant = "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations."
+'			sAssistant = "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations."
+			sAssistant = "Act as a English language teacher."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
-'			sText = "Translate the following text to English:" & CRLF
-			sAssistant = "You are a translator to English language."
+			sText = "I want you to act as a Translator. I want you replay correct translate of anything I send. now let's start translate: " & CRLF
+			sAssistant = "Act as a translator to English language."
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
-'			sText = "Translate the following text to Farsi:" & CRLF
-			sAssistant = "You are a translator of the Farsi language, Translate the inputted text into Farsi and show only the correct result in the output."
+			sText = "Translate the inputted text into Farsi and show only the correct result in the output. Now Translate the following text to Farsi:" & CRLF
+			sAssistant = "Act as a translator of the Farsi language."
 		Else if (chkChat.Checked) Then
 			ResetAI
 '			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
-'			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
-			sText = "I want you to act as a spoken English teacher and improver. " & _
-					"I will speak to you in English and you will reply to me in English To practice my spoken English. " & _
-					"I want you To keep your reply neat, " & _
-					"limiting the reply To 100 words. " & _
-					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
-					"I want you To Ask Me a question in your reply. " & _
-					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
-					"reply correct sentence when answer." & CRLF
+			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+'			sText = "I want you to act as a spoken English teacher and improver. " & _
+'					"I will speak to you in English and you will reply to me in English To practice my spoken English. " & _
+'					"I want you To keep your reply neat, " & _
+'					"limiting the reply To 100 words. " & _
+'					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
+'					"I want you To Ask Me a question in your reply. " & _
+'					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
+'					"reply correct sentence when answer." & CRLF
 			sAssistant = "Act as a Spoken English Teacher and Improver."
 		Else
 			
@@ -938,7 +939,7 @@ Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
 End Sub
 
 
-Private Sub chkCorrectEnglish_CheckedChange(Checked As Boolean)
+Private Sub chkGrammar_CheckedChange(Checked As Boolean)
 	ClickSimulation
 	If (Checked = True) Then
 		chkTranslate.Checked = False
@@ -1048,6 +1049,7 @@ End Sub
 
 
 Private Sub chkChat_CheckedChange(Checked As Boolean)
+	ClickSimulation
 	ChatConversation = Checked
 End Sub
 
