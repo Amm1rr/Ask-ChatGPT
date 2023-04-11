@@ -76,6 +76,7 @@ Sub Class_Globals
 	Private lastY As Float
 	Private lblClearText As Label
 	Private panTextToolbar As Panel
+	Private lblCopy As Label
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -153,6 +154,11 @@ Public Sub Initialize(parent As B4XView)
 	
 	Dim cp As BClipboard
 	lblPaste.Visible = cp.hasText
+	If (txtQuestion.Text.Length > 0) Then
+		lblCopy.Visible = True
+	Else
+		lblCopy.Visible = False
+	End If
 	
 End Sub
 
@@ -481,11 +487,13 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		Else
 			lblPaste.Visible = False
 		End If
+		lblCopy.Visible =  True
 	Else if (Main.voicer.IsSupported) Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
 		Dim cp As BClipboard
 		lblPaste.Visible = cp.hasText
+		lblCopy.Visible =  False
 	End If
 	
 	
@@ -595,7 +603,8 @@ Public Sub imgSend_Click
 		
 		If (chkGrammar.Checked) Then
 			ResetAI
-			sText = "I want you to strictly correct my grammar mistakes, typos, and factual errors: " & CRLF
+'			sText = "I want you JUST to strictly correct my grammar mistakes, typos, and factual errors: " & CRLF
+			sText = "I want you JUST to strictly correct my grammar mistakes, typos, and factual errors I will reply to you FROM NOW: " & CRLF
 '			sAssistant = "Correct grammar improves fluency in English and the output should only show the corrected text."
 '			sAssistant = "You are an English grammar check and corrector."
 '			sAssistant = "You are an language teacher who corrects the textual errors I give you and writes the correct sentence."
@@ -603,7 +612,7 @@ Public Sub imgSend_Click
 			sAssistant = "Act as a English language teacher."
 		Else If (chkTranslate.Checked) Then
 			ResetAI
-			sText = "I want you to act as a Translator. I want you replay correct translate of anything I send. now let's start translate: " & CRLF
+			sText = "I want you to act as a Translator. I want you replay correct translate of anything I send to the English. now let's start translate: " & CRLF
 			sAssistant = "Act as a translator to English language."
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
@@ -612,15 +621,15 @@ Public Sub imgSend_Click
 		Else if (chkChat.Checked) Then
 			ResetAI
 '			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
-			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
-'			sText = "I want you to act as a spoken English teacher and improver. " & _
-'					"I will speak to you in English and you will reply to me in English To practice my spoken English. " & _
-'					"I want you To keep your reply neat, " & _
-'					"limiting the reply To 100 words. " & _
-'					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
-'					"I want you To Ask Me a question in your reply. " & _
-'					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
-'					"reply correct sentence when answer." & CRLF
+'			sText = "I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer." & CRLF
+			sText = "I want you to act as a spoken English teacher and improver. " & _
+					"I will speak to you in English and you will reply to me in English To practice my spoken English. " & _
+					"I want you To keep your reply neat, " & _
+					"limiting the reply To 100 words. " & _
+					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
+					"I want you To Ask Me a question in your reply. " & _
+					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
+					"reply correct sentence when answer." & CRLF
 			sAssistant = "Act as a Spoken English Teacher and Improver."
 		Else
 			
@@ -714,7 +723,7 @@ public Sub AdjustSize_Clv(height As Int)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
-		panTextToolbar.SetLayout(txtQuestion.Width - 20%x, txtQuestion.Height - 5%x, 77%x, 11%y)
+		panTextToolbar.SetLayout(txtQuestion.Width - 30%x, txtQuestion.Height - 5%x, 77%x, 11%y)
 	Catch
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
@@ -1075,4 +1084,12 @@ Private Sub lblTemperatureDrawer_LongClick
 	ClickSimulation
 	UpDown1Drawer.Value = 5
 	ToastMessageShow("Critivity Reset to Default.", False)
+End Sub
+
+Private Sub lblCopy_Click
+	If (txtQuestion.Text.Length > 0) Then
+		ClickSimulation
+		Dim cp As BClipboard
+			cp.setText(txtQuestion.Text)
+	End If
 End Sub
