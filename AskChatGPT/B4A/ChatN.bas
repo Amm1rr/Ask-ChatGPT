@@ -74,6 +74,7 @@ Sub Class_Globals
 	Private StartOffset As Float
 	Private ScrollPosition As Float
 	Private lastY As Float
+	Private lblClearText As Label
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -484,19 +485,21 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 	End If
 	
 	
-	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion,New)
+	TextboxHeightChange(New)
+	
+End Sub
+
+Private Sub TextboxHeightChange(text As String)
+	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
 	If i > 7%y Then 'It is small, we are going to increase to the limit
 		panBottom.Height = i
 		txtQuestion.Height = i
-		panBottom.Top = heightKeyboard - panBottom.Height - 1%y
+		panBottom.Top = heightKeyboard - panBottom.Height - 3%y
 		AdjustSize_Clv(0)
 	End If
-	
 End Sub
-
-
 
 Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	
@@ -707,6 +710,8 @@ public Sub AdjustSize_Clv(height As Int)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
 		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
+		lblClearText.Top = txtQuestion.Height - lblClearText.Height
+		lblPaste.Top = lblClearText.Top
 	Catch
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
