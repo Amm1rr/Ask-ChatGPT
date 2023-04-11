@@ -1,9 +1,13 @@
 Build 10 Dev
 -----
-+ Added Paste button
++ Add Drawer
++ Add Creativity Options
++ Rechange about
++ First Stable Release
 
 Build 9 Dev
 -----
++ Added Paste button
 + Change background color
 + Change UI
 + Solve height issue

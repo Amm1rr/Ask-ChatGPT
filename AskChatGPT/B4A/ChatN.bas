@@ -471,7 +471,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Message.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "text"
 		Dim cp As BClipboard
-		If (New.Trim.Length < 20) And (cp.hasText) Then
+		If (New.Trim.Length < 10) And (cp.hasText) Then
 			lblPaste.Visible = True
 		Else
 			lblPaste.Visible = False
@@ -856,7 +856,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	
 	AdjustSize_Clv(0)
 	
-	Wait For (wrk_chat.Query(assistant, question, History, temperature)) Complete (response As String)
+	Wait For (wrk_chat.Query(assistant, question, History, Temperature)) Complete (response As String)
 '	History = History & CRLF & question 	'Me:
 '	History = History & CRLF & response		'You:
 	History = History & CRLF & question & CRLF & response		'You:
