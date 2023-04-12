@@ -74,9 +74,12 @@ Sub Class_Globals
 	Private StartOffset As Float
 	Private ScrollPosition As Float
 	Private lastY As Float
+	
 	Private lblClearText As Label
 	Private panTextToolbar As Panel
 	Private lblCopy As Label
+	Private LanguageList As List
+	Private cmbLanguagesDrawer As B4XComboBox
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -159,6 +162,25 @@ Public Sub Initialize(parent As B4XView)
 	Else
 		lblCopy.Visible = False
 	End If
+	
+	LoadLanguage
+	
+End Sub
+
+Private Sub LoadLanguage
+	
+	If Not (LanguageList.IsInitialized) Then LanguageList.Initialize
+	
+	LanguageList.AddAll(Array As String("English", "Russian", "Spanish", "French", "German", _
+							   "Japanese", "Turkish", "Portuguese", "Persian", "Italian", _
+							   "Chinese", "Dutch, Flemish", "Polish", "Vietnamese", _
+							   "Arabic", "Korean", "Czech", "Indonesian", "Ukrainian", "Greek", _
+							   "Hebrew", "Swedish", "Thai", "Romanian", "Hungarian", _
+							   "Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
+							   "Norwegian (Bokmål)", "Croatian", "Lithuanian", "Slovenian", _
+							   "Catalan", "Norwegian", "Estonian", "Latvian", "Hindi"))
+	
+	cmbLanguagesDrawer.SetItems(LanguageList)
 	
 End Sub
 
@@ -903,11 +925,6 @@ Public Sub ShowKeyboard
 	ime.ShowKeyboard(txtQuestion)
 End Sub
 
-Private Sub icConfigTopMenu_Click
-	ClickSimulation
-	Drawer.LeftOpen = Not (Drawer.LeftOpen)
-End Sub
-
 #if B4J
 Sub imgSend_MouseClicked (EventData As MouseEvent)
 	lblSend_Click
@@ -1070,6 +1087,10 @@ Private Sub chkChat_CheckedChange(Checked As Boolean)
 	ChatConversation = Checked
 End Sub
 
+Private Sub icConfigTopMenu_Click
+	ClickSimulation
+	Drawer.LeftOpen = Not (Drawer.LeftOpen)
+End Sub
 
 Private Sub icMenuTopMenu_Click
 	Drawer.LeftOpen = Not (Drawer.LeftOpen)
@@ -1092,4 +1113,8 @@ Private Sub lblCopy_Click
 		Dim cp As BClipboard
 			cp.setText(txtQuestion.Text)
 	End If
+End Sub
+
+Private Sub cmbLanguagesDrawer_SelectedIndexChanged (Index As Int)
+	
 End Sub
