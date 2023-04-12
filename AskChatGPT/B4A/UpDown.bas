@@ -99,16 +99,8 @@ Public Sub setValue(NewValue As Int)
 	Lab.Text=Valore
 End Sub
 
-'TODO: Buggy
-'This try and catch is not a sulotion.
-'I have to fix it.
 Public Sub getValue As Int
-	Try
-		Return  Valore
-	Catch
-'		Log(LastException)
-		Return 0
-	End Try
+	Return  Valore
 End Sub
 
 Private Sub Bp_Click

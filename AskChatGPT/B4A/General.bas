@@ -30,6 +30,7 @@ Public Sub LoadSetting
 	Main.Pref.FirstLang  = "English" 'sett.Get("FirstLang").As(String)
 	Main.Pref.SecondLang = GetLangStr(Main.Sett.Get("SecondLang"))
 	Main.Pref.Creativity = GetCreativityInt(Main.Sett.Get("Creativity"))
+	LogColor("LoadSetting: " & Main.Pref.Creativity & " : " & Main.Sett.Get("Creativity"), Colors.Red)
 	
 End Sub
 Private Sub GetLangStr(txt As Object) As String

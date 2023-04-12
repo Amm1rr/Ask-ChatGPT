@@ -79,7 +79,8 @@ Sub Class_Globals
 	Private panTextToolbar As Panel
 	Private lblCopy As Label
 	Private LanguageList As List
-	Private cmbLanguagesDrawer As B4XComboBox
+	Private cmbLangDrawerFirst As B4XComboBox
+	Private cmbLangDrawerSec As B4XComboBox
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -165,12 +166,24 @@ Public Sub Initialize(parent As B4XView)
 	
 	LoadLanguage
 	
+	Check_First_Sec_Lang_Visibility
+	
+	UpDown1Drawer.Value = Main.Pref.Creativity
+	
+End Sub
+
+Private Sub Check_First_Sec_Lang_Visibility
+	If (Main.Pref.FirstLang = "(None)") Then
+		chkTranslate.Visible = False
+	Else
+		chkTranslate.Visible = True
+	End If
+	
 	If (Main.Pref.SecondLang = "(None)") Then
 		chkToFarsi.Visible = False
 	Else
 		chkToFarsi.Visible = True
 	End If
-	
 End Sub
 
 Private Sub LoadLanguage
@@ -185,30 +198,47 @@ Private Sub LoadLanguage
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
 							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi", "(None)"))
-	
-	Dim index 	As Int = -1
+
+	'######### First Language
+	Dim indexFirst 	As Int = -1
+	Dim indexSec 	As Int = -1
 	Dim lenght 	As Int = LanguageList.Size - 1
 	For i = 0 To lenght
-		If LanguageList.Get(i) = Main.Pref.SecondLang Then
-			index = LanguageList.IndexOf(LanguageList.Get(i))
+		If LanguageList.Get(i) = Main.Pref.FirstLang Then
+			indexFirst = LanguageList.IndexOf(LanguageList.Get(i))
+		Else If LanguageList.Get(i) = Main.Pref.SecondLang Then
+			indexSec = LanguageList.IndexOf(LanguageList.Get(i))
 		End If
 	Next
 	
-	cmbLanguagesDrawer.SetItems(LanguageList)
+	cmbLangDrawerFirst.SetItems(LanguageList)
+	If (indexFirst > -1) Then
+		cmbLangDrawerFirst.SelectedIndex = indexFirst
+		chkTranslate.Text = Main.Pref.FirstLang
+		chkTranslate.Visible = True
+	Else
+		cmbLangDrawerFirst.SelectedIndex = lenght
+		chkTranslate.Visible = False
+	End If
 	
-	If (index > -1) Then
-		cmbLanguagesDrawer.SelectedIndex = index
+	cmbLangDrawerSec.SetItems(LanguageList)
+	If (indexSec > -1) Then
+		cmbLangDrawerSec.SelectedIndex = indexSec
 		chkToFarsi.Text = Main.Pref.SecondLang
 		chkToFarsi.Visible = True
 	Else
-		cmbLanguagesDrawer.SelectedIndex = lenght
+		cmbLangDrawerSec.SelectedIndex = lenght
 		chkToFarsi.Visible = False
 	End If
 	
 End Sub
 
 Private Sub Drawer_StateChanged (Open As Boolean)
-	If (Open) Then UpDown1Drawer.Value = Temperature * 10
+	If (Open) Then
+		UpDown1Drawer.Value = Main.Pref.Creativity 'Temperature * 10
+	Else
+		General.SaveSetting
+	End If
 	LogColor("State: " & Open, Colors.Cyan)
 End Sub
 
@@ -1123,6 +1153,8 @@ End Sub
 
 Private Sub UpDown1Drawer_ChangeValue
 	Temperature = (UpDown1Drawer.Value / 10)
+	Main.Pref.Creativity = UpDown1Drawer.Value
+	General.SaveSetting
 End Sub
 
 Private Sub lblTemperatureDrawer_LongClick
@@ -1139,8 +1171,20 @@ Private Sub lblCopy_Click
 	End If
 End Sub
 
-Private Sub cmbLanguagesDrawer_SelectedIndexChanged (Index As Int)
-	Main.Pref.SecondLang = cmbLanguagesDrawer.GetItem(Index)
+Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
+	Main.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
+	
+	If (Main.Pref.FirstLang = "(None)") Then
+		chkTranslate.SetVisibleAnimated(150, False)
+	Else
+		chkTranslate.Text = Main.Pref.FirstLang
+		chkTranslate.SetVisibleAnimated(300, True)
+	End If
+	
+End Sub
+
+Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
+	Main.Pref.SecondLang = cmbLangDrawerSec.GetItem(Index)
 	
 	If (Main.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
@@ -1148,7 +1192,5 @@ Private Sub cmbLanguagesDrawer_SelectedIndexChanged (Index As Int)
 		chkToFarsi.Text = Main.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
 	End If
-	
-	General.SaveSetting
 	
 End Sub
