@@ -95,9 +95,7 @@ End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
 	
-	If (FirstTime) Then
-		General.LoadSetting
-	End If
+	General.LoadSetting
 
 '	chat1.Initialize(Activity)
 	ChatN1.Initialize(Activity)

@@ -165,6 +165,12 @@ Public Sub Initialize(parent As B4XView)
 	
 	LoadLanguage
 	
+	If (Main.Pref.SecondLang = "(None)") Then
+		chkToFarsi.Visible = False
+	Else
+		chkToFarsi.Visible = True
+	End If
+	
 End Sub
 
 Private Sub LoadLanguage
@@ -191,12 +197,12 @@ Private Sub LoadLanguage
 	cmbLanguagesDrawer.SetItems(LanguageList)
 	
 	If (index > -1) Then
+		cmbLanguagesDrawer.SelectedIndex = index
 		chkToFarsi.Text = Main.Pref.SecondLang
 		chkToFarsi.Visible = True
-		cmbLanguagesDrawer.SelectedIndex = index
 	Else
-		chkToFarsi.Visible = False
 		cmbLanguagesDrawer.SelectedIndex = lenght
+		chkToFarsi.Visible = False
 	End If
 	
 End Sub
@@ -1137,10 +1143,10 @@ Private Sub cmbLanguagesDrawer_SelectedIndexChanged (Index As Int)
 	Main.Pref.SecondLang = cmbLanguagesDrawer.GetItem(Index)
 	
 	If (Main.Pref.SecondLang = "(None)") Then
-		chkToFarsi.Visible = False
+		chkToFarsi.SetVisibleAnimated(150, False)
 	Else
 		chkToFarsi.Text = Main.Pref.SecondLang
-		chkToFarsi.Visible = True
+		chkToFarsi.SetVisibleAnimated(300, True)
 	End If
 	
 	General.SaveSetting
