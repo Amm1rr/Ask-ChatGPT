@@ -9,6 +9,56 @@ Sub Process_Globals
 	Private xui As XUI
 End Sub
 
+#Region Save and Load Settings
+
+Public Sub SaveSetting
+	If Not (Main.Sett.IsInitialized) Then
+		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
+	End If
+	
+	Main.Sett.Put("FirstLang", Main.Pref.FirstLang)
+	Main.Sett.Put("SecondLang", Main.Pref.SecondLang)
+	Main.Sett.Put("Creativity", Main.Pref.Creativity)
+	
+End Sub
+
+Public Sub LoadSetting
+	If Not (Main.Sett.IsInitialized) Then
+		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
+	End If
+	
+	Main.Pref.FirstLang  = "English" 'sett.Get("FirstLang").As(String)
+	Main.Pref.SecondLang = GetLangStr(Main.Sett.Get("SecondLang"))
+	Main.Pref.Creativity = GetCreativityInt(Main.Sett.Get("Creativity"))
+	
+End Sub
+Private Sub GetLangStr(txt As Object) As String
+	Try
+		If (txt.As(String).Length < 0) Then Return "(None)"
+		Return txt.As(String)
+	Catch
+		Return "(None)"
+	End Try
+End Sub
+
+Private Sub GetCreativityInt(val As Object) As Int
+	Try
+		If IsNumber(val) Then
+			If (val < 11) And (val > -1) Then
+				Return val
+			Else
+				Return 5
+			End If
+		End If
+		
+		Return 5
+		
+	Catch
+		Return 5
+	End Try
+End Sub
+#End Region Setting
+
 Sub Size_textVertical(lb As Label,text As String) As Int
 	If text.Length < 1 Then Return 0
 	Private su As StringUtils

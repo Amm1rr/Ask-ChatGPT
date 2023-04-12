@@ -1,9 +1,14 @@
+Build 11 Dev
+-----
+
 Build 10 Dev
 -----
-+ Add Drawer
-+ Add Creativity Options
-+ Rechange about
++ Added Drawer
++ Added Creativity Options
 + First Stable Release
++ Added Second Language Support Option
++ Added Setting Feature
+* Rechange about page
 
 Build 9 Dev
 -----

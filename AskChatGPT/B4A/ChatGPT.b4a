@@ -29,21 +29,22 @@ FileGroup8=Default Group
 FileGroup9=Default Group
 Group=Default Group
 Library1=as_textfieldadvanced
-Library10=phone
-Library11=securemytext
-Library12=viewsex
-Library13=webviewextras2
-Library14=xcustomlistview
-Library15=xui views
-Library16=b4xdraweradvanced
-Library2=bctextengine
-Library3=clipboard
-Library4=core
-Library5=designerutils
-Library6=ime2
-Library7=json
-Library8=md2html4a.11
-Library9=okhttputils2
+Library10=md2html4a.11
+Library11=okhttputils2
+Library12=phone
+Library13=securemytext
+Library14=viewsex
+Library15=webviewextras2
+Library16=xcustomlistview
+Library17=xui views
+Library2=b4xdraweradvanced
+Library3=bctextengine
+Library4=clipboard
+Library5=core
+Library6=designerutils
+Library7=ime2
+Library8=json
+Library9=keyvaluestore2
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~
 Module1=ACTION_PROCESS_TEXT
 Module2=ChatGPT
@@ -54,7 +55,7 @@ Module6=General
 Module7=Starter
 Module8=UpDown
 NumberOfFiles=14
-NumberOfLibraries=16
+NumberOfLibraries=17
 NumberOfModules=8
 Version=12.2
 @EndOfDesignText@
@@ -75,10 +76,16 @@ Version=12.2
 #BridgeLogger: True
 
 Sub Process_Globals
-	Public 	voicer 						As VoiceRecognition
+	Private OldIntent 				As Intent
+	Public	Voicer 					As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
 	Public 	strActoinTextSelected	As String
-	Private OldIntent 				As Intent
+	Public 	Sett 					As KeyValueStore
+	Public 	Pref 					As Setting
+	Type Setting(FirstLang As String, _
+				 SecondLang As String, _
+				 Creativity As Int)
+	
 End Sub
 
 Sub Globals
@@ -87,13 +94,16 @@ Sub Globals
 End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
+	
+	If (FirstTime) Then
+		General.LoadSetting
+	End If
 
 '	chat1.Initialize(Activity)
 	ChatN1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"
 	
-	
-	voicer.Initialize("vr")
+	Voicer.Initialize("vr")
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
