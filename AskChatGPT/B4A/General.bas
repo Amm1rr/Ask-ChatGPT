@@ -12,52 +12,71 @@ End Sub
 #Region Save and Load Settings
 
 Public Sub SaveSetting
-	If Not (Main.Sett.IsInitialized) Then
+	
+	If Not(Main.Sett.IsInitialized) Then
 		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
 	End If
-	
+
 	Main.Sett.Put("FirstLang", Main.Pref.FirstLang)
 	Main.Sett.Put("SecondLang", Main.Pref.SecondLang)
 	Main.Sett.Put("Creativity", Main.Pref.Creativity)
+	Main.Sett.Put("AutoSend", Main.Pref.AutoSend)
 	
+'	LogColor("SaveSetting: " & Main.Pref.FirstLang & " : " & Main.Pref.SecondLang & " : " & Main.Pref.Creativity & " : " & Main.Pref.AutoSend, Colors.Red)
 End Sub
 
 Public Sub LoadSetting
-	If Not (Main.Sett.IsInitialized) Then
+	
+	If Not(Main.Sett.IsInitialized) Then
 		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
 	End If
-	
-	Main.Pref.FirstLang  = "English" 'sett.Get("FirstLang").As(String)
+
+	Main.Pref.FirstLang = GetLangFirstStr(Main.Sett.Get("FirstLang"))
 	Main.Pref.SecondLang = GetLangStr(Main.Sett.Get("SecondLang"))
 	Main.Pref.Creativity = GetCreativityInt(Main.Sett.Get("Creativity"))
-	LogColor("LoadSetting: " & Main.Pref.Creativity & " : " & Main.Sett.Get("Creativity"), Colors.Red)
+	Main.Pref.AutoSend = GetBoolean(Main.Sett.Get("AutoSend"))
 	
+'	LogColor("SaveSetting: " & Main.Pref.FirstLang & " : " & Main.Pref.SecondLang & " : " & Main.Pref.Creativity & " : " & Main.Pref.AutoSend, Colors.Blue)
 End Sub
-Private Sub GetLangStr(txt As Object) As String
+
+Private Sub GetLangFirstStr(txt As Object) As String
+
 	Try
-		If (txt.As(String).Length < 0) Then Return "(None)"
+		If (txt.As(String) = "(None)") Then Return "English"
 		Return txt.As(String)
 	Catch
 		Return "(None)"
 	End Try
+
+End Sub
+Private Sub GetLangStr(txt As Object) As String
+
+	Try
+		Return txt.As(String)
+	Catch
+		Return "(None)"
+	End Try
+
 End Sub
 
 Private Sub GetCreativityInt(val As Object) As Int
+
+	If (val >= 0) And (val <= 10) Then
+		Return val
+	End If
+
+	Return 5
+
+End Sub
+
+Private Sub GetBoolean(val As Object) As Boolean
 	Try
-		If IsNumber(val) Then
-			If (val < 11) And (val > -1) Then
-				Return val
-			Else
-				Return 5
-			End If
-		End If
-		
-		Return 5
-		
+		Return val.As(Boolean)
 	Catch
-		Return 5
+		Return False
 	End Try
 End Sub
+
 #End Region Setting
 
 Sub Size_textVertical(lb As Label,text As String) As Int

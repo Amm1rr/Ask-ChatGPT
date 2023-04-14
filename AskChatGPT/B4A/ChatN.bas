@@ -49,7 +49,6 @@ Sub Class_Globals
 	Private webAnswerExtra As WebViewExtras
 	Private jsi As DefaultJavascriptInterface
 	
-	Public AUTOSENDVOICE 		As Boolean = False
 	Private panToolbar 			As B4XView
 	Private chkGrammar 	As B4XView
 	Private chkTranslate 		As CheckBox
@@ -81,6 +80,7 @@ Sub Class_Globals
 	Private LanguageList As List
 	Private cmbLangDrawerFirst As B4XComboBox
 	Private cmbLangDrawerSec As B4XComboBox
+	Private chkAutoSendDrawer As CheckBox
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -169,6 +169,7 @@ Public Sub Initialize(parent As B4XView)
 	Check_First_Sec_Lang_Visibility
 	
 	UpDown1Drawer.Value = Main.Pref.Creativity
+	chkAutoSendDrawer.Checked = Main.Pref.AutoSend
 	
 End Sub
 
@@ -199,7 +200,6 @@ Private Sub LoadLanguage
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
 							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi", "(None)"))
 
-	'######### First Language
 	Dim indexFirst 	As Int = -1
 	Dim indexSec 	As Int = -1
 	Dim lenght 	As Int = LanguageList.Size - 1
@@ -211,16 +211,25 @@ Private Sub LoadLanguage
 		End If
 	Next
 	
+	'######### First Language
 	cmbLangDrawerFirst.SetItems(LanguageList)
 	If (indexFirst > -1) Then
-		cmbLangDrawerFirst.SelectedIndex = indexFirst
-		chkTranslate.Text = Main.Pref.FirstLang
-		chkTranslate.Visible = True
+		If (Main.Pref.FirstLang = "(None)") Then
+			cmbLangDrawerFirst.cmbBox.RemoveAt(indexFirst)
+			cmbLangDrawerFirst.SelectedIndex = 0				'English
+			chkTranslate.Text = cmbLangDrawerFirst.GetItem(0)	'English
+		Else
+			cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)
+			cmbLangDrawerFirst.SelectedIndex = indexFirst
+			chkTranslate.Text = Main.Pref.FirstLang
+		End If
+			chkTranslate.Visible = True
 	Else
 		cmbLangDrawerFirst.SelectedIndex = lenght
 		chkTranslate.Visible = False
 	End If
 	
+	'######### Second Language
 	cmbLangDrawerSec.SetItems(LanguageList)
 	If (indexSec > -1) Then
 		cmbLangDrawerSec.SelectedIndex = indexSec
@@ -234,12 +243,13 @@ Private Sub LoadLanguage
 End Sub
 
 Private Sub Drawer_StateChanged (Open As Boolean)
+	LogColor("State: " & Open, Colors.Cyan)
 	If (Open) Then
 		UpDown1Drawer.Value = Main.Pref.Creativity 'Temperature * 10
+		chkAutoSendDrawer.Checked = Main.Pref.AutoSend
 	Else
 		General.SaveSetting
 	End If
-	LogColor("State: " & Open, Colors.Cyan)
 End Sub
 
 Sub LocationOnScreen(View As View) As List
@@ -624,8 +634,7 @@ End Sub
 
 
 Private Sub imgSend_LongClick
-	AUTOSENDVOICE = Not(AUTOSENDVOICE)
-	ToastMessageShow("Auto Send " & AUTOSENDVOICE, False)
+	
 End Sub
 
 Private Sub csTitle_Click (Tag As Object)
@@ -743,7 +752,7 @@ Public Sub imgSend_Click
 		If (Result <> "") Then
 			LogColor("Voice:" & Result, Colors.Blue)
 			txtQuestion.Text = Result
-			If (AUTOSENDVOICE) Then
+			If (Main.Pref.AutoSend) Then
 				imgSend_Click
 			Else
 '				txtQuestion.SelectAll
@@ -1180,7 +1189,7 @@ Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
 		chkTranslate.Text = Main.Pref.FirstLang
 		chkTranslate.SetVisibleAnimated(300, True)
 	End If
-	
+	General.SaveSetting
 End Sub
 
 Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
@@ -1192,5 +1201,9 @@ Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
 		chkToFarsi.Text = Main.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
 	End If
-	
+	General.SaveSetting
+End Sub
+
+Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
+	Main.Pref.AutoSend = Checked
 End Sub

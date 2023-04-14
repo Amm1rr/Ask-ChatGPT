@@ -82,9 +82,10 @@ Sub Process_Globals
 	Public 	strActoinTextSelected	As String
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
-	Type Setting(FirstLang As String, _
+	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
-				 Creativity As Int)
+				 Creativity As Int, _
+				 AutoSend 	As Boolean)
 	
 End Sub
 
@@ -133,7 +134,7 @@ Sub Activity_Resume
 		
 		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
-		If (ChatN1.AUTOSENDVOICE) Then _
+		If (Pref.AutoSend) Then _
 			ChatN1.imgSend_Click
 		
 		#Region Shared a Image
@@ -155,7 +156,7 @@ Sub Activity_Resume
 		ChatN1.txtQuestion.Text = strActoinTextSelected
 		strActoinTextSelected = ""
 		Sleep(0)
-		If (ChatN1.AUTOSENDVOICE) Then _
+		If (Pref.AutoSend) Then _
 			ChatN1.imgSend_Click
 		
 	End If
