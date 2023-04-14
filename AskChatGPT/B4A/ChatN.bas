@@ -635,6 +635,21 @@ End Sub
 
 Private Sub imgSend_LongClick
 	
+	Dim SecLang As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
+	If (SecLang = "(None)") Then Return
+	
+	VoiceLang(SecLang)
+	Wait For (RecognizeVoice) Complete (Result As String)
+	If (Result <> "") Then
+		LogColor("Voice:" & Result, Colors.Blue)
+		txtQuestion.Text = Result
+		If (Main.Pref.AutoSend) Then
+			imgSend_Click
+		Else
+'				txtQuestion.SelectAll
+		End If
+	End If
+	IME_HeightChanged(100%y, 0)
 End Sub
 
 Private Sub csTitle_Click (Tag As Object)
@@ -758,6 +773,7 @@ Public Sub imgSend_Click
 		Log("imgSend_Click: Voice" & imgSend.Tag)
 		
 		ClickSimulation
+		VoiceLang("en")
 		Wait For (RecognizeVoice) Complete (Result As String)
 		If (Result <> "") Then
 			LogColor("Voice:" & Result, Colors.Blue)
@@ -789,16 +805,37 @@ Public Sub imgSend_Click
 	
 End Sub
 
-
-Private Sub RecognizeVoice As ResumableSub
-	If (chkVoiceLang.Checked) Then
-		Main.voicer.Language = "fa"
-		Main.voicer.Prompt = "صحبت کنید"
+Private Sub VoiceLang(lng As String)
+	
+	LogColor(lng, Colors.Red)
+	LogColor(lng.Length, Colors.Red)
+	If lng.Length > 0 Then
+		Dim langslug As String = lng.SubString2(0, 2).ToLowerCase
+		LogColor(langslug, Colors.Red)
+		Dim prompt 	 As String
+		Select langslug
+			Case "pe"
+				langslug = "fa"
+				prompt = "صحبت کنید"
+			Case "en"
+				prompt = "Speak Now"
+			Case "ar"
+				prompt = "تَکَلُم"
+'			Case Else
+'				langslug = "en"
+'				prompt = "Speak Now"
+		End Select
+		
+		Main.voicer.Language = langslug
+		Main.voicer.Prompt 	 = prompt
 	Else
 		Main.voicer.Language = "en"
 		Main.voicer.Prompt = "Speak Now"
 	End If
 	
+End Sub
+
+Private Sub RecognizeVoice As ResumableSub
 	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then
