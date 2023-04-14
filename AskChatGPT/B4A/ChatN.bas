@@ -549,11 +549,13 @@ Private Sub String_Remove_DoubleQuot(text As String) As String
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
+	
 	HideKeyboard
-'	#if B4i
-'		Dim tf As View = TextField.TextField
-'		tf.ResignFocus
-'	#End If
+	#if B4i
+		Dim tf As View = TextField.TextField
+		tf.ResignFocus
+	#End If
+	
 End Sub
 
 
@@ -1145,42 +1147,28 @@ End Sub
 Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
 	ClickSimulation
 	AnswerRtl = Checked
-	Try
-		Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size - 1)
-		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
-		
-		If (Checked) Then
-			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-		Else
-			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-		End If
-		
-	Catch
-		Log(LastException)
-	End Try
-	
 End Sub
 
 
-'Private Sub lblAnswer_Click
-'	Try
-'		Dim index As Int = clvMessages.GetItemFromView(Sender)
-'		Dim pnl As B4XView = clvMessages.GetPanel(index)
-'		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
-'		
-'		If (AnswerRtl) Then
-'			AnswerRtl = False
-'			' center the text horizontally and vertically
-'			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-'		Else
-'			AnswerRtl = True
-'			' center the text horizontally and vertically
-'			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-'		End If
-'	Catch
-'		Log(LastException)
-'	End Try
-'End Sub
+Private Sub lblAnswer_Click
+	Try
+		Dim index As Int = clvMessages.GetItemFromView(Sender)
+		Dim pnl As B4XView = clvMessages.GetPanel(index)
+		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
+		
+		If (AnswerRtl) Then
+			AnswerRtl = False
+			' center the text horizontally and vertically
+			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+		Else
+			AnswerRtl = True
+			' center the text horizontally and vertically
+			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+		End If
+	Catch
+		Log(LastException)
+	End Try
+End Sub
 
 
 Private Sub lblPaste_Click
