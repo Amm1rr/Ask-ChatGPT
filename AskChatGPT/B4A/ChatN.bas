@@ -809,24 +809,132 @@ End Sub
 
 Private Sub VoiceLang(lng As String)
 	
-	LogColor(lng, Colors.Red)
-	LogColor(lng.Length, Colors.Red)
 	If lng.Length > 0 Then
-		Dim langslug As String = lng.SubString2(0, 2).ToLowerCase
-		LogColor(langslug, Colors.Red)
+		
+		Dim langslug As String '= lng.SubString2(0, 2).ToUpperCase
 		Dim prompt 	 As String
-		Select langslug
-			Case "pe"
-				langslug = "fa"
-				prompt = "صحبت کنید"
-			Case "en"
-				prompt = "Speak Now"
-			Case "ar"
-				prompt = "تَکَلُم"
-'			Case Else
-'				langslug = "en"
-'				prompt = "Speak Now"
+		
+		Select lng
+			Case "English"
+				langslug = "EN"
+				prompt   = "Speak Now"
+			Case "Russian"
+				langslug = "RU"
+				prompt   = "Говори сейчас"	'Govori seychas
+			Case "Spanish"
+				langslug = "ES"
+				prompt   = "Habla Ahora"
+			Case "French"
+				langslug = "FR"
+				prompt   = "Parle maintenant"
+			Case "German"
+				langslug = "DE"
+				prompt   = "Sprich jetzt"
+			Case "Japanese"
+				langslug = "JA"
+				prompt 	 = "今すぐ話す"			'Ima sugu hanasu
+			Case "Turkish"
+				langslug = "TR"
+				prompt   = "Şimdi Konuş"
+			Case "Portuguese"
+				langslug = "PT"
+				prompt   = "Fale Agora"
+			Case "Persian"
+				langslug = "FA"
+				prompt   = "صحبت کنید"
+			Case "Italian"
+				langslug = "IT"
+				prompt   = "Parla Ora"
+			Case "Chinese"
+				langslug = "ZH"
+				prompt   = "立即说" 			'"立即说" (Lìjí shuō) Or "现在说" (Xiànzài shuō)
+			Case "Dutch"
+				langslug = "NL"
+				prompt   = "Spreek Nu"
+			Case "Polish"
+				langslug = "PL"
+				prompt   = "Mów Teraz"
+			Case "Vietnamese"
+				langslug = "VI"
+				prompt   = "Hãy Nói Ngay"
+			Case "Arabic"
+				langslug = "AR"				'"تحدث الآن" (tuhaddith al-an)
+				prompt   = ""
+			Case "Korean"
+				langslug = "KO"
+				prompt   = "지금 말해" 		'Jigeum Malhae
+			Case "Czech"
+				langslug = "CS"
+				prompt   = "Promluvte nyní"
+			Case "Indonesian"
+				langslug = "ID"
+				prompt   = "Berbicara Sekarang"
+			Case "Ukrainian"
+				langslug = "UK"
+				prompt   = "Говори зараз"
+			Case "Greek"
+				langslug = "EL"
+				prompt   = "Μίλα Τώρα" 		'Míla Tóra
+			Case "Hebrew"
+				langslug = "HE"
+				prompt   =  "דבר עכשיו" 		'daber achshav
+			Case "Swedish"
+				langslug = "SV"
+				prompt   = "Tala Nu"
+			Case "Thai"
+				langslug = "TH"
+				prompt   = "พูดตอนนี้" 			'Poot dton nee
+			Case "Romanian"
+				langslug = "RO"
+				prompt   = "Vorbește acum"
+			Case "Hungarian"
+				langslug = "HU"
+				prompt   = "Beszélj Most"
+			Case "Danish"
+				langslug = "DA"
+				prompt   = "Tal Nu"
+			Case "Finnish"
+				langslug = "FI"
+				prompt   = "Puhu Nyt"
+			Case "Slovak"
+				langslug = "SK"
+				prompt   = "Hovor teraz"
+			Case "Bulgarian"
+				langslug = "BG"
+				prompt   = "Говори сега" 		'Govori sega
+			Case "Serbian"
+				langslug = "SR"
+				prompt   = "Govori Sada" 		'Говори Сада
+			Case "Norwegian"
+				langslug = "NO"
+				prompt   = "Snakk nå"
+			Case "Croatian"
+				langslug = "HR"
+				prompt   = "Govori Sada"
+			Case "Lithuanian"
+				langslug = "LT"
+				prompt   = "Kalbėk Dabar"
+			Case "Slovenian"
+				langslug = "SL"
+				prompt   = "Govori zdaj"
+			Case "Catalan"
+				langslug = "CA"
+				prompt   = "Parla Ara"
+			Case "Estonian"
+				langslug = "Räägi Kohe"
+				prompt   = ""
+			Case "Latvian"
+				langslug = "LV"
+				prompt   = "Runā tagad"
+			Case "Hindi"
+				langslug = "HI"
+				prompt   = "अभी बोलें |"
+			Case Else
+				langslug = "EN"
+				prompt   = "Speak Now"
 		End Select
+		
+		If (prompt = "") Then prompt = "Speak Now"
 		
 		Main.voicer.Language = langslug
 		Main.voicer.Prompt 	 = prompt
@@ -1151,22 +1259,24 @@ End Sub
 
 
 Private Sub lblAnswer_Click
+	
+	If Not (AnswerRtl) Then Return
+	
 	Try
 		Dim index As Int = clvMessages.GetItemFromView(Sender)
 		Dim pnl As B4XView = clvMessages.GetPanel(index)
 		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
 		
-		If (AnswerRtl) Then
-			AnswerRtl = False
+		If (lbl.As(Label).Gravity = 51) Then
 			' center the text horizontally and vertically
 			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-		Else
-			AnswerRtl = True
+		Else '53
 			' center the text horizontally and vertically
 			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
 		End If
+		
 	Catch
-		Log(LastException)
+		Log("lblAnswer_Click - " & CRLF & LastException)
 	End Try
 End Sub
 
