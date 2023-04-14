@@ -688,33 +688,43 @@ Public Sub imgSend_Click
 		
 		If (chkGrammar.Checked) Then
 			ResetAI
-'			sText = $"I want you JUST to strictly correct my grammar mistakes, typos, and factual errors: "$ & CRLF
-			sText = $"I want you JUST to strictly correct my grammar mistakes, typos, and factual errors I will reply to you FROM NOW: "$ & CRLF
-'			sAssistant = $"Correct grammar improves fluency in ${Main.Pref.FirstLang} and the output should only show the corrected text."$ & CRLF
-'			sAssistant = $"You are an ${Main.Pref.FirstLang} grammar check and corrector."$ & CRLF
-'			sAssistant = $"You are an language teacher who corrects the textual errors I give you and writes the correct sentence."$ & CRLF
-'			sAssistant = $"I want you to act as an ${Main.Pref.FirstLang} translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in ${Main.Pref.FirstLang}. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level ${Main.Pref.FirstLang} words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations."$ & CRLF
+'			sText = $"I want you JUST to strictly correct my grammar mistakes, typos, and factual errors I will reply to you FROM NOW: "$ & CRLF
+			sText = $"## Instructions ${CRLF} " & _
+					"**Language instruction:** ${CRLF} " & _
+					"I want you to strictly correct only my grammar mistakes, typos, and factual errors. ${CRLF}" & _
+					"## End Instructions ${CRLF}${CRLF} "$
 			sAssistant = $"Act as a ${Main.Pref.FirstLang} language teacher."$
 		Else If (chkTranslate.Checked) Then
 			ResetAI
-			sText = $"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${Main.Pref.FirstLang}. now let's start translate: "$ & CRLF
+'			sText = $"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${Main.Pref.FirstLang}. now let's start translate: "$ & CRLF
+			sText = $"## Instructions ${CRLF} " & _
+					"**Language instruction:** ${CRLF} " & _
+					"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${Main.Pref.FirstLang}. ${CRLF}" & _
+					"## End Instructions ${CRLF}${CRLF}"$
 			sAssistant = $"Act as a translator to ${Main.Pref.FirstLang} language."$
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
-			sText = $"Translate the inputted text into ${Main.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${Main.Pref.SecondLang}:"$ & CRLF
+'			sText = $"Translate the inputted text into ${Main.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${Main.Pref.SecondLang}:"$ & CRLF
+			sText = $"## Instructions ${CRLF} " & _
+					"**Language instruction:** ${CRLF} " & _
+					"Translate the inputted text into ${Main.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${Main.Pref.SecondLang}: ${CRLF}" & _
+					"## End Instructions ${CRLF}${CRLF}"$
 			sAssistant = $"Act as a translator of the ${Main.Pref.SecondLang} language."$
 		Else if (chkChat.Checked) Then
 			ResetAI
 '			sText = $"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} to practice my spoken ${Main.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
 '			sText = $"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} to practice my spoken ${Main.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
-			sText = $"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. " & _
+			sText = $"## Instructions ${CRLF} " & _
+					"**Language instruction:** ${CRLF} " & _
+					"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. " & _
 					"I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} To practice my spoken ${Main.Pref.FirstLang}. " & _
 					"I want you To keep your reply neat, " & _
 					"limiting the reply To 100 words. " & _
 					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
 					"I want you To Ask Me a question in your reply. " & _
 					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
-					"reply correct sentence when answer."$ & CRLF
+					"reply correct sentence when answer. ${CRLF}" & _
+					"## End Instructions ${CRLF}${CRLF}"$
 			sAssistant = $"Act as a Spoken ${Main.Pref.FirstLang} Teacher and Improver."$
 		Else
 			
