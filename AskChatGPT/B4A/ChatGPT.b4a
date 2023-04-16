@@ -1,10 +1,11 @@
 ﻿Build1=Default,com.ask.chatgpt
 File1=Acme-Regular.ttf
-File10=PROMPTS.md
-File11=puton.png
-File12=roboto-regular.ttf
-File13=settings.png
-File14=voice.png
+File10=montserrat-medium.ttf
+File11=PROMPTS.md
+File12=puton.png
+File13=roboto-regular.ttf
+File14=settings.png
+File15=voice.png
 File2=Changelog.txt
 File3=Chat.bal
 File4=clvAnswerRow.bal
@@ -19,6 +20,7 @@ FileGroup11=Default Group
 FileGroup12=Default Group
 FileGroup13=Default Group
 FileGroup14=Default Group
+FileGroup15=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
@@ -52,11 +54,12 @@ Module3=ChatN
 Module4=ChatNew
 Module5=CLVNested
 Module6=General
-Module7=Starter
-Module8=UpDown
-NumberOfFiles=14
+Module7=ResizingTextComponent
+Module8=Starter
+Module9=UpDown
+NumberOfFiles=15
 NumberOfLibraries=17
-NumberOfModules=8
+NumberOfModules=9
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -82,11 +85,11 @@ Sub Process_Globals
 	Public 	strActoinTextSelected	As String
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
+	Public 	IsDevMode				As Boolean = True				'If its in Development Mode, just for MySelf
 	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
 				 Creativity As Int, _
 				 AutoSend 	As Boolean)
-	
 End Sub
 
 Sub Globals
@@ -97,7 +100,8 @@ End Sub
 Sub Activity_Create(FirstTime As Boolean)
 	
 	General.LoadSetting
-
+	
+	
 '	chat1.Initialize(Activity)
 	ChatN1.Initialize(Activity)
 	Activity.Title = "Ask ChatGPT"

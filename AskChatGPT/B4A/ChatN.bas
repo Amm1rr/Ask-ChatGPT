@@ -33,8 +33,11 @@ Sub Class_Globals
 	Public IsWorking As Boolean
 	Private ChatConversation As Boolean = False
 	
+	Private mEventName As String 'ignore
+	Private mCallBack As Object 'ignore
+	
 	'CLV Answer
-	Private lblAnswer As Label
+	Private lblAnswer As ResizingTextComponent
 	Private pnlAnswer As Panel
 	Private imgAnswer As ImageView
 	
@@ -81,11 +84,14 @@ Sub Class_Globals
 	Private cmbLangDrawerFirst As B4XComboBox
 	Private cmbLangDrawerSec As B4XComboBox
 	Private chkAutoSendDrawer As CheckBox
+	
+	Private mainparent As B4XView
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize(parent As B4XView)
 	
+	mainparent = parent
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
 	General.Set_StatusBarColor(0xFF74A5FF)
@@ -156,13 +162,7 @@ Public Sub Initialize(parent As B4XView)
 		csTitle.EnableClickEvents(lblVersionTextDrawer)
 	lblVersionTextDrawer.Text = csTitle
 	
-	Dim cp As BClipboard
-	lblPaste.Visible = cp.hasText
-	If (txtQuestion.Text.Length > 0) Then
-		lblCopy.Visible = True
-	Else
-		lblCopy.Visible = False
-	End If
+	CheckTextBoxToolbar
 	
 	LoadLanguage
 	
@@ -170,6 +170,20 @@ Public Sub Initialize(parent As B4XView)
 	
 	UpDown1Drawer.Value = Main.Pref.Creativity
 	chkAutoSendDrawer.Checked = Main.Pref.AutoSend
+	
+End Sub
+
+Private Sub CheckTextBoxToolbar
+	
+	Dim cp As BClipboard
+	
+	lblPaste.Visible = cp.hasText
+	
+	If (txtQuestion.Text.Length > 0) Then
+		lblCopy.Visible = True
+	Else
+		lblCopy.Visible = False
+	End If
 	
 End Sub
 
@@ -448,12 +462,12 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 					
 					'ADJUST VERTICAL
 					Private TopMargin, BottomMargin As Int = 2%y
-					Dim text As String = lblAnswer.Text
+'					Dim text As String = lblAnswer.TextValue
 '					If (text.Length > 45) Then text = text & CRLF
 					Dim t As Int
 '					t = General.Size_textVertical(lblAnswer, text)
-					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
-					LogColor("Length: " & text.Length, Colors.Blue)
+'					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
+'					LogColor("Length: " & text.Length, Colors.Blue)
 					LogColor("H: " & t, Colors.Blue)
 '					If (t > 150) Then
 					webAnswer.Top = TopMargin + 1%y
@@ -462,19 +476,19 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 					Else
 						webAnswer.Height = t + 2%y
 					End If
-'					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.Text) + BottomMargin
+'					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.TextIs) + BottomMargin
 '					lblAnswer.Top = TopMargin + 1%y
 					
 					'ADJUST HORIZONTAL
-					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
+'					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.TextValue)
 					LogColor("H: " & t, Colors.Magenta)
 					If (t < 130) Then
 						webAnswer.Width = 50%x
 						pnlAnswer.Width = webAnswer.Width + 4%x
 						LogColor("W is smaller of 120", Colors.Cyan)
 					Else If (t < 82%x) Then
-'						lblAnswer.Width = General.Size_textHorizontal(lblAnswer,lblAnswer.Text)
-'						lblAnswer.SingleLine = True
+'						lblAnswerOLD.Width = General.Size_textHorizontal(lblAnswerOLD,lblAnswerOLD.Text)
+'						lblAnswerOLD.SingleLine = True
 						webAnswer.Width = t
 						pnlAnswer.Width = (webAnswer.Width + 4%x)
 						LogColor("W is more than of 82%x", Colors.Yellow)
@@ -686,7 +700,11 @@ End Sub
 
 Public Sub imgSend_Click
 	
+	If (IsWorking) Then Return
+
+'	ResetAI
 	IsWorking = True
+	
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -832,7 +850,7 @@ Private Sub VoiceLang(lng As String)
 				prompt   = "Sprich jetzt"
 			Case "Japanese"
 				langslug = "JA"
-				prompt 	 = "今すぐ話す"			'Ima sugu hanasu
+				prompt 	 = "今すぐ話す"		'Ima sugu hanasu
 			Case "Turkish"
 				langslug = "TR"
 				prompt   = "Şimdi Konuş"
@@ -883,7 +901,7 @@ Private Sub VoiceLang(lng As String)
 				prompt   = "Tala Nu"
 			Case "Thai"
 				langslug = "TH"
-				prompt   = "พูดตอนนี้" 			'Poot dton nee
+				prompt   = "พูดตอนนี้" 		'Poot dton nee
 			Case "Romanian"
 				langslug = "RO"
 				prompt   = "Vorbește acum"
@@ -901,10 +919,10 @@ Private Sub VoiceLang(lng As String)
 				prompt   = "Hovor teraz"
 			Case "Bulgarian"
 				langslug = "BG"
-				prompt   = "Говори сега" 		'Govori sega
+				prompt   = "Говори сега" 	'Govori sega
 			Case "Serbian"
 				langslug = "SR"
-				prompt   = "Govori Sada" 		'Говори Сада
+				prompt   = "Govori Sada" 	'Говори Сада
 			Case "Norwegian"
 				langslug = "NO"
 				prompt   = "Snakk nå"
@@ -1033,44 +1051,42 @@ Sub WriteAnswer(message As String) 'Left Side
 		m.Initialize
 		m.message = message
 		m.assistant = True
-		
 	
 	Dim p As B4XView = xui.CreatePanel("")
-		p.LoadLayout("clvAnswerRow")
-	p.Tag = webAnswer
 	
-	lblAnswer.Text = message
+'	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,300dip)
+'	panMain.AddView(p,0,0, clvMessages.AsView.Width, 300dip)
+	mainparent.AddView(p,0,0, clvMessages.AsView.Width, 300dip)
 	
-'	'ADJUST VERTICAL
-'	Private TopMargin, BottomMargin As Int = 2%y
-'	Dim text As String = lblAnswer.Text
-'	lblAnswer.Height = General.Size_textVertical(lblAnswer, text) + BottomMargin
-'	lblAnswer.Top = TopMargin + 1%y
-'	pnlAnswer.Height = lblAnswer.Height + TopMargin + BottomMargin
-	
-	
-	Dim h As Int = General.Size_textVertical(lblAnswer, message)
-	LogColor("lbl Height : " & h, Colors.Red)
-	If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
-	LogColor("lbl Height > " & h, Colors.Red)
-	pnlAnswer.Height = h + 100dip
-	lblAnswer.Height = pnlAnswer.Height
-	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
+	p.LoadLayout("clvAnswerRow")
+	p.RemoveViewFromParent
 	
 	If (AnswerRtl) Then
-		lblAnswer.Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+		lblAnswer.setTextAlling("CENTER", "RIGHT")
 	Else
-		lblAnswer.Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+		lblAnswer.setTextAlling("CENTER", "LEFT")
 	End If
-		
+	
+	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
+	lblAnswer.SetBackColor(Colors.White)
+	lblAnswer.SetCorners(10dip)
+	lblAnswer.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
+	lblAnswer.Text = message
+	p.Height = lblAnswer.GetHeight
+	pnlAnswer.Height = p.Height
+	
+	
 '	webAnswerExtra.Initialize(webAnswer)
 '	jsi.Initialize
 '	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+
 	
 	clvMessages.Add(p, m)
+'	clvMessages.AddTextItem(message, m)
+
 '	clvMessages.ResizeItem(clvMessages.Size - 1,pnlAnswer.Height)
-	AdjustSize_Clv(0)
+'	AdjustSize_Clv(0)
 	
 	IsWorking = False
 	
@@ -1116,10 +1132,15 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	
 	AdjustSize_Clv(0)
 	
+'	If (History.Length > 1000) Then
+'		History = History.SubString(History.Length / 2)
+'	End If
+'	History = "YOUR LAST ANSWER TO MY LAST QUESTION WAS:" & CRLF & clvMessages.GetValue(clvMessages.Size - 1)
+	
 	Wait For (wrk_chat.Query(assistant, question, History, Temperature)) Complete (response As String)
-'	History = History & CRLF & question 	'Me:
-'	History = History & CRLF & response		'You:
-	History = History & CRLF & question & CRLF & response		'You:
+	History = History & CRLF & question 	'Me:
+	History = History & CRLF & response		'You:
+'	History = History & CRLF & question & CRLF & response	'Me: CRLF You:
 '	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
@@ -1258,28 +1279,35 @@ Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
 End Sub
 
 
-Private Sub lblAnswer_Click
+Private Sub lblAnswerOLD_Click
 	
 	If Not (AnswerRtl) Then Return
 	
 	Try
 		Dim index As Int = clvMessages.GetItemFromView(Sender)
 		Dim pnl As B4XView = clvMessages.GetPanel(index)
+		Dim lblOLD As B4XView = dd.GetViewByName(pnl, "lblAnswerOLD")
 		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
 		
-		If (lbl.As(Label).Gravity = 51) Then
+		If (lblOLD.As(Label).Gravity = 51) Then
 			' center the text horizontally and vertically
-			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+			lblOLD.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+			lbl.SetTextAlignment(Gravity.CENTER, Gravity.RIGHT)
 		Else '53
 			' center the text horizontally and vertically
-			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+			lblOLD.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+			lbl.SetTextAlignment(Gravity.CENTER, Gravity.LEFT)
 		End If
 		
 	Catch
-		Log("lblAnswer_Click - " & CRLF & LastException)
+		Log("lblAnswerOLD_Click - " & CRLF & LastException)
 	End Try
 End Sub
-
+Private Sub lblAnswerOLD_LongClick
+	
+	Dim index As Int = clvMessages.GetItemFromView(Sender)
+	clvMessages_ItemLongClick(index, clvMessages.GetValue(index))
+End Sub
 
 Private Sub lblPaste_Click
 	ClickSimulation
@@ -1296,8 +1324,32 @@ Private Sub chkChat_CheckedChange(Checked As Boolean)
 End Sub
 
 Private Sub icConfigTopMenu_Click
+	
 	ClickSimulation
-	Drawer.LeftOpen = Not (Drawer.LeftOpen)
+	
+	If (Main.IsDevMode) Then
+		
+		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100"
+		
+		Dim myStrings As List
+			myStrings.Initialize
+			myStrings.Add("Hi there, How are you?")
+			myStrings.Add("🤔")
+			myStrings.Add(v)
+			myStrings.Add(v & CRLF & CRLF & v)
+			myStrings.Add(v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v)
+			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
+			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
+		
+		Dim index As Int
+			index = Rnd(0, myStrings.Size - 1)
+	
+		WriteAnswer(myStrings.Get(index))
+		
+	Else
+		Drawer.LeftOpen = Not (Drawer.LeftOpen)
+	End If
+	
 End Sub
 
 Private Sub icMenuTopMenu_Click
@@ -1351,4 +1403,18 @@ End Sub
 
 Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
 	Main.Pref.AutoSend = Checked
+End Sub
+
+
+Private Sub lblVersionNameDrawer_LongClick
+	Main.IsDevMode = Not(Main.IsDevMode)
+	ToastMessageShow("IsDevMode: " & Main.IsDevMode, False)
+End Sub
+
+Private Sub lblAnswer_Click
+	lblAnswerOLD_Click
+End Sub
+
+Private Sub lblAnswer_LongClick
+	lblAnswerOLD_LongClick
 End Sub
