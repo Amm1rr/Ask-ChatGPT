@@ -86,6 +86,7 @@ Sub Class_Globals
 	Private chkAutoSendDrawer As CheckBox
 	
 	Private mainparent As B4XView
+	Private imgBrain As ImageView
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -121,7 +122,9 @@ Public Sub Initialize(parent As B4XView)
 	lblTitleTopMenu.Text = csTitle
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
 	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
+	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "brain.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
 	
+	MemoryChanged
 	
 	Private cc As ColorDrawable
 	cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
@@ -162,39 +165,40 @@ Public Sub Initialize(parent As B4XView)
 		csTitle.EnableClickEvents(lblVersionTextDrawer)
 	lblVersionTextDrawer.Text = csTitle
 	
-	CheckTextBoxToolbar
+	resetTextboxToolbar
 	
 	LoadLanguage
 	
+	
+	UpDown1Drawer.Value = General.Pref.Creativity
+	chkAutoSendDrawer.Checked = General.Pref.AutoSend
+	
+	DevModeCheck
+	
+	MemoryChanged
+	
 	Check_First_Sec_Lang_Visibility
 	
-	UpDown1Drawer.Value = Main.Pref.Creativity
-	chkAutoSendDrawer.Checked = Main.Pref.AutoSend
-	
 End Sub
 
-Private Sub CheckTextBoxToolbar
-	
-	Dim cp As BClipboard
-	
-	lblPaste.Visible = cp.hasText
-	
-	If (txtQuestion.Text.Length > 0) Then
-		lblCopy.Visible = True
+Public Sub MemoryChanged
+	If (General.Pref.Memory) Then
+		imgBrain.SetVisibleAnimated(300, True)
+'		imgBrain.SetColorAnimated(0, Colors.ARGB(100,116,165,255), Colors.ARGB(100,116,165,105))
+'		lblTitleTopMenu.Color = Colors.RGB(82,144,255)	'0xFF5290FF
 	Else
-		lblCopy.Visible = False
+		imgBrain.SetVisibleAnimated(300, False)
+'		imgBrain.SetColorAnimated(100, Colors.ARGB(0,116,165,255), Colors.ARGB(0,116,165,205))
+'		lblTitleTopMenu.Color = Colors.RGB(116,165,255) '0xFF74A5FF
 	End If
-	
 End Sub
 
-Private Sub Check_First_Sec_Lang_Visibility
-	If (Main.Pref.FirstLang = "(None)") Then
-		chkTranslate.Visible = False
-	Else
-		chkTranslate.Visible = True
-	End If
-	
-	If (Main.Pref.SecondLang = "(None)") Then
+Public Sub DevModeCheck
+	icConfigTopMenu.Visible = General.Pref.IsDevMode
+End Sub
+
+Public Sub Check_First_Sec_Lang_Visibility
+	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.Visible = False
 	Else
 		chkToFarsi.Visible = True
@@ -218,36 +222,30 @@ Private Sub LoadLanguage
 	Dim indexSec 	As Int = -1
 	Dim lenght 	As Int = LanguageList.Size - 1
 	For i = 0 To lenght
-		If LanguageList.Get(i) = Main.Pref.FirstLang Then
+		If LanguageList.Get(i) = General.Pref.FirstLang Then
 			indexFirst = LanguageList.IndexOf(LanguageList.Get(i))
-		Else If LanguageList.Get(i) = Main.Pref.SecondLang Then
+		Else If LanguageList.Get(i) = General.Pref.SecondLang Then
 			indexSec = LanguageList.IndexOf(LanguageList.Get(i))
 		End If
 	Next
 	
 	'######### First Language
+	'#
+	
 	cmbLangDrawerFirst.SetItems(LanguageList)
-	If (indexFirst > -1) Then
-		If (Main.Pref.FirstLang = "(None)") Then
-			cmbLangDrawerFirst.cmbBox.RemoveAt(indexFirst)
-			cmbLangDrawerFirst.SelectedIndex = 0				'English
-			chkTranslate.Text = cmbLangDrawerFirst.GetItem(0)	'English
-		Else
-			cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)
-			cmbLangDrawerFirst.SelectedIndex = indexFirst
-			chkTranslate.Text = Main.Pref.FirstLang
-		End If
-			chkTranslate.Visible = True
-	Else
-		cmbLangDrawerFirst.SelectedIndex = lenght
-		chkTranslate.Visible = False
-	End If
+	cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)	'Remove "(None)" from First Language Combo
+	If Not (indexFirst > -1) Then indexFirst = 0
+	
+	cmbLangDrawerFirst.SelectedIndex = indexFirst
+	chkTranslate.Text = General.Pref.FirstLang
 	
 	'######### Second Language
+	'#
+	
 	cmbLangDrawerSec.SetItems(LanguageList)
 	If (indexSec > -1) Then
 		cmbLangDrawerSec.SelectedIndex = indexSec
-		chkToFarsi.Text = Main.Pref.SecondLang
+		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.Visible = True
 	Else
 		cmbLangDrawerSec.SelectedIndex = lenght
@@ -256,11 +254,12 @@ Private Sub LoadLanguage
 	
 End Sub
 
+
 Private Sub Drawer_StateChanged (Open As Boolean)
 	LogColor("State: " & Open, Colors.Cyan)
 	If (Open) Then
-		UpDown1Drawer.Value = Main.Pref.Creativity 'Temperature * 10
-		chkAutoSendDrawer.Checked = Main.Pref.AutoSend
+		UpDown1Drawer.Value = General.Pref.Creativity 'Temperature * 10
+		chkAutoSendDrawer.Checked = General.Pref.AutoSend
 	Else
 		General.SaveSetting
 	End If
@@ -419,20 +418,16 @@ Private Sub LoadCLVSetup
 		myStrings.Add("How can I help?")
 		myStrings.Add("💻")
 		myStrings.Add("👩")
-		myStrings.Add("👨‍🏫")
 		myStrings.Add("🧑")
-		myStrings.Add("🤖")
-		myStrings.Add("📚")
-		myStrings.Add("🤔")
 		myStrings.Add("💡")
 		myStrings.Add("Just Ask... 🤔")
 		myStrings.Add("I know all languages that might you know 😀")
-		myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 		myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
-		myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
-		myStrings.Add($"Try me in Farsi...${CRLF}بیا فارسی صحبت کنیم 😉"$)
 		myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
-		myStrings.Add($"I can correct your ${Main.Pref.FirstLang}, just ask"$)
+		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
+		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
+		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
+		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
 	
 	Dim index As Int
 	index = Rnd(0, myStrings.Size - 1)
@@ -549,6 +544,7 @@ Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	Dim cp As BClipboard
 	Dim msg As textMessage = Value
 	cp.setText(String_Remove_DoubleQuot(msg.message))
+	resetTextboxToolbar
 End Sub
 
 'Remove first and last Double Quotation charachters
@@ -570,12 +566,25 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 		tf.ResignFocus
 	#End If
 	
+	resetTextboxToolbar
+	
+'	lblAnswer_Click
+	
 End Sub
 
-
-
-
-
+Private Sub resetTextboxToolbar
+	Dim cp As BClipboard
+	If (txtQuestion.Text.Trim.Length < 10) And (cp.hasText) Then
+		lblPaste.Visible = True
+	Else
+		lblPaste.Visible = False
+	End If
+	If (txtQuestion.Text.Length > -1) Then
+		lblCopy.Visible =  True
+	Else
+		lblCopy.Visible =  False
+	End If
+End Sub
 
 Sub txtQuestion_TextChanged (Old As String, New As String)
 	
@@ -583,13 +592,14 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 	If New.Length > 0 Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Message.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "text"
-		Dim cp As BClipboard
-		If (New.Trim.Length < 10) And (cp.hasText) Then
-			lblPaste.Visible = True
-		Else
-			lblPaste.Visible = False
-		End If
-		lblCopy.Visible =  True
+		resetTextboxToolbar
+'		Dim cp As BClipboard
+'		If (New.Trim.Length < 10) And (cp.hasText) Then
+'			lblPaste.Visible = True
+'		Else
+'			lblPaste.Visible = False
+'		End If
+'		lblCopy.Visible =  True
 	Else if (Main.voicer.IsSupported) Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
@@ -659,7 +669,7 @@ Private Sub imgSend_LongClick
 	If (Result <> "") Then
 		LogColor("Voice:" & Result, Colors.Blue)
 		txtQuestion.Text = Result
-		If (Main.Pref.AutoSend) Then
+		If (General.Pref.AutoSend) Then
 			imgSend_Click
 		Else
 '				txtQuestion.SelectAll
@@ -701,9 +711,10 @@ End Sub
 Public Sub imgSend_Click
 	
 	If (IsWorking) Then Return
-
-'	ResetAI
+	
 	IsWorking = True
+	
+	If Not (General.Pref.Memory) Then ResetAI
 	
 	
 	If (imgSend.Tag = "text") Then
@@ -724,43 +735,41 @@ Public Sub imgSend_Click
 		If (chkGrammar.Checked) Then
 			ResetAI
 '			sText = $"I want you JUST to strictly correct my grammar mistakes, typos, and factual errors I will reply to you FROM NOW: "$ & CRLF
-			sText = $"## Instructions ${CRLF} " & _
-					"**Language instruction:** ${CRLF} " & _
-					"I want you to strictly correct only my grammar mistakes, typos, and factual errors. ${CRLF}" & _
-					"## End Instructions ${CRLF}${CRLF} "$
-			sAssistant = $"Act as a ${Main.Pref.FirstLang} language teacher."$
+'			sText = $"## Instructions ${CRLF} " & _
+'					"**Language instruction:** ${CRLF} " & _
+'					"I want you to strictly correct only my grammar mistakes, typos, and factual errors. ${CRLF}" & _
+'					"## End Instructions ${CRLF}${CRLF} "$
+
+			sText = $"I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is “”. ${CRLF} "$
+			
+'			sAssistant = $"Act as a ${General.Pref.FirstLang} language teacher and only only check and  correct my grammar mistakes, typos, and factual errors. "$
+			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver. "$
+			
 		Else If (chkTranslate.Checked) Then
 			ResetAI
-'			sText = $"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${Main.Pref.FirstLang}. now let's start translate: "$ & CRLF
+'			sText = $"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${General.Pref.FirstLang}. now let's start translate: "$ & CRLF
 			sText = $"## Instructions ${CRLF} " & _
 					"**Language instruction:** ${CRLF} " & _
-					"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${Main.Pref.FirstLang}. ${CRLF}" & _
+					"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${General.Pref.FirstLang}. ${CRLF}" & _
 					"## End Instructions ${CRLF}${CRLF}"$
-			sAssistant = $"Act as a translator to ${Main.Pref.FirstLang} language."$
+			sAssistant = $"Act as a translator to ${General.Pref.FirstLang} language."$
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
-'			sText = $"Translate the inputted text into ${Main.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${Main.Pref.SecondLang}:"$ & CRLF
+'			sText = $"Translate the inputted text into ${General.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${General.Pref.SecondLang}:"$ & CRLF
 			sText = $"## Instructions ${CRLF} " & _
 					"**Language instruction:** ${CRLF} " & _
-					"Translate the inputted text into ${Main.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${Main.Pref.SecondLang}: ${CRLF}" & _
+					"Translate the inputted text into ${General.Pref.SecondLang} and show only the correct result in the output. Now Translate the following text to ${General.Pref.SecondLang}: ${CRLF}" & _
 					"## End Instructions ${CRLF}${CRLF}"$
-			sAssistant = $"Act as a translator of the ${Main.Pref.SecondLang} language."$
+			sAssistant = $"Act as a translator of the ${General.Pref.SecondLang} language."$
 		Else if (chkChat.Checked) Then
 			ResetAI
-'			sText = $"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} to practice my spoken ${Main.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
-'			sText = $"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} to practice my spoken ${Main.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
+'			sText = $"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver. I will speak to you in ${General.Pref.FirstLang} and you will reply to me in ${General.Pref.FirstLang} to practice my spoken ${General.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
+'			sText = $"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver. I will speak to you in ${General.Pref.FirstLang} and you will reply to me in ${General.Pref.FirstLang} to practice my spoken ${General.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors and reply correct sentence when answer."$ & CRLF
 			sText = $"## Instructions ${CRLF} " & _
 					"**Language instruction:** ${CRLF} " & _
-					"I want you to act as a spoken ${Main.Pref.FirstLang} teacher and improver. " & _
-					"I will speak to you in ${Main.Pref.FirstLang} and you will reply to me in ${Main.Pref.FirstLang} To practice my spoken ${Main.Pref.FirstLang}. " & _
-					"I want you To keep your reply neat, " & _
-					"limiting the reply To 100 words. " & _
-					"I want you To strictly correct my grammar mistakes, typos, And factual errors. " & _
-					"I want you To Ask Me a question in your reply. " & _
-					"Remember, I want you To strictly correct my grammar mistakes, typos, And factual errors And " & _
-					"reply correct sentence when answer. ${CRLF}" & _
+					"I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors. ${CRLF}" & _
 					"## End Instructions ${CRLF}${CRLF}"$
-			sAssistant = $"Act as a Spoken ${Main.Pref.FirstLang} Teacher and Improver."$
+			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
 		Else
 			
 			sAssistant = Null '"You are a helpful assistant."
@@ -798,7 +807,7 @@ Public Sub imgSend_Click
 		If (Result <> "") Then
 			LogColor("Voice:" & Result, Colors.Blue)
 			txtQuestion.Text = Result
-			If (Main.Pref.AutoSend) Then
+			If (General.Pref.AutoSend) Then
 				imgSend_Click
 			Else
 '				txtQuestion.SelectAll
@@ -1054,9 +1063,9 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	Dim p As B4XView = xui.CreatePanel("")
 	
-'	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,300dip)
-'	panMain.AddView(p,0,0, clvMessages.AsView.Width, 300dip)
-	mainparent.AddView(p,0,0, clvMessages.AsView.Width, 300dip)
+'	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
+'	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
+	mainparent.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
 	
 	p.LoadLayout("clvAnswerRow")
 	p.RemoveViewFromParent
@@ -1067,13 +1076,16 @@ Sub WriteAnswer(message As String) 'Left Side
 		lblAnswer.setTextAlling("CENTER", "LEFT")
 	End If
 	
-	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
+'	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
+'	lblAnswer.SetPadding(6%x,0,0,0)
 	lblAnswer.SetBackColor(Colors.White)
-	lblAnswer.SetCorners(10dip)
-	lblAnswer.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
+	lblAnswer.SetCorners(0dip)
+'	lblAnswer.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
 	lblAnswer.Text = message
 	p.Height = lblAnswer.GetHeight
 	pnlAnswer.Height = p.Height
+	
+	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, p.Height)
 	
 	
 '	webAnswerExtra.Initialize(webAnswer)
@@ -1085,7 +1097,8 @@ Sub WriteAnswer(message As String) 'Left Side
 	clvMessages.Add(p, m)
 '	clvMessages.AddTextItem(message, m)
 
-'	clvMessages.ResizeItem(clvMessages.Size - 1,pnlAnswer.Height)
+'	clvMessages.ResizeItem(clvMessages.Size - 1, p.Height + panToolbar.Height + panBottom.Height + 10dip)
+'	clvMessages.ResizeItem(clvMessages.Size - 1, lblAnswer.GetHeight)
 '	AdjustSize_Clv(0)
 	
 	IsWorking = False
@@ -1135,9 +1148,9 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 '	If (History.Length > 1000) Then
 '		History = History.SubString(History.Length / 2)
 '	End If
-'	History = "YOUR LAST ANSWER TO MY LAST QUESTION WAS:" & CRLF & clvMessages.GetValue(clvMessages.Size - 1)
-	
+
 	Wait For (wrk_chat.Query(assistant, question, History, Temperature)) Complete (response As String)
+	History = Null
 	History = History & CRLF & question 	'Me:
 	History = History & CRLF & response		'You:
 '	History = History & CRLF & question & CRLF & response	'Me: CRLF You:
@@ -1182,7 +1195,7 @@ Public Sub ClickSimulation
 		XUIViewsUtils.PerformHapticFeedback(Sender)
 	Catch
 		XUIViewsUtils.PerformHapticFeedback(panMain)
-		LogColor("ClickSimulation: It's a Handaled Runtime Exeption. It's Ok, Leave It." & CRLF & TAB & TAB & LastException.Message, Colors.LightGray)
+		LogColor("ClickSimulation: It's a Handaled Runtime Exeption. It's Ok, Ignore It." & CRLF & TAB & TAB & LastException.Message, Colors.LightGray)
 	End Try
 End Sub
 
@@ -1210,6 +1223,7 @@ Public Sub ResetAI
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
+'	resetTextboxToolbar
 	If Not (HasFocus) Then HideKeyboard
 End Sub
 
@@ -1219,7 +1233,6 @@ Private Sub chkGrammar_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkTranslate.Checked = False
 		chkToFarsi.Checked = False
-		Return
 	End If
 End Sub
 
@@ -1228,7 +1241,6 @@ Private Sub chkTranslate_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkToFarsi.Checked = False
-		Return
 	End If
 End Sub
 
@@ -1278,37 +1290,6 @@ Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
 	AnswerRtl = Checked
 End Sub
 
-
-Private Sub lblAnswerOLD_Click
-	
-	If Not (AnswerRtl) Then Return
-	
-	Try
-		Dim index As Int = clvMessages.GetItemFromView(Sender)
-		Dim pnl As B4XView = clvMessages.GetPanel(index)
-		Dim lblOLD As B4XView = dd.GetViewByName(pnl, "lblAnswerOLD")
-		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
-		
-		If (lblOLD.As(Label).Gravity = 51) Then
-			' center the text horizontally and vertically
-			lblOLD.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-			lbl.SetTextAlignment(Gravity.CENTER, Gravity.RIGHT)
-		Else '53
-			' center the text horizontally and vertically
-			lblOLD.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-			lbl.SetTextAlignment(Gravity.CENTER, Gravity.LEFT)
-		End If
-		
-	Catch
-		Log("lblAnswerOLD_Click - " & CRLF & LastException)
-	End Try
-End Sub
-Private Sub lblAnswerOLD_LongClick
-	
-	Dim index As Int = clvMessages.GetItemFromView(Sender)
-	clvMessages_ItemLongClick(index, clvMessages.GetValue(index))
-End Sub
-
 Private Sub lblPaste_Click
 	ClickSimulation
 	Dim cp As BClipboard
@@ -1327,19 +1308,19 @@ Private Sub icConfigTopMenu_Click
 	
 	ClickSimulation
 	
-	If (Main.IsDevMode) Then
+	If (General.Pref.IsDevMode) Then
 		
 		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100"
 		
 		Dim myStrings As List
 			myStrings.Initialize
 			myStrings.Add("Hi there, How are you?")
-			myStrings.Add("🤔")
-			myStrings.Add(v)
-			myStrings.Add(v & CRLF & CRLF & v)
+'			myStrings.Add("🤔")
+'			myStrings.Add(v)
+			myStrings.Add(v & CRLF & CRLF & v & CRLF & CRLF & v)
 			myStrings.Add(v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v)
-			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
-			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
+'			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
+'			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
 			index = Rnd(0, myStrings.Size - 1)
@@ -1359,12 +1340,11 @@ End Sub
 
 Private Sub UpDown1Drawer_ChangeValue
 	Temperature = (UpDown1Drawer.Value / 10)
-	Main.Pref.Creativity = UpDown1Drawer.Value
+	General.Pref.Creativity = UpDown1Drawer.Value
 	General.SaveSetting
 End Sub
 
 Private Sub lblTemperatureDrawer_LongClick
-	ClickSimulation
 	UpDown1Drawer.Value = 5
 	ToastMessageShow("Critivity Reset to Default.", False)
 End Sub
@@ -1378,43 +1358,93 @@ Private Sub lblCopy_Click
 End Sub
 
 Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
-	Main.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
 	
-	If (Main.Pref.FirstLang = "(None)") Then
-		chkTranslate.SetVisibleAnimated(150, False)
-	Else
-		chkTranslate.Text = Main.Pref.FirstLang
-		chkTranslate.SetVisibleAnimated(300, True)
-	End If
+	General.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
+	chkTranslate.Text = General.Pref.FirstLang
 	General.SaveSetting
+	
 End Sub
 
 Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
-	Main.Pref.SecondLang = cmbLangDrawerSec.GetItem(Index)
+	General.Pref.SecondLang = cmbLangDrawerSec.GetItem(Index)
 	
-	If (Main.Pref.SecondLang = "(None)") Then
+	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
 	Else
-		chkToFarsi.Text = Main.Pref.SecondLang
+		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
 	End If
 	General.SaveSetting
 End Sub
 
 Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
-	Main.Pref.AutoSend = Checked
+	General.Pref.AutoSend = Checked
+	General.SaveSetting
 End Sub
 
 
 Private Sub lblVersionNameDrawer_LongClick
-	Main.IsDevMode = Not(Main.IsDevMode)
-	ToastMessageShow("IsDevMode: " & Main.IsDevMode, False)
+	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
+	DevModeCheck
+	General.SaveSetting
+	ToastMessageShow("IsDevMode: " & General.Pref.IsDevMode, False)
 End Sub
 
 Private Sub lblAnswer_Click
-	lblAnswerOLD_Click
+	
+	LogColor(AnswerRtl, Colors.Red)
+	
+	If Not (AnswerRtl) Then Return
+	
+	Try
+		
+		Dim index As Int = clvMessages.GetItemFromView(Sender)
+		Dim pnl As B4XView = clvMessages.GetPanel(index)
+		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
+		
+		LogColor(lbl.As(Label).Gravity, Colors.Red)
+'		If (lbl.As(Label).Gravity = 51) Then
+		If (AnswerRtl) Then
+			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+			lbl.SetTextAlignment("CENTER", "RIGHT")
+		Else '53
+			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+			lbl.SetTextAlignment("CENTER", "LEFT")
+		End If
+		
+	Catch
+		Log("lblAnswer_Click - " & CRLF & LastException)
+	End Try
+	
 End Sub
 
 Private Sub lblAnswer_LongClick
-	lblAnswerOLD_LongClick
+	
+	Dim index As Int = clvMessages.GetItemFromView(Sender)
+	clvMessages_ItemLongClick(index, clvMessages.GetValue(index))
+	
+End Sub
+
+Private Sub lblTitleTopMenu_Click
+	lblTitleTopMenu_LongClick
+End Sub
+
+Private Sub lblTitleTopMenu_LongClick
+	If (General.Pref.Memory) Then
+		General.Pref.Memory = False
+		ToastMessageShow("Memory Deactivated", False)
+	Else
+		General.Pref.Memory = True
+		ToastMessageShow("Memory Activated", True)
+	End If
+	MemoryChanged
+	General.SaveSetting
+End Sub
+
+Private Sub imgBrain_Click
+	lblTitleTopMenu_LongClick
+End Sub
+
+Private Sub imgBrain_LongClick
+	lblTitleTopMenu_LongClick
 End Sub

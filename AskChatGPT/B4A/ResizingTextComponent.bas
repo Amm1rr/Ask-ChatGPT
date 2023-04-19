@@ -81,7 +81,23 @@ End Sub
 'End Sub
 
 public Sub setText(t As Object)
-	txt = t
+	Dim len As Int = t.As(String).Length
+	LogColor("Lenght: " & len, Colors.Red)
+	If len > 300 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else If len > 1000 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else If len > 1500 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else If len > 2000 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else If len > 2500 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else If len > 3000 Then
+		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
+	Else
+		txt = t
+	End If
 	draw
 End Sub
 
@@ -130,18 +146,17 @@ private Sub draw
 	If (mBase.IsInitialized And mlbl.IsInitialized) Then
 		mBase.SetColorAndBorder(bclr,0dip,Colors.Transparent,mcorn)
 		
-		mBase.SetLayoutAnimated(0,0,0,mBase.Width,GetPerfectHeight)
+		mBase.SetLayoutAnimated(0,6%x,0,mBase.Width,GetPerfectHeight)
 		mlbl.SetLayoutAnimated(0,lpad,tpad,mBase.Width-(lpad+rpad),mBase.Height-(tpad+bpad))
 		
 		mlbl.Font = tfnt
 		mlbl.TextColor = tclr
 		mlbl.Color = bclr
-	
+		
 		XUIViewsUtils.SetTextOrCSBuilderToLabel(mlbl,txt)
 		
 	End If
 End Sub
-
 
 #Region multiline DrawText
 public Sub GetPerfectHeight As Int

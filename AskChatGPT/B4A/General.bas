@@ -7,74 +7,92 @@ Version=12.2
 
 Sub Process_Globals
 	Private xui As XUI
+	Public 	Sett 					As KeyValueStore
+	Public 	Pref 					As Setting
 End Sub
 
 #Region Save and Load Settings
 
 Public Sub SaveSetting
 	
-	If Not(Main.Sett.IsInitialized) Then
-		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
+	If Not(Sett.IsInitialized) Then
+		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
 	End If
 
-	Main.Sett.Put("FirstLang", Main.Pref.FirstLang)
-	Main.Sett.Put("SecondLang", Main.Pref.SecondLang)
-	Main.Sett.Put("Creativity", Main.Pref.Creativity)
-	Main.Sett.Put("AutoSend", Main.Pref.AutoSend)
+	Sett.Put("FirstLang", Pref.FirstLang)
+	Sett.Put("SecondLang", Pref.SecondLang)
+	Sett.Put("Creativity", Pref.Creativity)
+	Sett.Put("AutoSend", Pref.AutoSend)
+	Sett.Put("Memory", Pref.Memory)
+	Sett.Put("IsDevMode", Pref.IsDevMode)
 	
-'	LogColor("SaveSetting: " & Main.Pref.FirstLang & " : " & Main.Pref.SecondLang & " : " & Main.Pref.Creativity & " : " & Main.Pref.AutoSend, Colors.Red)
+	LogColor($"SaveSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
+			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
+			 ${Pref.IsDevMode}"$, Colors.Blue)
 End Sub
 
 Public Sub LoadSetting
 	
-	If Not(Main.Sett.IsInitialized) Then
-		Main.Sett.Initialize(File.DirInternal, "ChatGPT.conf")
+	If Not(Sett.IsInitialized) Then
+		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
 	End If
 
-	Main.Pref.FirstLang = GetLangFirstStr(Main.Sett.Get("FirstLang"))
-	Main.Pref.SecondLang = GetLangStr(Main.Sett.Get("SecondLang"))
-	Main.Pref.Creativity = GetCreativityInt(Main.Sett.Get("Creativity"))
-	Main.Pref.AutoSend = GetBoolean(Main.Sett.Get("AutoSend"))
+	Pref.FirstLang = GetLangFirstStr(Sett.Get("FirstLang").As(String))
+	Pref.SecondLang = GetLangSecStr(Sett.Get("SecondLang"))
+	Pref.Creativity = GetCreativityInt(Sett.Get("Creativity"))
+	Pref.AutoSend = GetBoolean(Sett.Get("AutoSend"))
+	Pref.Memory = GetDefaultMemory(Sett.Get("Memory"))	'Default True
+	Pref.IsDevMode = GetBoolean(Sett.Get("IsDevMode"))
 	
-'	LogColor("SaveSetting: " & Main.Pref.FirstLang & " : " & Main.Pref.SecondLang & " : " & Main.Pref.Creativity & " : " & Main.Pref.AutoSend, Colors.Blue)
+	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
+			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
+			 ${Pref.IsDevMode}"$, Colors.Blue)
 End Sub
 
 Private Sub GetLangFirstStr(txt As Object) As String
 
-	Try
-		If (txt.As(String) = "(None)") Then Return "English"
-		Return txt.As(String)
-	Catch
-		Return "(None)"
-	End Try
-
+	If IsNull(txt) Then Return "English"
+	
+	Dim val As String = txt.As(String)
+	
+	If (val = "(None)") Then Return "English"
+	
+	Return val
 End Sub
-Private Sub GetLangStr(txt As Object) As String
 
-	Try
-		Return txt.As(String)
-	Catch
-		Return "(None)"
-	End Try
+Private Sub GetDefaultMemory(val As Object) As Boolean
+	If IsNull(val) Then Return True
+	Return val.As(Boolean)
+End Sub
 
+Public Sub IsNull(txt As String) As Boolean
+	If (txt = Null) Or (txt.ToLowerCase) = "null" Then Return True
+	Return False
+End Sub
+
+Private Sub GetLangSecStr(txt As Object) As String
+	
+	If IsNull(txt) Then Return "(None)"
+	Return txt.As(String)
+	
 End Sub
 
 Private Sub GetCreativityInt(val As Object) As Int
 
+	If IsNull(val) Then Return 5
+	If (val < 0)   Then Return 5
+	
 	If (val >= 0) And (val <= 10) Then
-		Return val
+		Return val.As(Int)
 	End If
-
+	
 	Return 5
 
 End Sub
 
 Private Sub GetBoolean(val As Object) As Boolean
-	Try
-		Return val.As(Boolean)
-	Catch
-		Return False
-	End Try
+	If IsNull(val) Then Return False
+	Return val.As(Boolean)
 End Sub
 
 #End Region Setting

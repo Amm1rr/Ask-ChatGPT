@@ -1,19 +1,20 @@
 ﻿Build1=Default,com.ask.chatgpt
 File1=Acme-Regular.ttf
-File10=montserrat-medium.ttf
-File11=PROMPTS.md
-File12=puton.png
-File13=roboto-regular.ttf
-File14=settings.png
-File15=voice.png
-File2=Changelog.txt
-File3=Chat.bal
-File4=clvAnswerRow.bal
-File5=clvQuestionRow.bal
-File6=gray-tipped.png
-File7=LeftDrawer.bal
-File8=menu.png
-File9=message.png
+File10=message.png
+File11=montserrat-medium.ttf
+File12=PROMPTS.md
+File13=puton.png
+File14=roboto-regular.ttf
+File15=settings.png
+File16=voice.png
+File2=brain.png
+File3=Changelog.txt
+File4=Chat.bal
+File5=clvAnswerRow.bal
+File6=clvQuestionRow.bal
+File7=gray-tipped.png
+File8=LeftDrawer.bal
+File9=menu.png
 FileGroup1=Default Group
 FileGroup10=Default Group
 FileGroup11=Default Group
@@ -21,6 +22,7 @@ FileGroup12=Default Group
 FileGroup13=Default Group
 FileGroup14=Default Group
 FileGroup15=Default Group
+FileGroup16=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
@@ -57,7 +59,7 @@ Module6=General
 Module7=ResizingTextComponent
 Module8=Starter
 Module9=UpDown
-NumberOfFiles=15
+NumberOfFiles=16
 NumberOfLibraries=17
 NumberOfModules=9
 Version=12.2
@@ -83,13 +85,13 @@ Sub Process_Globals
 	Public	Voicer 					As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
 	Public 	strActoinTextSelected	As String
-	Public 	Sett 					As KeyValueStore
-	Public 	Pref 					As Setting
-	Public 	IsDevMode				As Boolean = True				'If its in Development Mode, just for MySelf
+	
 	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
 				 Creativity As Int, _
-				 AutoSend 	As Boolean)
+				 AutoSend 	As Boolean, _
+				 Memory 	As Boolean, _
+				 IsDevMode 	As Boolean)		'If its in Development Mode, just for MySelf
 End Sub
 
 Sub Globals
@@ -110,6 +112,8 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
+	
+	ChatN1.txtQuestion.RequestFocus
 	
 '	ChatN1.panMain.RemoveAllViews
 '	Activity.AddView(ChatN1.panMain, 0, ChatN1.pTopMenu.Height, Activity.Width, ChatN1.clvMessages.sv.Height)
@@ -138,7 +142,7 @@ Sub Activity_Resume
 		
 		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
-		If (Pref.AutoSend) Then _
+		If (General.Pref.AutoSend) Then _
 			ChatN1.imgSend_Click
 		
 		#Region Shared a Image
@@ -160,7 +164,7 @@ Sub Activity_Resume
 		ChatN1.txtQuestion.Text = strActoinTextSelected
 		strActoinTextSelected = ""
 		Sleep(0)
-		If (Pref.AutoSend) Then _
+		If (General.Pref.AutoSend) Then _
 			ChatN1.imgSend_Click
 		
 	End If
@@ -232,7 +236,7 @@ Private Sub SendToTwitter(text As String)
 End Sub
 
 Sub Activity_Pause (UserClosed As Boolean)
-
+	General.SaveSetting
 End Sub
 
 #if Java
