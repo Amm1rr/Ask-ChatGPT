@@ -567,6 +567,7 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 	#End If
 	
 	resetTextboxToolbar
+	AdjustSize_Clv(0)
 	
 	If Not (AnswerRtl) Then Return
 	
