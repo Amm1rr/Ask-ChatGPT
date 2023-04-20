@@ -4,10 +4,11 @@ ModulesStructureVersion=1
 Type=Class
 Version=7.2
 @EndOfDesignText@
-#Event: Click
-#Event: LongClick
+'Requires Phone and Reflection on Android to support SetFallbackLineSpacing
 #DesignerProperty: Key: TextColor, DisplayName: Name Color, FieldType: Color, DefaultValue: 0xFF000000, Description: Text Colour
 #DesignerProperty: Key: BackColor, DisplayName: Background Color, FieldType: Color, DefaultValue: 0xFFFFFFFF, Description: Background Color
+'#Event: Click
+'#Event: LongClick
 
 Sub Class_Globals
 	Private mEventName As String 'ignore
@@ -76,9 +77,10 @@ Private Sub Base_Resize (Width As Double, Height As Double)
 	draw
 End Sub
 
+
 'On certain phones StringUtils.MeasureMultilineTextHeight does not correctly calculate the height
 'See https://www.b4x.com/android/forum/threads/non-english-characters-and-measuremultilinetextheight-in-api28.118643/#post-802771
-Public Sub FallbackLineSpacing(status As Boolean)
+Public Sub setFallbackLineSpacing(status As Boolean)
 	#if B4a
 	Dim P As Phone
 	If P.SdkVersion >= 28 Then
@@ -88,10 +90,11 @@ Public Sub FallbackLineSpacing(status As Boolean)
 			Ref.RunMethod2("setFallbackLineSpacing","True","java.lang.boolean")
 		Else
 			Ref.RunMethod2("setFallbackLineSpacing","False","java.lang.boolean")
-		End If
+		End If	
 	End If
 	#end if
 End Sub
+
 
 
 public Sub setText(t As Object)
@@ -128,38 +131,47 @@ public Sub SetCorners(c As Int)
 	draw
 End Sub
 
-public Sub GetHeight As Int
-	Return GetPerfectHeight
-End Sub
-
 'Vertical:		Horizontal:
 ' Gravity.Top	Gravity.Left
 ' Gravity.Center	Gravity.Center
 ' Gravity.Bottom	Gravity.Right
-Public Sub SetTextAlling(vertical As String, horizontal As String)
+Public Sub TextAlling(vertical As String, horizontal As String)
 	mlbl.SetTextAlignment(vertical.ToUpperCase, horizontal.ToUpperCase)
 End Sub
+
+Public Sub IsTextRtl As Int
+	Return mlbl.As(Label).Gravity
+End Sub
+
+public Sub GetHeight As Int
+	Return GetPerfectHeight
+End Sub
+
 
 private Sub draw
 	If (mBase.IsInitialized And mlbl.IsInitialized) Then
 		mBase.SetColorAndBorder(bclr,0dip,Colors.Transparent,mcorn)
 		
+		mlbl.Font = tfnt
+		
 		mBase.SetLayoutAnimated(0,6%x,0,mBase.Width,GetPerfectHeight)
 		mlbl.SetLayoutAnimated(0,lpad,tpad,mBase.Width-(lpad+rpad),mBase.Height-(tpad+bpad))
-		
-		mlbl.Font = tfnt
+	
 		mlbl.TextColor = tclr
 		mlbl.Color = bclr
-		
+	
 		XUIViewsUtils.SetTextOrCSBuilderToLabel(mlbl,txt)
 		
 	End If
 End Sub
 
+
 #Region multiline DrawText
 public Sub GetPerfectHeight As Int
 	
 	If mlbl.IsInitialized Then
+		mlbl.Font = tfnt
+		
 		Private h As Int = (MeasureMultiTextHeight(mlbl, mBase.Width-(lpad+rpad), txt) + tpad + bpad)
 '		Log("perfect height = "&h)
 		Return h
@@ -168,10 +180,10 @@ public Sub GetPerfectHeight As Int
 	Return mBase.Height
 End Sub
 
-Public Sub MeasureMultiTextHeight(lbl As Label, width As Int, Text As Object) As Int
+Public Sub MeasureMultiTextHeight(lbl As Label, width As Int, text As Object) As Int
 	#if b4a
 	Private su As StringUtils
-	Return su.MeasureMultilineTextHeight(lbl, Text)
+	Return su.MeasureMultilineTextHeight(lbl, text)
 	#else if b4i
 	Dim plbl As Label
 	plbl.Initialize("")
@@ -188,32 +200,32 @@ End Sub
 
 #Region Click
 
-Private Sub mlbl_Click
-	
-	mlbl_click_handler(Sender)
-	
-End Sub
+'Private Sub mlbl_Click
+'	
+'	mlbl_click_handler(Sender)
+'	
+'End Sub
 
-Private Sub mlbl_LongClick
-	
-	mlbl_longclick_handler(Sender)
-	
-End Sub
+'Private Sub mlbl_LongClick
+'	
+'	mlbl_longclick_handler(Sender)
+'	
+'End Sub
 
-private Sub mlbl_click_handler(SenderPanel As B4XView)
-	
-	If xui.SubExists(mCallBack, mEventName & "_Click",0) Then
-		CallSub(mCallBack, mEventName & "_Click")
-	End If
-	
-End Sub
+'private Sub mlbl_click_handler(SenderPanel As B4XView)
+'	
+'	If xui.SubExists(mCallBack, mEventName & "_Click",0) Then
+'		CallSub(mCallBack, mEventName & "_Click")
+'	End If
+'	
+'End Sub
 
-private Sub mlbl_longclick_handler(SenderPanel As B4XView)
-	
-	If xui.SubExists(mCallBack, mEventName & "_LongClick",0) Then
-		CallSub(mCallBack, mEventName & "_LongClick")
-	End If
-	
-End Sub
+'private Sub mlbl_longclick_handler(SenderPanel As B4XView)
+'	
+'	If xui.SubExists(mCallBack, mEventName & "_LongClick",0) Then
+'		CallSub(mCallBack, mEventName & "_LongClick")
+'	End If
+'	
+'End Sub
 
 #End Region

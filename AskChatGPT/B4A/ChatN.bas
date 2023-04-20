@@ -568,7 +568,22 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 	
 	resetTextboxToolbar
 	
-'	lblAnswer_Click
+	If Not (AnswerRtl) Then Return
+	
+'	Try
+		
+		Dim pnl As B4XView = clvMessages.GetPanel(Index)
+		Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
+		
+		If (lbl.IsTextRtl = 19) Then
+			lbl.TextAlling("CENTER", "RIGHT")
+		Else '21
+			lbl.TextAlling("CENTER", "LEFT")
+		End If
+		
+'	Catch
+'		Log("clvMessages_ItemClick: " & CRLF & LastException)
+'	End Try
 	
 End Sub
 
@@ -1071,12 +1086,12 @@ Sub WriteAnswer(message As String) 'Left Side
 	p.RemoveViewFromParent
 	
 	If (AnswerRtl) Then
-		lblAnswer.setTextAlling("CENTER", "RIGHT")
+		lblAnswer.TextAlling("CENTER", "RIGHT")
 	Else
-		lblAnswer.setTextAlling("CENTER", "LEFT")
+		lblAnswer.TextAlling("CENTER", "LEFT")
 	End If
 	
-	lblAnswer.FallbackLineSpacing(False)
+	lblAnswer.FallbackLineSpacing = False
 	
 '	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
 '	lblAnswer.SetPadding(6%x,0,0,0)
@@ -1392,40 +1407,40 @@ Private Sub lblVersionNameDrawer_LongClick
 	ToastMessageShow("IsDevMode: " & General.Pref.IsDevMode, False)
 End Sub
 
-Private Sub lblAnswer_Click
-	
-	LogColor(AnswerRtl, Colors.Red)
-	
-	If Not (AnswerRtl) Then Return
-	
-	Try
-		
-		Dim index As Int = clvMessages.GetItemFromView(Sender)
-		Dim pnl As B4XView = clvMessages.GetPanel(index)
-		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
-		
-		LogColor(lbl.As(Label).Gravity, Colors.Red)
-'		If (lbl.As(Label).Gravity = 51) Then
-		If (AnswerRtl) Then
-			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
-			lbl.SetTextAlignment("CENTER", "RIGHT")
-		Else '53
-			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
-			lbl.SetTextAlignment("CENTER", "LEFT")
-		End If
-		
-	Catch
-		Log("lblAnswer_Click - " & CRLF & LastException)
-	End Try
-	
-End Sub
-
-Private Sub lblAnswer_LongClick
-	
-	Dim index As Int = clvMessages.GetItemFromView(Sender)
-	clvMessages_ItemLongClick(index, clvMessages.GetValue(index))
-	
-End Sub
+'Private Sub lblAnswer_Click
+'	
+'	LogColor(AnswerRtl, Colors.Red)
+'	
+'	If Not (AnswerRtl) Then Return
+'	
+'	Try
+'		
+'		Dim index As Int = clvMessages.GetItemFromView(Sender)
+'		Dim pnl As B4XView = clvMessages.GetPanel(index)
+'		Dim lbl As B4XView = dd.GetViewByName(pnl, "lblAnswer")
+'		
+'		LogColor(lbl.As(Label).Gravity, Colors.Red)
+''		If (lbl.As(Label).Gravity = 51) Then
+'		If (AnswerRtl) Then
+'			lbl.As(Label).Gravity = Bit.Or(Gravity.CENTER_HORIZONTAL, Gravity.RIGHT)
+'			lbl.SetTextAlignment("CENTER", "RIGHT")
+'		Else '53
+'			lbl.As(Label).Gravity = Bit.Or(Gravity.LEFT, Gravity.CENTER_HORIZONTAL)
+'			lbl.SetTextAlignment("CENTER", "LEFT")
+'		End If
+'		
+'	Catch
+'		Log("lblAnswer_Click - " & CRLF & LastException)
+'	End Try
+'	
+'End Sub
+'
+'Private Sub lblAnswer_LongClick
+'	
+'	Dim index As Int = clvMessages.GetItemFromView(Sender)
+'	clvMessages_ItemLongClick(index, clvMessages.GetValue(index))
+'	
+'End Sub
 
 Private Sub lblTitleTopMenu_Click
 	lblTitleTopMenu_LongClick

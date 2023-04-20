@@ -26,9 +26,9 @@ Public Sub SaveSetting
 	Sett.Put("Memory", Pref.Memory)
 	Sett.Put("IsDevMode", Pref.IsDevMode)
 	
-	LogColor($"SaveSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
-			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
-			 ${Pref.IsDevMode}"$, Colors.Blue)
+'	LogColor($"SaveSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
+'			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
+'			 ${Pref.IsDevMode}"$, Colors.Blue)
 End Sub
 
 Public Sub LoadSetting
@@ -44,9 +44,9 @@ Public Sub LoadSetting
 	Pref.Memory = GetDefaultMemory(Sett.Get("Memory"))	'Default True
 	Pref.IsDevMode = GetBoolean(Sett.Get("IsDevMode"))
 	
-	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
-			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
-			 ${Pref.IsDevMode}"$, Colors.Blue)
+'	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
+'			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
+'			 ${Pref.IsDevMode}"$, Colors.Blue)
 End Sub
 
 Private Sub GetLangFirstStr(txt As Object) As String
