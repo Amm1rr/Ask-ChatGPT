@@ -1076,6 +1076,8 @@ Sub WriteAnswer(message As String) 'Left Side
 		lblAnswer.setTextAlling("CENTER", "LEFT")
 	End If
 	
+	lblAnswer.FallbackLineSpacing(False)
+	
 '	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
 '	lblAnswer.SetPadding(6%x,0,0,0)
 	lblAnswer.SetBackColor(Colors.White)

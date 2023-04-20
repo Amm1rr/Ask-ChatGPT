@@ -41,6 +41,7 @@ Library14=viewsex
 Library15=webviewextras2
 Library16=xcustomlistview
 Library17=xui views
+Library18=reflection
 Library2=b4xdraweradvanced
 Library3=bctextengine
 Library4=clipboard
@@ -60,7 +61,7 @@ Module7=ResizingTextComponent
 Module8=Starter
 Module9=UpDown
 NumberOfFiles=16
-NumberOfLibraries=17
+NumberOfLibraries=18
 NumberOfModules=9
 Version=12.2
 @EndOfDesignText@

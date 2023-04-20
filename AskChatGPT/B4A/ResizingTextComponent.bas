@@ -76,28 +76,26 @@ Private Sub Base_Resize (Width As Double, Height As Double)
 	draw
 End Sub
 
-'Public Sub TextValue As String
-'	Return txt 'mlbl.Text
-'End Sub
+'On certain phones StringUtils.MeasureMultilineTextHeight does not correctly calculate the height
+'See https://www.b4x.com/android/forum/threads/non-english-characters-and-measuremultilinetextheight-in-api28.118643/#post-802771
+Public Sub FallbackLineSpacing(status As Boolean)
+	#if B4a
+	Dim P As Phone
+	If P.SdkVersion >= 28 Then
+		Dim Ref As Reflector
+		Ref.Target = mlbl.As(Label)
+		If (status) Then
+			Ref.RunMethod2("setFallbackLineSpacing","True","java.lang.boolean")
+		Else
+			Ref.RunMethod2("setFallbackLineSpacing","False","java.lang.boolean")
+		End If
+	End If
+	#end if
+End Sub
+
 
 public Sub setText(t As Object)
-	Dim len As Int = t.As(String).Length
-	LogColor("Lenght: " & len, Colors.Red)
-	If len > 300 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else If len > 1000 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else If len > 1500 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else If len > 2000 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else If len > 2500 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else If len > 3000 Then
-		txt = t & $"${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}${CRLF}"$
-	Else
-		txt = t
-	End If
+	txt = t
 	draw
 End Sub
 
