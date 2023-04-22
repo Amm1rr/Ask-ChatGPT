@@ -574,15 +574,43 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 	Try
 		
 		Dim pnl As B4XView = clvMessages.GetPanel(Index)
-		Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
 		
-		If (lbl.IsTextRtl = 19) Then
-			lbl.TextAlling("CENTER", "RIGHT")
-		Else '21
-			lbl.TextAlling("CENTER", "LEFT")
+		If (pnl.Tag = "Answer") Then
+			
+			Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
+			
+			If (lbl.IsTextRtl = 19) Then
+				lbl.TextAlling("CENTER", "RIGHT")
+			Else '21
+				lbl.TextAlling("CENTER", "LEFT")
+			End If
+			
+		Else If (pnl.Tag = "Question") Then
+			
+			Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblQuestion").Tag
+			
+			If (lbl.IsTextRtl = 19) Then
+				lbl.TextAlling("CENTER", "RIGHT")
+			Else '21
+				lbl.TextAlling("CENTER", "LEFT")
+			End If
+			
+		Else If (pnl.Tag = WaitingText) Then
+			'Progress Message...
 		End If
 		
 	Catch
+'		If (LastException.Message = "Object should first be initialized (B4XView).") Then
+'			Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
+'		
+'			If (lbl.IsTextRtl = 19) Then
+'				lbl.TextAlling("CENTER", "RIGHT")
+'			Else '21
+'				lbl.TextAlling("CENTER", "LEFT")
+'			End If
+'		Else
+'			Log("clvMessages_ItemClick: " & Index & ":" & Value & CRLF & LastException)
+'		End If
 		Log("clvMessages_ItemClick: " & Index & ":" & Value & CRLF & LastException)
 	End Try
 	
@@ -1044,6 +1072,7 @@ Sub WriteQuestion(message As String) 'Right Side
 	
 	p.LoadLayout("clvQuestionRow")
 	p.RemoveViewFromParent
+	p.Tag = "Question"
 	
 	If (AnswerRtl) Then
 		lblQuestion.TextAlling("CENTER", "RIGHT")
@@ -1092,6 +1121,7 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	p.LoadLayout("clvAnswerRow")
 	p.RemoveViewFromParent
+	p.Tag = "Answer"
 	
 	If (AnswerRtl) Then
 		lblAnswer.TextAlling("CENTER", "RIGHT")
@@ -1161,7 +1191,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	Dim p As B4XView = xui.CreatePanel("")
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
 		p.LoadLayout("clvQuestionRow")
-'		p.Tag = webQuestion
+		p.Tag = WaitingText
 	lblQuestion.Text = m.message
 	pnlQuestion.Height = lblQuestion.GetHeight
 	
