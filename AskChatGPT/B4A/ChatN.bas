@@ -42,7 +42,7 @@ Sub Class_Globals
 	Private imgAnswer As ImageView
 	
 	'CLV Question
-	Private lblQuestion As Label
+	Private lblQuestion As ResizingTextComponent
 	Private pnlQuestion As Panel
 	Private imgQuestion As ImageView
 	
@@ -513,18 +513,18 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 					
 					'ADJUST VERTICAL
 					Private TopMargin As Int = 1%y : Private BottomMargin As Int = 1%y
-					lblQuestion.Height = General.Size_textVertical(lblQuestion,m.message)
-					lblQuestion.Top = 0%y + TopMargin
+'					lblQuestion.Height = General.Size_textVertical(lblQuestion,m.message)
+'					lblQuestion.Top = 0%y + TopMargin
 					
 					'ADJUST HORIZONTAL
-					If General.Size_textHorizontal(lblQuestion,lblQuestion.Text) < 82%x Then
-						lblQuestion.Width = General.Size_textHorizontal(lblQuestion,lblQuestion.Text)
-						lblQuestion.SingleLine = True
-						pnlQuestion.Width = lblQuestion.Width +4%x
-						pnlQuestion.Left = 100%x - pnlQuestion.Width - 4%x
-					End If
+'					If General.Size_textHorizontal(lblQuestion,lblQuestion.Text) < 82%x Then
+'						lblQuestion.Width = General.Size_textHorizontal(lblQuestion,lblQuestion.Text)
+'						lblQuestion.SingleLine = True
+'						pnlQuestion.Width = lblQuestion.Width +4%x
+'						pnlQuestion.Left = 100%x - pnlQuestion.Width - 4%x
+'					End If
 	
-					pnlQuestion.Height = lblQuestion.Height + TopMargin + BottomMargin
+'					pnlQuestion.Height = lblQuestion.Height + TopMargin + BottomMargin
 					clvMessages.ResizeItem(i,pnlQuestion.Height)
 			
 				End If
@@ -571,7 +571,7 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 	
 	If Not (AnswerRtl) Then Return
 	
-'	Try
+	Try
 		
 		Dim pnl As B4XView = clvMessages.GetPanel(Index)
 		Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
@@ -582,9 +582,9 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 			lbl.TextAlling("CENTER", "LEFT")
 		End If
 		
-'	Catch
-'		Log("clvMessages_ItemClick: " & CRLF & LastException)
-'	End Try
+	Catch
+		Log("clvMessages_ItemClick: " & Index & ":" & Value & CRLF & LastException)
+	End Try
 	
 End Sub
 
@@ -595,7 +595,7 @@ Private Sub resetTextboxToolbar
 	Else
 		lblPaste.Visible = False
 	End If
-	If (txtQuestion.Text.Length > -1) Then
+	If (txtQuestion.Text.Length > 0) Then
 		lblCopy.Visible =  True
 	Else
 		lblCopy.Visible =  False
@@ -609,13 +609,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Message.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "text"
 		resetTextboxToolbar
-'		Dim cp As BClipboard
-'		If (New.Trim.Length < 10) And (cp.hasText) Then
-'			lblPaste.Visible = True
-'		Else
-'			lblPaste.Visible = False
-'		End If
-'		lblCopy.Visible =  True
+		
 	Else if (Main.voicer.IsSupported) Then
 		imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 		imgSend.Tag = "voice"
@@ -623,7 +617,6 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		lblPaste.Visible = cp.hasText
 		lblCopy.Visible =  False
 	End If
-	
 	
 	TextboxHeightChange(New)
 	
@@ -756,7 +749,7 @@ Public Sub imgSend_Click
 '					"I want you to strictly correct only my grammar mistakes, typos, and factual errors. ${CRLF}" & _
 '					"## End Instructions ${CRLF}${CRLF} "$
 
-			sText = $"I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is “”. ${CRLF} "$
+			sText = $"I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is “”. ${CRLF} "$
 			
 '			sAssistant = $"Act as a ${General.Pref.FirstLang} language teacher and only only check and  correct my grammar mistakes, typos, and factual errors. "$
 			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver. "$
@@ -766,7 +759,7 @@ Public Sub imgSend_Click
 '			sText = $"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${General.Pref.FirstLang}. now let's start translate: "$ & CRLF
 			sText = $"## Instructions ${CRLF} " & _
 					"**Language instruction:** ${CRLF} " & _
-					"I want you to act as a Translator. I want you replay correct translate of anything I send to the ${General.Pref.FirstLang}. ${CRLF}" & _
+					"I want you to act as a Translator. I want you replay correct sentenc and translate of anything I send to the ${General.Pref.FirstLang}. ${CRLF}" & _
 					"## End Instructions ${CRLF}${CRLF}"$
 			sAssistant = $"Act as a translator to ${General.Pref.FirstLang} language."$
 		Else If (chkToFarsi.Checked) Then
@@ -1046,16 +1039,30 @@ Sub WriteQuestion(message As String) 'Right Side
 		m.assistant = False
 		
 	
-	Dim p As B4XView = xui.CreatePanel("")
-		p.LoadLayout("clvQuestionRow")
-		p.Tag = webQuestion
-		
-		lblQuestion.Text = message
-		lblQuestion.TextColor = Colors.DarkGray
-		
-		Dim h As Int = General.Size_textVertical(lblQuestion, message)
-		If (h < 200) Then: h = 140 + h: Else: h = (h / 2) * 3: End If ' + panBottom.Height + panToolbar.Height
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, h)
+	Dim p As B4XView = xui.CreatePanel("ques")
+	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
+	
+	p.LoadLayout("clvQuestionRow")
+	p.RemoveViewFromParent
+	
+	If (AnswerRtl) Then
+		lblQuestion.TextAlling("CENTER", "RIGHT")
+	Else
+		lblQuestion.TextAlling("CENTER", "LEFT")
+	End If
+	
+	lblAnswer.FallbackLineSpacing = False
+	
+'	lblQuestion.SetPadding(20dip,10dip,20dip,10dip)
+'	lblQuestion.SetPadding(6%x,0,0,0)
+	lblQuestion.SetBackColor(Colors.White)
+	lblQuestion.SetCorners(0dip)
+'	lblQuestion.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
+	lblQuestion.Text = message
+	p.Height = lblQuestion.GetHeight
+	pnlQuestion.Height = p.Height
+	
+	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, p.Height)
 	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
@@ -1077,7 +1084,7 @@ Sub WriteAnswer(message As String) 'Left Side
 		m.message = message
 		m.assistant = True
 	
-	Dim p As B4XView = xui.CreatePanel("")
+	Dim p As B4XView = xui.CreatePanel("answ")
 	
 '	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
 '	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
@@ -1151,14 +1158,15 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		m.Initialize
 		m.message = WaitingText '"Proccessing..."
 		m.assistant = True
-'	Dim p As Panel
 	Dim p As B4XView = xui.CreatePanel("")
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
 		p.LoadLayout("clvQuestionRow")
-		p.Tag = webQuestion
+'		p.Tag = webQuestion
 	lblQuestion.Text = m.message
+	pnlQuestion.Height = lblQuestion.GetHeight
+	
 '	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
-	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
+'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 	clvMessages.Add(p, m)
 	
 	AdjustSize_Clv(0)
@@ -1166,7 +1174,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 '	If (History.Length > 1000) Then
 '		History = History.SubString(History.Length / 2)
 '	End If
-
+	
 	Wait For (wrk_chat.Query(assistant, question, History, Temperature)) Complete (response As String)
 	History = Null
 	History = History & CRLF & question 	'Me:
