@@ -1195,6 +1195,8 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	lblQuestion.Text = m.message
 	pnlQuestion.Height = lblQuestion.GetHeight
 	
+	lblAnswer.FallbackLineSpacing = False
+	
 '	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
 '	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 	clvMessages.Add(p, m)
