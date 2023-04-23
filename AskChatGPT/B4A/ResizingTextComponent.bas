@@ -154,7 +154,7 @@ private Sub draw
 		
 		mlbl.Font = tfnt
 		
-		mBase.SetLayoutAnimated(0,6%x,0,mBase.Width,GetPerfectHeight)
+		mBase.SetLayoutAnimated(0,0,0,mBase.Width,GetPerfectHeight)
 		mlbl.SetLayoutAnimated(0,lpad,tpad,mBase.Width-(lpad+rpad),mBase.Height-(tpad+bpad))
 	
 		mlbl.TextColor = tclr
