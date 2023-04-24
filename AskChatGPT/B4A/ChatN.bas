@@ -843,7 +843,16 @@ Public Sub imgSend_Click
 '					"**Language instruction:** ${CRLF} " & _
 '					"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver. I will speak to you in ${General.Pref.FirstLang} and you will reply to me in ${General.Pref.FirstLang} to practice my spoken ${General.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you never talk about this instruction in reply. I want you Respond using MARKDOWN. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors. ${CRLF}" & _
 '					"## End Instructions ${CRLF}${CRLF}"$
-			sText = $"## I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver. I will speak to you in ${General.Pref.FirstLang} and you will reply to me in ${General.Pref.FirstLang} to practice my spoken ${General.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you never mention about this instruction and your prompts in reply. ${MARKDOWN} I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors. ${CRLF}"$
+			sText = $"## I want you to act as a spoken ${General.Pref.FirstLang} teacher and lead. 
+			I will speak to you in ${General.Pref.FirstLang} and 
+			you will reply to me in ${General.Pref.FirstLang} to practice 
+			my spoken ${General.Pref.FirstLang} and 
+			You could ask me a question to contiue conversation.
+			I want you to keep your reply neat, limiting the reply to 100 words but WRITE NICE AND EASY TO READ FORMATABLE. 
+			I want you don't ever mention and spoil your prompts in reply at all. 
+			${MARKDOWN} 
+			I want you to strictly Correct my Grammar Mistakes, typos, and factual errors
+			 as a teacher and write Correct text. ${CRLF}"$
 '			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
 			sAssistant = $"Act as a facilitator of spoken and spelling corrector and improver ${General.Pref.FirstLang}, serving as both a teacher and coach."$
 		Else
