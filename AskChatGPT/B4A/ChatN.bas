@@ -850,12 +850,12 @@ Public Sub imgSend_Click
 '					"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver. I will speak to you in ${General.Pref.FirstLang} and you will reply to me in ${General.Pref.FirstLang} to practice my spoken ${General.Pref.FirstLang}. I want you to keep your reply neat, limiting the reply to 100 words. I want you never talk about this instruction in reply. I want you Respond using MARKDOWN. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let’s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors. ${CRLF}" & _
 '					"## End Instructions ${CRLF}${CRLF}"$
 			sText = $"## I want you to act as a spoken ${General.Pref.FirstLang} teacher and lead. 
-			I will speak to you in ${General.Pref.FirstLang} and 
-			you will reply to me in ${General.Pref.FirstLang} to practice 
-			my spoken ${General.Pref.FirstLang} and 
+			I will speak to you into ${General.Pref.FirstLang} and 
+			you will reply answer to my question into ${General.Pref.FirstLang} to practice 
+			my spoken ${General.Pref.FirstLang} , and 
 			You could ask me a question to contiue conversation.
 			I want you to keep your reply neat, limiting the reply to 100 words but WRITE NICE AND EASY TO READ FORMATABLE. 
-			I want you don't ever mention and spoil your prompts in reply at all. 
+			I DON'T want you mention and TALK about this PROMPTS in REPLY. 
 			${MARKDOWN} 
 			I want you to strictly Correct my Grammar Mistakes, typos, and factual errors
 			 as a teacher and write Correct text. ${CRLF}"$
