@@ -112,7 +112,7 @@ Public Sub Query(system_string As String, _
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
-			json.Put("stop", "stop")
+			json.Put("stop", "#END#")
 '			json.Put("prompt", query_string)
 			json.Put("max_tokens", 2048)
 			json.Put("temperature", temperature)
@@ -169,9 +169,9 @@ Public Sub Query(system_string As String, _
         req.GetRequest.SetHeader("OpenAI-Organization", "")
         req.GetRequest.SetContentType("application/json")
 		req.GetRequest.SetContentEncoding("UTF8")
-		req.GetRequest.Timeout = 30000 '30 Sec
+		req.GetRequest.Timeout = 45000 '45 Sec
 		
-        Wait For (req) JobDone(req As HttpJob)
+		Wait For (req) JobDone(req As HttpJob)
 		
         If req.Success Then
 			

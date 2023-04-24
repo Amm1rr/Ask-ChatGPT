@@ -89,6 +89,7 @@ Sub Class_Globals
 	Private imgBrain As ImageView
 	Private lblWaitingText As ResizingTextComponent
 	Private panWaitingText As Panel
+	Private lblSample As Label
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -542,6 +543,8 @@ End Sub
 
 Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
+	Dim msg As textMessage = Value
+	If (msg.message = WaitingText) Then Return
 	ToastMessageShow("Copied", False)
 	Dim cp As BClipboard
 	Dim msg As textMessage = Value
@@ -752,6 +755,9 @@ Public Sub imgSend_Click
 	
 	IsWorking = True
 	
+	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+	If (msg.message = WaitingText) Then Return
+	
 	If Not (General.Pref.Memory) Then ResetAI
 	
 	
@@ -856,8 +862,8 @@ Public Sub imgSend_Click
 '			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
 			sAssistant = $"Act as a facilitator of spoken and spelling corrector and improver ${General.Pref.FirstLang}, serving as both a teacher and coach."$
 		Else
-			sText = ""
-			sAssistant = Null '"You are a helpful assistant."
+			
+			sAssistant = "" '"You are a helpful assistant."
 		End If
 		
 		If (chkGrammar.Checked = False) And _
@@ -1159,13 +1165,13 @@ Sub WriteAnswer(message As String) 'Left Side
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
-		m.assistant = True
+	m.assistant = True
 	
 	Dim p As B4XView = xui.CreatePanel("answ")
 	
 '	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
-'	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
-	mainparent.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
+'	panMain.AddView(p,0,0,clvMessages.AsView.Width,200dip)
+	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
 	
 	p.LoadLayout("clvAnswerRow")
 	p.RemoveViewFromParent
@@ -1188,13 +1194,22 @@ Sub WriteAnswer(message As String) 'Left Side
 	p.Height = lblAnswer.GetHeight
 	pnlAnswer.Height = p.Height
 	
+	'#### Get and Set Width
+	'#
+'	lblSample.Text = message
+'	lblSample.Width = clvMessages.AsView.Width
+'	Dim c As Canvas
+'	c.Initialize(lblSample)
+'	Dim labelWidth As Float
+'	labelWidth = c.MeasureStringWidth(lblSample.Text, lblSample.Typeface, lblSample.TextSize)
+'	If (labelWidth < (clvMessages.AsView.Width / 3)) Then labelWidth = (clvMessages.AsView.Width / 3)
+	
 	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, p.Height + 2%y)
 	
-	
-	webAnswerExtra.Initialize(webAnswer)
-	jsi.Initialize
-	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
-	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+'	webAnswerExtra.Initialize(webAnswer)
+'	jsi.Initialize
+'	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
+'	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	clvMessages.Add(p, m)
 '	clvMessages.AddTextItem(message, m)

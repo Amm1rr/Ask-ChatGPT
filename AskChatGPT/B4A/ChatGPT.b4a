@@ -69,7 +69,7 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 11
+	#VersionCode: 12
 	#VersionName: Develop
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
