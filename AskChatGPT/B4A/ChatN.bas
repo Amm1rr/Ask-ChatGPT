@@ -863,7 +863,7 @@ Public Sub imgSend_Click
 			sAssistant = $"Act as a facilitator of spoken and spelling corrector and improver ${General.Pref.FirstLang}, serving as both a teacher and coach."$
 		Else
 			
-			sAssistant = "" '"You are a helpful assistant."
+			sAssistant = "You are a smart helpful assistant."
 		End If
 		
 		If (chkGrammar.Checked = False) And _
