@@ -18,6 +18,11 @@ Sub Class_Globals
 	Private API_KEY 			As String
 	Public TimeoutText 			As String = "Timeout" & CRLF & "Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
+	
+	Public Const AITYPE_Chat 			As Int	= 0
+	Public Const AITYPE_Grammar 		As Int	= 1
+	Public Const AITYPE_Translate 		As Int 	= 2
+	Public Const AITYPE_Practice 		As Int	= 3
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -44,7 +49,8 @@ End Sub
 Public Sub Query(system_string As String, _
 				 query_string As String, _
 				 assistant_string As String, _
-				 temperature As Double) As ResumableSub
+				 temperature As Double, _
+				 AI_Type As Int) As ResumableSub
     Try
         'Following parameter explanations I have primarily taken from
         'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
@@ -109,48 +115,65 @@ Public Sub Query(system_string As String, _
 		
 		' Create a JSON object
 		Dim json As Map
+		
+		If (AI_Type = AITYPE_Grammar) Then
+			json.Initialize
+			json.Put("model", "text-davinci-edit-001")
+			json.Put("input", query_string)
+			json.Put("instruction", system_string)
+			
+		Else
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
-			json.Put("stop", "#END#")
+			json.Put("stop", "stop")
 '			json.Put("prompt", query_string)
-			json.Put("max_tokens", 2048)
+			json.Put("max_tokens", 700)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
-
-		' Create an array of messages
-		Dim messages As List
-			messages.Initialize
-		Dim systemMessage As Map
-			systemMessage.Initialize
-			systemMessage.Put("role", "system")
-			systemMessage.Put("content", system_string)
-		messages.Add(systemMessage)
-		Dim userMessage As Map
-			userMessage.Initialize
-			userMessage.Put("role", "user")
-			userMessage.Put("content", query_string)
-		messages.Add(userMessage)
-		Dim assistantMessage As Map
-			assistantMessage.Initialize
-			assistantMessage.Put("role", "assistant")
-			assistantMessage.Put("content", assistant_string)
-		messages.Add(assistantMessage)
-		json.Put("messages", messages)
+			
+			' Create an array of messages
+			Dim messages As List
+				messages.Initialize
+			Dim systemMessage As Map
+				systemMessage.Initialize
+				systemMessage.Put("role", "system")
+				systemMessage.Put("content", system_string)
+			messages.Add(systemMessage)
+			Dim userMessage As Map
+				userMessage.Initialize
+				userMessage.Put("role", "user")
+				userMessage.Put("content", query_string)
+			messages.Add(userMessage)
+			Dim assistantMessage As Map
+				assistantMessage.Initialize
+				assistantMessage.Put("role", "assistant")
+				assistantMessage.Put("content", assistant_string)
+			messages.Add(assistantMessage)
+			json.Put("messages", messages)
+		End If
 		
 		Dim js As JSONGenerator
 			js.Initialize(json)
 		
 		'Raw JSON String Generated
-'		LogColor("Param: " & js.ToString, Colors.Magenta)
+		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
 		Dim response As String
  		
 		Dim req As HttpJob
 	        req.Initialize("", Me)
-'		req.PostString("https://api.openai.com/v1/completions", js.ToString)
-		req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
- 
+		
+		Select AI_Type
+			
+			Case AITYPE_Chat, AITYPE_Practice, AITYPE_Translate
+				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
+				
+			Case AITYPE_Grammar
+				req.PostString("https://api.openai.com/v1/edits", js.ToString)
+				
+		End Select
+		
         'Abdull has supplied his own account API key which is very generous of
         'him but you should not use it
         'req.GetRequest.SetHeader("Authorization","Bearer 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")
@@ -169,24 +192,30 @@ Public Sub Query(system_string As String, _
         req.GetRequest.SetHeader("OpenAI-Organization", "")
         req.GetRequest.SetContentType("application/json")
 		req.GetRequest.SetContentEncoding("UTF8")
-		req.GetRequest.Timeout = 45000 '45 Sec
+		req.GetRequest.Timeout = 90000 '45 Sec
 		
 		Wait For (req) JobDone(req As HttpJob)
 		
         If req.Success Then
 			
             'Raw JSON Response
-'			LogColor("Respose: " & req.GetString, Colors.Blue)
+			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
-				
-			Dim text 		As String  	= ParseJson(req.GetString, False)
-			Dim endofconv 	As String 	= ParseJson(req.GetString, True)
-			If (response <> "") Then response = response & CRLF
-			response = response & text.Trim
 			
-			If (endofconv <> "stop") Then response = response & CRLF & "»»"
+			If (AI_Type = AITYPE_Grammar) Then
+				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
+				If (response <> "") Then response = response & CRLF
+				response = response & text.Trim
+			Else
+				Dim text 		As String  	= ParseJson(req.GetString, False)
+				Dim endofconv 	As String 	= ParseJson(req.GetString, True)
+				If (response <> "") Then response = response & CRLF
+				response = response & text.Trim
+				
+				If (endofconv <> "stop") Then response = response & CRLF & "»»"
+			End If
 			
         Else
 			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
@@ -262,4 +291,29 @@ Private Sub ParseJson(json As String, CheckEndOfConv As Boolean) As String
 		Log("Finish Reason: " & finishReason)
 	Next
 	Return content
+End Sub
+
+Private Sub ParseJSONEditMode(json As String) As String 'As Map
+    Dim parser As JSONParser
+    parser.Initialize(json)
+
+    Dim root As Map = parser.NextObject
+    Dim result As Map
+    result.Initialize
+
+    result.Put("object", root.Get("object"))
+    result.Put("created", root.Get("created"))
+
+    Dim choices As List = root.Get("choices")
+    Dim choice As Map = choices.Get(0)
+    result.Put("text", choice.Get("text"))
+    result.Put("index", choice.Get("index"))
+
+    Dim usage As Map = root.Get("usage")
+    result.Put("prompt_tokens", usage.Get("prompt_tokens"))
+    result.Put("completion_tokens", usage.Get("completion_tokens"))
+    result.Put("total_tokens", usage.Get("total_tokens"))
+
+'    Return result
+	Return choice.Get("text")
 End Sub
