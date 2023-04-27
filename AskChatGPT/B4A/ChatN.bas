@@ -759,6 +759,11 @@ Public Sub imgSend_Click
 	
 	IsWorking = True
 	
+'	Dim bartai As Bart
+'	bartai.Initialize
+'	bartai.translate(txtQuestion.Text, "en", "fa")
+'	Return
+	
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
 	If (msg.message = WaitingText) Then Return
 	
@@ -798,7 +803,8 @@ Public Sub imgSend_Click
 '						When I need to tell you something I will do so in curly 
 '						braces {like this} ."$
 			
-			sSystem = $"Correct and translate to standard ${General.Pref.FirstLang}."$
+'			sSystem = $"Correct and translate to standard ${General.Pref.FirstLang}."$
+			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang}."$
 			
 			sAssistant = $"Act As an ${General.Pref.FirstLang} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
 			
@@ -1367,6 +1373,16 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkTranslate.Checked = False
+		chkVoiceLang.Checked = True
+	End If
+End Sub
+
+Private Sub IsLangRTL
+	Dim SecLang As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
+	If (SecLang = "Hebrew") Or (SecLang = "Arabic") Or (SecLang = "Persian") Then
+		AnswerRtl = True
+	Else
+		AnswerRtl = False
 	End If
 End Sub
 

@@ -54,17 +54,18 @@ Library8=json
 Library9=keyvaluestore2
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~
 Module1=ACTION_PROCESS_TEXT
-Module2=ChatGPT
-Module3=ChatN
-Module4=ChatNew
-Module5=CLVNested
-Module6=General
-Module7=ResizingTextComponent
-Module8=Starter
-Module9=UpDown
+Module10=UpDown
+Module2=Bart
+Module3=ChatGPT
+Module4=ChatN
+Module5=ChatNew
+Module6=CLVNested
+Module7=General
+Module8=ResizingTextComponent
+Module9=Starter
 NumberOfFiles=17
 NumberOfLibraries=18
-NumberOfModules=9
+NumberOfModules=10
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
