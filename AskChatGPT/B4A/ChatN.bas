@@ -203,8 +203,10 @@ End Sub
 Public Sub Check_First_Sec_Lang_Visibility
 	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.Visible = False
+		chkTranslate.Visible = False
 	Else
 		chkToFarsi.Visible = True
+		chkTranslate.Visible = True
 	End If
 End Sub
 
@@ -250,9 +252,11 @@ Private Sub LoadLanguage
 		cmbLangDrawerSec.SelectedIndex = indexSec
 		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.Visible = True
+		chkTranslate.Visible = True
 	Else
 		cmbLangDrawerSec.SelectedIndex = lenght
 		chkToFarsi.Visible = False
+		chkTranslate.Visible = False
 	End If
 	
 End Sub
@@ -794,9 +798,11 @@ Public Sub imgSend_Click
 '						When I need to tell you something I will do so in curly 
 '						braces {like this} ."$
 			
-			sSystem = $"Fix ${General.Pref.FirstLang} grammar and correct this to standard ${General.Pref.FirstLang}."$
+			sSystem = $"Correct and translate to standard ${General.Pref.FirstLang}."$
 			
 			sAssistant = $"Act As an ${General.Pref.FirstLang} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+			
+			question = txtQuestion.Text.Trim
 			
 		Else If (chkTranslate.Checked) Then
 			
@@ -810,6 +816,10 @@ Public Sub imgSend_Click
 			and nothing else, do not write explanations.
 			When my text is only a word, act as ${General.Pref.FirstLang} Dictionary as well and show 
 			definitions and synonyms."$
+			
+			sSystem = sSystem.Replace("\t", Null)
+			
+			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
 			
 			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver."$
 			
@@ -826,6 +836,10 @@ Public Sub imgSend_Click
 			When my text is only a word, act as ${General.Pref.SecondLang} Dictionary as well and show 
 			definitions and synonyms."$
 			
+			sSystem = sSystem.Replace("\t", Null)
+			
+			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
+			
 			sAssistant = $"Act as an ${General.Pref.SecondLang} Translator and Improver."$
 			
 		Else if (chkChat.Checked) Then
@@ -840,14 +854,18 @@ Public Sub imgSend_Click
 				Now let’s start practising, you could ask me a question first.
 				Remember, I want you to strictly correct my grammar mistakes, typos, 
 				and factual errors."$
-				
-				sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver"$
+			
+			sSystem = sSystem.Replace("\t", Null)
+			
+			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver"$
+			
+			question = txtQuestion.Text.Trim
 		Else
 			sSystem = "You are a smart helpful assistant."
 			sAssistant = "You are a smart helpful assistant."
+			
+			question = txtQuestion.Text.Trim
 		End If
-		
-		question = txtQuestion.Text.Trim
 		
 		WriteQuestion(txtQuestion.Text)
 		Ask(question, sAssistant, sSystem)
@@ -1260,6 +1278,11 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 				txtQuestion.Text = questionHolder
 			Case wrk_chat.OpenApiHostError:
 				txtQuestion.Text = questionHolder
+			Case wrk_chat.InstructureError
+				chkTranslate.Checked = True
+				txtQuestion.Text = questionHolder
+				imgSend_Click
+				
 		End Select
 	End If
 	
@@ -1465,9 +1488,11 @@ Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
 	
 	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
+		chkTranslate.SetVisibleAnimated(150, False)
 	Else
 		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
+		chkTranslate.SetVisibleAnimated(300, True)
 	End If
 	General.SaveSetting
 End Sub

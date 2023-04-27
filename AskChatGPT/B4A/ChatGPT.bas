@@ -18,6 +18,7 @@ Sub Class_Globals
 	Private API_KEY 			As String
 	Public TimeoutText 			As String = "Timeout" & CRLF & "Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
+	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
 	Public Const AITYPE_Chat 			As Int	= 0
 	Public Const AITYPE_Grammar 		As Int	= 1
@@ -121,13 +122,24 @@ Public Sub Query(system_string As String, _
 			json.Put("model", "text-davinci-edit-001")
 			json.Put("input", query_string)
 			json.Put("instruction", system_string)
+			json.Put("temperature", 0)
+			json.Put("top_p", 1)
+		
+		Else If (AI_Type = AITYPE_Translate) Then
+			json.Initialize
+			json.Put("model", "text-davinci-003")
+			json.Put("prompt", query_string)
+			json.Put("max_tokens", 60)
+			json.Put("temperature", 0)
+			json.Put("top_p", 1)
+			json.Put("frequency_penalty", 0)
+			json.Put("presence_penalty", 0)
 			
 		Else
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
 			json.Put("stop", "stop")
-'			json.Put("prompt", query_string)
 			json.Put("max_tokens", 700)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
@@ -166,11 +178,14 @@ Public Sub Query(system_string As String, _
 		
 		Select AI_Type
 			
-			Case AITYPE_Chat, AITYPE_Practice, AITYPE_Translate
+			Case AITYPE_Chat, AITYPE_Practice
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 				
 			Case AITYPE_Grammar
 				req.PostString("https://api.openai.com/v1/edits", js.ToString)
+				
+			Case AITYPE_Translate
+				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 				
 		End Select
 		
@@ -208,6 +223,10 @@ Public Sub Query(system_string As String, _
 				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
+			Else If (AI_Type = AITYPE_Translate) Then
+				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
+				If (response <> "") Then response = response & CRLF
+				response = response & text.Trim
 			Else
 				Dim text 		As String  	= ParseJson(req.GetString, False)
 				Dim endofconv 	As String 	= ParseJson(req.GetString, True)
@@ -219,9 +238,11 @@ Public Sub Query(system_string As String, _
 			
         Else
 			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
-				response = TimeoutText
+				response = TimeoutText & " Error:"
 			Else If (req.ErrorMessage = "java.net.UnknownHostException Unable To resolve host ""api.openai.com"": No address associated with hostname") Then
 				response = OpenApiHostError
+			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
+				response = InstructureError
 			Else
 				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
 			End If
@@ -316,4 +337,44 @@ Private Sub ParseJSONEditMode(json As String) As String 'As Map
 
 '    Return result
 	Return choice.Get("text")
+End Sub
+
+Private Sub ParseJSONTranslate(jsonString As String) As String 'As Map
+	Dim JSON As JSONParser
+    JSON.Initialize(jsonString)
+    Dim root As Map = JSON.NextObject
+    
+    Dim id As String = root.Get("id")
+    Dim obj As String = root.Get("object")
+    Dim created As Long = root.Get("created")
+    Dim model As String = root.Get("model")
+    
+    Dim choices As List = root.Get("choices")
+    Dim choice As Map = choices.Get(0)
+    Dim text As String = choice.Get("text")
+    Dim index As Int = choice.Get("index")
+    Dim logprobs As Object = choice.Get("logprobs")
+    Dim finish_reason As String = choice.Get("finish_reason")
+    
+    Dim usage As Map = root.Get("usage")
+    Dim prompt_tokens As Int = usage.Get("prompt_tokens")
+    Dim completion_tokens As Int = usage.Get("completion_tokens")
+    Dim total_tokens As Int = usage.Get("total_tokens")
+    
+    Dim parsedData As Map
+    parsedData.Initialize
+    parsedData.Put("id", id)
+    parsedData.Put("object", obj)
+    parsedData.Put("created", created)
+    parsedData.Put("model", model)
+    parsedData.Put("text", text)
+    parsedData.Put("index", index)
+    parsedData.Put("logprobs", logprobs)
+    parsedData.Put("finish_reason", finish_reason)
+    parsedData.Put("prompt_tokens", prompt_tokens)
+    parsedData.Put("completion_tokens", completion_tokens)
+    parsedData.Put("total_tokens", total_tokens)
+    
+'    Return parsedData
+    Return text
 End Sub
