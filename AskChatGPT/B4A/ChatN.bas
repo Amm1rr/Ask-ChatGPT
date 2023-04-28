@@ -1253,10 +1253,12 @@ Sub WriteQuestion(message As String) 'Right Side
 		labelWidth = clvMessages.AsView.Width - 10%x
 		pnlQuestion.Width = labelWidth
 	Else
-		pnlQuestion.Width = labelWidth + 5%x
+		pnlQuestion.Width = labelWidth + 10%x
 	End If
 	
-	p.SetLayoutAnimated(0, 0, 0, labelWidth, p.Height + 2%y)
+'	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWidth - 10%x
+	pnlQuestion.Left = clvMessages.sv.Width - labelWidth - 15%x
+	p.SetLayoutAnimated(0, 15%x, 0, labelWidth, p.Height + 2%y)
 	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize

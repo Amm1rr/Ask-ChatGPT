@@ -143,7 +143,34 @@ End Sub
 ' Gravity.Center	Gravity.Center
 ' Gravity.Bottom	Gravity.Right
 Public Sub TextAlling(vertical As String, horizontal As String)
-	mlbl.SetTextAlignment(vertical.ToUpperCase, horizontal.ToUpperCase)
+	
+'	mlbl.SetTextAlignment(vertical.ToUpperCase, horizontal.ToUpperCase)
+	mlbl.SetTextAlignment(vertical.ToUpperCase, "LEFT")
+
+'	Dim ver As Int
+'	Dim hor As Int
+'	
+'	vertical = vertical.ToUpperCase
+'	horizontal = horizontal.ToUpperCase
+'	
+'	If (vertical ="CENTER") Then
+'		ver = Gravity.CENTER
+'	Else if (vertical = "RIGHT") Then
+'		ver = Gravity.RIGHT
+'	Else
+'		ver = Gravity.LEFT
+'	End If
+'	
+'	If (horizontal ="CENTER") Then
+'		hor = Gravity.CENTER
+'	Else if (vertical = "BOTTOM") Then
+'		hor = Gravity.BOTTOM
+'	Else
+'		hor = Gravity.TOP
+'	End If
+'	
+'	Dim lb As Label = mlbl
+'		lb.Gravity = Bit.Or(hor, ver)
 End Sub
 
 Public Sub IsTextRtl As Int
