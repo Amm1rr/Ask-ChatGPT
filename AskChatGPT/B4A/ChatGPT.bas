@@ -20,6 +20,9 @@ Sub Class_Globals
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
+	Private Const MAXTOKEN 		As Int	= 2048
+	Private Const TIMEOUT		As Int 	= 90000
+	
 	Public Const AITYPE_Chat 			As Int	= 0
 	Public Const AITYPE_Grammar 		As Int	= 1
 	Public Const AITYPE_Translate 		As Int 	= 2
@@ -129,18 +132,18 @@ Public Sub Query(system_string As String, _
 			json.Initialize
 			json.Put("model", "text-davinci-003")
 			json.Put("prompt", query_string)
-			json.Put("max_tokens", 60)
+			json.Put("max_tokens", query_string.Length * 1.5)
 			json.Put("temperature", 0)
 			json.Put("top_p", 1)
 			json.Put("frequency_penalty", 0)
 			json.Put("presence_penalty", 0)
 			
-		Else
+		Else 'Chat and AI
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
 			json.Put("stop", "stop")
-			json.Put("max_tokens", 700)
+			json.Put("max_tokens", MAXTOKEN)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
 			
@@ -171,9 +174,11 @@ Public Sub Query(system_string As String, _
 		'Raw JSON String Generated
 		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
-		Dim response As String
+		Dim response 	As String
+		Dim resobj 		As Map
+			resobj.Initialize
  		
-		Dim req As HttpJob
+		Dim req 		As HttpJob
 	        req.Initialize("", Me)
 		
 		Select AI_Type
@@ -207,7 +212,7 @@ Public Sub Query(system_string As String, _
         req.GetRequest.SetHeader("OpenAI-Organization", "")
         req.GetRequest.SetContentType("application/json")
 		req.GetRequest.SetContentEncoding("UTF8")
-		req.GetRequest.Timeout = 90000 '45 Sec
+		req.GetRequest.Timeout = TIMEOUT
 		
 		Wait For (req) JobDone(req As HttpJob)
 		
@@ -223,22 +228,34 @@ Public Sub Query(system_string As String, _
 				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
+				resobj.Put("response", response)
+				resobj.Put("continue", False)
 			Else If (AI_Type = AITYPE_Translate) Then
 				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
-			Else
+				resobj.Put("response", response)
+				resobj.Put("continue", False)
+			Else ' Chat and AI
 				Dim text 		As String  	= ParseJson(req.GetString, False)
 				Dim endofconv 	As String 	= ParseJson(req.GetString, True)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
 				
-				If (endofconv <> "stop") Then response = response & CRLF & "»»"
+				If (endofconv <> "stop") Then
+					response = response & CRLF & "»»"
+					resobj.Put("response", response)
+					resobj.Put("continue", True)
+				Else
+					resobj.Put("response", response)
+					resobj.Put("continue", True)
+				End If
 			End If
 			
         Else
 			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
 				response = TimeoutText & " Error:"
+				
 			Else If (req.ErrorMessage = "java.net.UnknownHostException Unable To resolve host ""api.openai.com"": No address associated with hostname") Then
 				response = OpenApiHostError
 			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
@@ -246,6 +263,8 @@ Public Sub Query(system_string As String, _
 			Else
 				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
 			End If
+			resobj.Put("response", response)
+			resobj.Put("continue", False)
 			
         End If
 		
@@ -253,11 +272,17 @@ Public Sub Query(system_string As String, _
 		
     Catch
 		
-		response = "ChatGPT:Query-> ERROR: " & LastException
+		Dim response As String
+			response = "ChatGPT:Query-> ERROR: " & LastException
+		
+		Dim resobj As Map
+			resobj.Initialize
+			resobj.Put("response", response)
+			resobj.Put("continue", False)
 		
 	End Try
 	
-	Return response
+	Return resobj
 	
 End Sub
 

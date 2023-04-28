@@ -222,6 +222,72 @@ Private Sub LoadLanguage
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
 							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi", "(None)"))
+	
+	
+'	Private supportLanguages As List
+'		supportLanguages.Initialize
+'		supportLanguages.Add(Array As String("en", "English"))
+'		supportLanguages.Add(Array As String("zh-Hans", "简体中文"))
+'		supportLanguages.Add(Array As String("zh-Hant", "繁體中文"))
+'		supportLanguages.Add(Array As String("yue", "粤语"))
+'		supportLanguages.Add(Array As String("wyw", "古文"))
+'		supportLanguages.Add(Array As String("ja", "日本語"))
+'		supportLanguages.Add(Array As String("ko", "한국어"))
+'		supportLanguages.Add(Array As String("fr", "Français"))
+'		supportLanguages.Add(Array As String("de", "Deutsch"))
+'		supportLanguages.Add(Array As String("es", "Español"))
+'		supportLanguages.Add(Array As String("it", "Italiano"))
+'		supportLanguages.Add(Array As String("ru", "Русский"))
+'		supportLanguages.Add(Array As String("pt", "Português"))
+'		supportLanguages.Add(Array As String("nl", "Nederlands"))
+'		supportLanguages.Add(Array As String("pl", "Polski"))
+'		supportLanguages.Add(Array As String("ar", "العربية"))
+'		supportLanguages.Add(Array As String("af", "Afrikaans"))
+'		supportLanguages.Add(Array As String("am", "አማርኛ"))
+'		supportLanguages.Add(Array As String("az", "Azərbaycan"))
+'		supportLanguages.Add(Array As String("be", "Беларуская"))
+'		supportLanguages.Add(Array As String("bg", "Български"))
+'		supportLanguages.Add(Array As String("bn", "বাংলা"))
+'		supportLanguages.Add(Array As String("bs", "Bosanski"))
+'		supportLanguages.Add(Array As String("ca", "Català"))
+'		supportLanguages.Add(Array As String("ceb", "Cebuano"))
+'		supportLanguages.Add(Array As String("co", "Corsu"))
+'		supportLanguages.Add(Array As String("cs", "Čeština"))
+'		supportLanguages.Add(Array As String("cy", "Cymraeg"))
+'		supportLanguages.Add(Array As String("da", "Dansk"))
+'		supportLanguages.Add(Array As String("el", "Ελληνικά"))
+'		supportLanguages.Add(Array As String("eo", "Esperanto"))
+'		supportLanguages.Add(Array As String("et", "Eesti"))
+'		supportLanguages.Add(Array As String("eu", "Euskara"))
+'		supportLanguages.Add(Array As String("fa", "فارسی"))
+'		supportLanguages.Add(Array As String("fi", "Suomi"))
+'		supportLanguages.Add(Array As String("fj", "Fijian"))
+'		supportLanguages.Add(Array As String("fy", "Frysk"))
+'		supportLanguages.Add(Array As String("ga", "Gaeilge"))
+'		supportLanguages.Add(Array As String("gd", "Gàidhlig"))
+'		supportLanguages.Add(Array As String("gl", "Galego"))
+'		supportLanguages.Add(Array As String("gu", "ગુજરાતી"))
+'		supportLanguages.Add(Array As String("ha", "Hausa"))
+'		supportLanguages.Add(Array As String("haw", "Hawaiʻi"))
+'		supportLanguages.Add(Array As String("he", "עברית"))
+'		supportLanguages.Add(Array As String("hi", "हिन्दी"))
+'		supportLanguages.Add(Array As String("hmn", "Hmong"))
+'		supportLanguages.Add(Array As String("hr", "Hrvatski"))
+'		supportLanguages.Add(Array As String("ht", "Kreyòl Ayisyen"))
+'		supportLanguages.Add(Array As String("hu", "Magyar"))
+'		supportLanguages.Add(Array As String("hy", "Հայերեն"))
+'		supportLanguages.Add(Array As String("id", "Bahasa Indonesia"))
+'		supportLanguages.Add(Array As String("ig", "Igbo"))
+'		supportLanguages.Add(Array As String("is", "Íslenska"))
+'		supportLanguages.Add(Array As String("jw", "Jawa"))
+'		supportLanguages.Add(Array As String("ka", "ქართული"))
+'		supportLanguages.Add(Array As String("kk", "Қазақ"))
+'		supportLanguages.Add(Array As String("mn", "Монгол хэл"))
+'		supportLanguages.Add(Array As String("tr", "Türkçe"))
+'		supportLanguages.Add(Array As String("ug", "ئۇيغۇر تىلى"))
+'		supportLanguages.Add(Array As String("uk", "Українська"))
+'		supportLanguages.Add(Array As String("ur", "اردو"))
+'		supportLanguages.Add(Array As String("vi", "Tiếng Việt"))
 
 	Dim indexFirst 	As Int = -1
 	Dim indexSec 	As Int = -1
@@ -803,8 +869,8 @@ Public Sub imgSend_Click
 '						When I need to tell you something I will do so in curly 
 '						braces {like this} ."$
 			
-'			sSystem = $"Correct and translate to standard ${General.Pref.FirstLang}."$
-			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang}."$
+'			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang}."$
+			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang} and don't interpret or answer it."$
 			
 			sAssistant = $"Act As an ${General.Pref.FirstLang} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
 			
@@ -813,40 +879,49 @@ Public Sub imgSend_Click
 		Else If (chkTranslate.Checked) Then
 			
 			ResetAI
-			sSystem = $"I want you to act as an ${General.Pref.FirstLang} translator,
-						spelling corrector and improver.
-			I will speak to you in any language and you will detect the language, 
-			translate it and answer in the corrected and improved version of my text, 
-			in ${General.Pref.FirstLang}.
-			I want you to only reply with the correction, the improvements 
-			and nothing else, do not write explanations.
-			When my text is only a word, act as ${General.Pref.FirstLang} Dictionary as well and show 
-			definitions and synonyms."$
+'			sSystem = $"I want you to act as an ${General.Pref.FirstLang} translator,
+'						spelling corrector and improver.
+'			I will speak to you in any language and you will detect the language, 
+'			translate it and answer in the corrected and improved version of my text, 
+'			in ${General.Pref.FirstLang}.
+'			I want you to only reply with the correction, the improvements 
+'			and nothing else, do not write explanations.
+'			When my text is only a word, act as ${General.Pref.FirstLang} Dictionary as well and show 
+'			definitions and synonyms and don't interpret it."$
+			sSystem = $"You are a ${General.Pref.FirstLang} translation engine that can only translate text and cannot interpret it.
+			When my text Is only a word, act As ${General.Pref.FirstLang} Dictionary as well and show 
+			definitions and synonyms using orginal text language but exaplains using ${General.Pref.FirstLang} and don't interpret it."$
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
 			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
 			
-			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver."$
+'			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver."$
+			sAssistant = $"Translate to ${General.Pref.FirstLang}"$
 			
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
 			'     “ ”
-			sSystem = $"I want you to act as an ${General.Pref.SecondLang} translator,
-						spelling corrector and improver.
-			I will speak to you in any language and you will detect the language, 
-			translate it and answer in the corrected and improved version of my text, 
-			in ${General.Pref.SecondLang}.
-			I want you to only reply with the correction, the improvements 
-			and nothing else, do not write explanations.
-			When my text is only a word, act as ${General.Pref.SecondLang} Dictionary as well and show 
-			definitions and synonyms."$
+'			sSystem = $"I want you to act as an ${General.Pref.SecondLang} translator,
+'						spelling corrector and improver.
+'			I will speak to you in any language and you will detect the language, 
+'			translate it and answer in the corrected and improved version of my text, 
+'			in ${General.Pref.SecondLang}.
+'			I want you to only reply with the correction, the improvements 
+'			and nothing else, do not write explanations.
+'			When my text is only a word, act as ${General.Pref.SecondLang} Dictionary as well and show 
+'			definitions and synonyms and don't interpret it."$
+			sSystem = $"You are a ${General.Pref.SecondLang} translation engine that can only translate text and cannot interpret it.
+			When my text Is only a word, act As ${General.Pref.SecondLang} Dictionary as well and show 
+			definitions and synonyms using orginal text language but exaplains using ${General.Pref.SecondLang} and don't interpret it."$
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
 			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
 			
-			sAssistant = $"Act as an ${General.Pref.SecondLang} Translator and Improver."$
+'			sAssistant = $"Act as an ${General.Pref.SecondLang} Translator and Improver."$
+'			sAssistant = $"You are a translation engine that can only translate text and cannot interpret it."$
+			sAssistant = $"Translate to ${General.Pref.SecondLang}"$
 			
 		Else if (chkChat.Checked) Then
 '			ResetAI
@@ -1268,18 +1343,26 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		AIType = wrk_chat.AITYPE_Chat
 	End If
 	
-	Wait For (wrk_chat.Query(questionHolder, question, assistant, Temperature, AIType)) Complete (response As String)
+	Wait For (wrk_chat.Query(questionHolder, _
+							 question, _
+							 assistant, _
+							 Temperature, _
+							 AIType)) Complete (response As Map)
+	
+	Dim responsetext As String 	= response.Get("response")
+	Dim contine 	 As Boolean = response.Get("continue")
+	
 	History = Null
 	History = History & CRLF & question 	'Me:
-	History = History & CRLF & response		'You:
-'	History = History & CRLF & question & CRLF & response	'Me: CRLF You:
+	History = History & CRLF & responsetext		'You:
+'	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
 '	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv(0)
 	
 	If (txtQuestion.Text.Length < 1) Then
-		Select response
+		Select responsetext
 			Case wrk_chat.TimeoutText:
 				txtQuestion.Text = questionHolder
 			Case wrk_chat.OpenApiHostError:
@@ -1292,8 +1375,10 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		End Select
 	End If
 	
-'	Log("Ask:" & response)
-	WriteAnswer(response)
+'	Log("Ask:" & responsetext)
+	WriteAnswer(responsetext)
+	
+	LogColor("Continue:" & contine, Colors.Blue)
 	
 	Return
 	
@@ -1357,6 +1442,7 @@ Private Sub chkGrammar_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkTranslate.Checked = False
 		chkToFarsi.Checked = False
+		ControlCheckBox
 	End If
 End Sub
 
@@ -1365,6 +1451,7 @@ Private Sub chkTranslate_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkToFarsi.Checked = False
+		ControlCheckBox
 	End If
 End Sub
 
@@ -1373,16 +1460,47 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkTranslate.Checked = False
-		chkVoiceLang.Checked = True
+		ControlCheckBox
 	End If
 End Sub
 
-Private Sub IsLangRTL
-	Dim SecLang As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
-	If (SecLang = "Hebrew") Or (SecLang = "Arabic") Or (SecLang = "Persian") Then
+Private Sub ControlCheckBox
+	
+	Dim Firstlang 	As String = cmbLangDrawerFirst.GetItem(cmbLangDrawerFirst.SelectedIndex)
+	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
+	
+	If chkTranslate.Checked Then
+		chkChat.Checked = False
+		If (IsLangRTL(Firstlang) = True) Then
+			Log("1" & Firstlang)
+			chkVoiceLang.Checked = True
+		Else
+			Log("2" & Firstlang)
+			chkVoiceLang.Checked = False
+		End If
+	Else If chkToFarsi.Checked Then
+		chkGrammar.Checked = False
+		chkTranslate.Checked = False
+		chkChat.Checked = False
+		chkVoiceLang.Checked = False
+		If (IsLangRTL(Seclang) = True) Then
+			Log("3" & Seclang)
+			chkVoiceLang.Checked = True
+		Else
+			Log("4" & Seclang)
+			chkVoiceLang.Checked = False
+		End If
+	End If
+	
+End Sub
+
+Private Sub IsLangRTL(langname As String) As Boolean
+	If (langname = "Hebrew") Or (langname = "Arabic") Or (langname = "Persian") Then
 		AnswerRtl = True
+		Return True
 	Else
 		AnswerRtl = False
+		Return False
 	End If
 End Sub
 
@@ -1496,6 +1614,7 @@ Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
 	General.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
 	chkTranslate.Text = General.Pref.FirstLang
 	General.SaveSetting
+	ControlCheckBox
 	
 End Sub
 
@@ -1505,12 +1624,14 @@ Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
 	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
 		chkTranslate.SetVisibleAnimated(150, False)
+		chkVoiceLang.Checked = False
 	Else
 		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
 		chkTranslate.SetVisibleAnimated(300, True)
 	End If
 	General.SaveSetting
+	ControlCheckBox
 End Sub
 
 Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
