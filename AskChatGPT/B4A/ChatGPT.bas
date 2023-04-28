@@ -8,10 +8,6 @@ Version=12.2
 'https://www.b4x.com/android/forum/threads/gpt-3.145654/#content
 'by Abdull Cadre
 '
-'All I have done is extract Abdull's code essential component (subroutine
-'[generate_gpt3_response] in [ChatUI] activity) turned it into a class, tidied
-'it up a bit, anglicized it and documented extensively
-'
 'All basically for my own education - many thanks to Abdull for doing all
 'original research
 Sub Class_Globals
@@ -20,7 +16,7 @@ Sub Class_Globals
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
-	Private Const MAXTOKEN 		As Int	= 2048
+	Private Const MAXTOKEN 		As Int	= 1024
 	Private Const TIMEOUT		As Int 	= 90000
 	
 	Public Const AITYPE_Chat 			As Int	= 0
@@ -120,25 +116,29 @@ Public Sub Query(system_string As String, _
 		' Create a JSON object
 		Dim json As Map
 		
-		If (AI_Type = AITYPE_Grammar) Then
-			json.Initialize
-			json.Put("model", "text-davinci-edit-001")
-			json.Put("input", query_string)
-			json.Put("instruction", system_string)
-			json.Put("temperature", 0)
-			json.Put("top_p", 1)
-		
-		Else If (AI_Type = AITYPE_Translate) Then
+'		If (AI_Type = AITYPE_Grammar) Then
+'			json.Initialize
+'			json.Put("model", "text-davinci-edit-001")
+'			json.Put("input", query_string)
+'			json.Put("instruction", system_string)
+'			json.Put("temperature", 0)
+'			json.Put("top_p", 1)
+'		
+'		Else 
+		If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
 			json.Initialize
 			json.Put("model", "text-davinci-003")
 			json.Put("prompt", query_string)
-			json.Put("max_tokens", query_string.Length * 1.5)
+			Dim token As Int = query_string.Length + system_string.Length + assistant_string.Length
+			Log("token: " & token)
+			If (token >= MAXTOKEN) Then token = MAXTOKEN
+			json.Put("max_tokens", token)
 			json.Put("temperature", 0)
 			json.Put("top_p", 1)
 			json.Put("frequency_penalty", 0)
 			json.Put("presence_penalty", 0)
 			
-		Else 'Chat and AI
+		Else 'AI
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
@@ -186,10 +186,10 @@ Public Sub Query(system_string As String, _
 			Case AITYPE_Chat, AITYPE_Practice
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 				
-			Case AITYPE_Grammar
-				req.PostString("https://api.openai.com/v1/edits", js.ToString)
+'			Case AITYPE_Grammar
+'				req.PostString("https://api.openai.com/v1/edits", js.ToString)
 				
-			Case AITYPE_Translate
+			Case AITYPE_Translate, AITYPE_Grammar
 				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 				
 		End Select
@@ -224,13 +224,14 @@ Public Sub Query(system_string As String, _
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
 			
-			If (AI_Type = AITYPE_Grammar) Then
-				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
-				If (response <> "") Then response = response & CRLF
-				response = response & text.Trim
-				resobj.Put("response", response)
-				resobj.Put("continue", False)
-			Else If (AI_Type = AITYPE_Translate) Then
+'			If (AI_Type = AITYPE_Grammar) Then
+'				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
+'				If (response <> "") Then response = response & CRLF
+'				response = response & text.Trim
+'				resobj.Put("response", response)
+'				resobj.Put("continue", False)
+'			Else 
+			If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
 				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim

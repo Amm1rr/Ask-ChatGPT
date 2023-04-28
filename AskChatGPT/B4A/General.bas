@@ -70,6 +70,28 @@ Public Sub IsNull(txt As String) As Boolean
 	Return False
 End Sub
 
+'Return correct work with A or AN
+Public Sub a_OR_an(word As String) As String
+	Dim firstLetter As String
+		firstLetter = word.SubString2(0, 1).ToLowerCase
+	
+	Select Case firstLetter
+		Case "a", "e", "i", "o", "u"
+			Return "an " & word
+		Case Else
+			Return "a " & word
+	End Select
+End Sub
+
+Public Sub IsAWord(text As String) As Boolean
+	Dim words() As String = Regex.Split("\s+", text.Trim)
+	If words.Length = 1 Then
+		Return True
+	Else
+		Return False
+	End If
+End Sub
+
 Private Sub GetLangSecStr(txt As Object) As String
 	
 	If IsNull(txt) Then Return "(None)"

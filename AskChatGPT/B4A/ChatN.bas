@@ -137,8 +137,7 @@ Public Sub Initialize(parent As B4XView)
 	
 	imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 	imgSend.Tag = "voice"
-
-
+	
 	'Calls the function of adjusting the size of the keyboard
 	IME_HeightChanged(100%y,0)
 	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 6 'After 6 lines, the EditText will increase, and after that, the scroll will appear
@@ -634,7 +633,7 @@ Private Sub String_Remove_DoubleQuot(text As String) As String
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
-	
+	MyLog(Index & " - " & Value)
 	HideKeyboard
 	#if B4i
 		Dim tf As View = TextField.TextField
@@ -705,7 +704,20 @@ Private Sub resetTextboxToolbar
 	End If
 End Sub
 
+Public Sub MyLog(text As String)
+'	Dim obj As B4XView = Sender
+'	Try
+		LogColor(text, Colors.Blue)
+		
+'	Catch
+'		LogColor($"${obj} & ": " text"$, Colors.Blue)
+'		Log(LastException)
+'	End Try
+End Sub
+
 Sub txtQuestion_TextChanged (Old As String, New As String)
+'	MyLog("txtQuestion_TextChanged: " & Old & " - " & New)
+	
 	
 	'Voice to Text Icon
 	If New.Length > 0 Then
@@ -726,6 +738,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 End Sub
 
 Private Sub TextboxHeightChange(text As String)
+	MyLog("TextboxHeightChange: " & text)
 	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
@@ -744,7 +757,6 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	imgSend.SetLayout(imgSend.Left, heightKeyboard - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 '	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 '	panToolbar.Top = NewHeight - panToolbar.Height - 200
-	
 	AdjustSize_Clv(0)
 	
 	
@@ -848,7 +860,7 @@ Public Sub imgSend_Click
 		ClickSimulation
 		
 		Dim sText As String
-		Dim question As String
+		Dim question As String = txtQuestion.Text.Trim
 		Dim sAssistant As String
 		Dim sSystem As String
 		
@@ -856,7 +868,7 @@ Public Sub imgSend_Click
 		
 		If (chkGrammar.Checked) Then
 			ResetAI
-'			sSystem = $"I want you to act as an ${General.Pref.FirstLang} translator, 
+'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.FirstLang)} translator, 
 '						Proofreader, Punctuation corrector, spelling corrector, 
 '						and improver. 
 '						I will write anything to you and you will detect the language, 
@@ -870,16 +882,21 @@ Public Sub imgSend_Click
 '						braces {like this} ."$
 			
 '			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang}."$
-			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang} and don't interpret or answer it."$
 			
-			sAssistant = $"Act As an ${General.Pref.FirstLang} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+			If (General.IsAWord(question)) Then
+				sSystem = $"Fix word into English or Translate word into English:"$
+			Else
+				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
+			End If
 			
-			question = txtQuestion.Text.Trim
+			sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+			
+			question = sSystem & txtQuestion.Text.Trim
 			
 		Else If (chkTranslate.Checked) Then
 			
 			ResetAI
-'			sSystem = $"I want you to act as an ${General.Pref.FirstLang} translator,
+'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.FirstLang)} translator,
 '						spelling corrector and improver.
 '			I will speak to you in any language and you will detect the language, 
 '			translate it and answer in the corrected and improved version of my text, 
@@ -888,21 +905,31 @@ Public Sub imgSend_Click
 '			and nothing else, do not write explanations.
 '			When my text is only a word, act as ${General.Pref.FirstLang} Dictionary as well and show 
 '			definitions and synonyms and don't interpret it."$
-			sSystem = $"You are a ${General.Pref.FirstLang} translation engine that can only translate text and cannot interpret it.
-			When my text Is only a word, act As ${General.Pref.FirstLang} Dictionary as well and show 
-			definitions and synonyms using orginal text language but exaplains using ${General.Pref.FirstLang} and don't interpret it."$
+			
+'			sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it.
+'			When my text Is only a word, act As ${General.a_OR_an(General.Pref.FirstLang)} Dictionary as well and show 
+'			definitions and synonyms using orginal text language but exaplains using ${General.Pref.FirstLang} and don't interpret it."$
+			If (General.IsAWord(question)) Then
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary,
+'							Show definitions and synonyms using orginal text 
+'							language but for exaplains using ${General.Pref.FirstLang}."$
+				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
+			Else
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
+				sSystem = $"Only translate into standard ${General.Pref.FirstLang}, don't interpret it or only show meaning, definitions and synonyms."$
+			End If
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
+			question = sSystem & " The Text Is: " & CRLF & txtQuestion.Text.Trim
 			
-'			sAssistant = $"Act as an ${General.Pref.FirstLang} Translator and Improver."$
-			sAssistant = $"Translate to ${General.Pref.FirstLang}"$
+'			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
+			sAssistant = $"Translate into ${General.Pref.FirstLang}."$
 			
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
 			'     “ ”
-'			sSystem = $"I want you to act as an ${General.Pref.SecondLang} translator,
+'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.SecondLang)} translator,
 '						spelling corrector and improver.
 '			I will speak to you in any language and you will detect the language, 
 '			translate it and answer in the corrected and improved version of my text, 
@@ -911,17 +938,24 @@ Public Sub imgSend_Click
 '			and nothing else, do not write explanations.
 '			When my text is only a word, act as ${General.Pref.SecondLang} Dictionary as well and show 
 '			definitions and synonyms and don't interpret it."$
-			sSystem = $"You are a ${General.Pref.SecondLang} translation engine that can only translate text and cannot interpret it.
-			When my text Is only a word, act As ${General.Pref.SecondLang} Dictionary as well and show 
-			definitions and synonyms using orginal text language but exaplains using ${General.Pref.SecondLang} and don't interpret it."$
+			
+			If (General.IsAWord(question)) Then
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary,
+'							Show definitions and synonyms using orginal text 
+'							language but for exaplains using ${General.Pref.SecondLang}."$
+				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
+			Else
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} translation engine that can only translate text and cannot interpret it."$
+				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
+			End If
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			question = sSystem & "Its Text:" & CRLF & txtQuestion.Text
+			question = sSystem & " The Text Is: " & CRLF & txtQuestion.Text.Trim
 			
-'			sAssistant = $"Act as an ${General.Pref.SecondLang} Translator and Improver."$
+'			sAssistant = $"Act as ${General.a_OR_an(General.Pref.SecondLang)} Translator and Improver."$
 '			sAssistant = $"You are a translation engine that can only translate text and cannot interpret it."$
-			sAssistant = $"Translate to ${General.Pref.SecondLang}"$
+			sAssistant = $"Translate into ${General.Pref.SecondLang}."$
 			
 		Else if (chkChat.Checked) Then
 '			ResetAI
@@ -938,7 +972,7 @@ Public Sub imgSend_Click
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver"$
+			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
 			
 			question = txtQuestion.Text.Trim
 		Else
@@ -1411,7 +1445,7 @@ End Sub
 Private Sub lblClearText_Click
 	ClickSimulation
 	txtQuestion.Text = ""
-	ShowKeyboard
+'	ShowKeyboard
 End Sub
 
 Private Sub lblClearText_LongClick
@@ -1472,22 +1506,14 @@ Private Sub ControlCheckBox
 	If chkTranslate.Checked Then
 		chkChat.Checked = False
 		If (IsLangRTL(Firstlang) = True) Then
-			Log("1" & Firstlang)
 			chkVoiceLang.Checked = True
 		Else
-			Log("2" & Firstlang)
 			chkVoiceLang.Checked = False
 		End If
 	Else If chkToFarsi.Checked Then
-		chkGrammar.Checked = False
-		chkTranslate.Checked = False
-		chkChat.Checked = False
-		chkVoiceLang.Checked = False
 		If (IsLangRTL(Seclang) = True) Then
-			Log("3" & Seclang)
 			chkVoiceLang.Checked = True
 		Else
-			Log("4" & Seclang)
 			chkVoiceLang.Checked = False
 		End If
 	End If
@@ -1704,4 +1730,9 @@ End Sub
 
 Private Sub imgBrain_LongClick
 	lblTitleTopMenu_LongClick
+End Sub
+
+
+Private Sub panTextToolbar_Click
+	Log("Click")
 End Sub
