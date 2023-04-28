@@ -95,7 +95,14 @@ Public Sub setFallbackLineSpacing(status As Boolean)
 	#end if
 End Sub
 
-
+Public Sub GetWidth As Int
+	Dim lb As Label = mlbl
+	Dim bmp As Bitmap
+		bmp.InitializeMutable(1dip, 1dip)
+	Dim cvs As Canvas
+		cvs.Initialize2(bmp)
+	Return cvs.MeasureStringWidth(lb.Text, lb.Typeface , lb.TextSize)
+End Sub
 
 public Sub setText(t As Object)
 	txt = t

@@ -707,7 +707,7 @@ End Sub
 Public Sub MyLog(text As String)
 '	Dim obj As B4XView = Sender
 '	Try
-		LogColor(text, Colors.Blue)
+		LogColor(text, Colors.Black)
 		
 '	Catch
 '		LogColor($"${obj} & ": " text"$, Colors.Blue)
@@ -1242,7 +1242,21 @@ Sub WriteQuestion(message As String) 'Right Side
 	p.Height = lblQuestion.GetHeight
 	pnlQuestion.Height = p.Height
 	
-	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, p.Height + 2%y)
+	'##########################
+	'#						  #
+	'#   	  Width   		  #
+	
+	Dim labelWidth As Int
+		labelWidth = lblQuestion.GetWidth
+	
+	If (labelWidth > clvMessages.AsView.Width) Then
+		labelWidth = clvMessages.AsView.Width - 10%x
+		pnlQuestion.Width = labelWidth
+	Else
+		pnlQuestion.Width = labelWidth + 5%x
+	End If
+	
+	p.SetLayoutAnimated(0, 0, 0, labelWidth, p.Height + 2%y)
 	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
@@ -1259,6 +1273,8 @@ End Sub
 
 Sub WriteAnswer(message As String) 'Left Side
 	
+	MyLog($"WriteAnswer: ${message}"$)
+	
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
@@ -1266,9 +1282,9 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	Dim p As B4XView = xui.CreatePanel("answ")
 	
-'	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
-'	panMain.AddView(p,0,0,clvMessages.AsView.Width,200dip)
-	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
+''	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
+''	panMain.AddView(p,0,0,clvMessages.AsView.Width,200dip)
+	mainparent.AddView(p,0,0,clvMessages.AsView.Width,50dip)
 	
 	p.LoadLayout("clvAnswerRow")
 	p.RemoveViewFromParent
@@ -1291,17 +1307,21 @@ Sub WriteAnswer(message As String) 'Left Side
 	p.Height = lblAnswer.GetHeight
 	pnlAnswer.Height = p.Height
 	
-	'#### Get and Set Width
-	'#
-'	lblSample.Text = message
-'	lblSample.Width = clvMessages.AsView.Width
-'	Dim c As Canvas
-'	c.Initialize(lblSample)
-'	Dim labelWidth As Float
-'	labelWidth = c.MeasureStringWidth(lblSample.Text, lblSample.Typeface, lblSample.TextSize)
-'	If (labelWidth < (clvMessages.AsView.Width / 3)) Then labelWidth = (clvMessages.AsView.Width / 3)
+	'##########################
+	'#						  #
+	'#   	  Width   		  #
 	
-	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, p.Height + 2%y)
+	Dim labelWidth As Int
+		labelWidth = lblAnswer.GetWidth
+	
+	If (labelWidth > clvMessages.AsView.Width) Then
+		labelWidth = clvMessages.AsView.Width - 10%x
+		pnlAnswer.Width = labelWidth
+	Else
+		pnlAnswer.Width = labelWidth + 5%x
+	End If
+	
+	p.SetLayoutAnimated(0, 0, 0, labelWidth, p.Height + 2%y)
 	
 '	webAnswerExtra.Initialize(webAnswer)
 '	jsi.Initialize
@@ -1313,7 +1333,6 @@ Sub WriteAnswer(message As String) 'Left Side
 
 '	clvMessages.ResizeItem(clvMessages.Size - 1, p.Height + panToolbar.Height + panBottom.Height + 10dip)
 '	clvMessages.ResizeItem(clvMessages.Size - 1, lblAnswer.GetHeight)
-'	AdjustSize_Clv(0)
 	
 	IsWorking = False
 	
@@ -1347,13 +1366,14 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		m.Initialize
 		m.message = WaitingText '"Proccessing..."
 		m.assistant = True
+	
 	Dim p As B4XView = xui.CreatePanel("")
 		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
 		p.LoadLayout("clvWaitingText")
 		p.Tag = WaitingText
+	
 	lblWaitingText.Text = m.message
 	panWaitingText.Height = lblWaitingText.GetHeight + 2%y
-	
 	lblWaitingText.FallbackLineSpacing = False
 	
 '	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
