@@ -139,39 +139,39 @@ public Sub SetCorners(c As Int)
 End Sub
 
 'Vertical:		Horizontal:
-' Gravity.Top	Gravity.Left
-' Gravity.Center	Gravity.Center
-' Gravity.Bottom	Gravity.Right
+'Gravity.Top	Gravity.Left
+'Gravity.Center	Gravity.Center
+'Gravity.Bottom	Gravity.Right
 Public Sub TextAlling(vertical As String, horizontal As String)
-	
-'	mlbl.SetTextAlignment(vertical.ToUpperCase, horizontal.ToUpperCase)
-	mlbl.SetTextAlignment(vertical.ToUpperCase, "LEFT")
-
+    
+	vertical = vertical.ToUpperCase
+	horizontal = horizontal.ToUpperCase
+    
+	mlbl.SetTextAlignment(vertical, horizontal)
+    
 '	Dim ver As Int
 '	Dim hor As Int
-'	
-'	vertical = vertical.ToUpperCase
-'	horizontal = horizontal.ToUpperCase
-'	
-'	If (vertical ="CENTER") Then
+'    
+'	If (vertical = "TOP") Then
+'		ver = Gravity.TOP
+'	Else If (vertical = "CENTER") Then
 '		ver = Gravity.CENTER
-'	Else if (vertical = "RIGHT") Then
-'		ver = Gravity.RIGHT
-'	Else
-'		ver = Gravity.LEFT
+'	Else If (vertical = "BOTTOM") Then
+'		ver = Gravity.BOTTOM
 '	End If
-'	
-'	If (horizontal ="CENTER") Then
+'    
+'	If (horizontal = "LEFT") Then
+'		hor = Gravity.LEFT
+'	Else If (horizontal = "CENTER") Then
 '		hor = Gravity.CENTER
-'	Else if (vertical = "BOTTOM") Then
-'		hor = Gravity.BOTTOM
-'	Else
-'		hor = Gravity.TOP
+'	Else If (horizontal = "RIGHT") Then
+'		hor = Gravity.RIGHT
 '	End If
-'	
-'	Dim lb As Label = mlbl
-'		lb.Gravity = Bit.Or(hor, ver)
+'    
+'	mlbl.As(Label).Gravity = Bit.Or(ver, hor)
+        
 End Sub
+
 
 Public Sub IsTextRtl As Int
 	Return mlbl.As(Label).Gravity

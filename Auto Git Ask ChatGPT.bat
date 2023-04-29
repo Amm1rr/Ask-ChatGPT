@@ -21,7 +21,7 @@ ECHO.
 ECHO.
 ECHO.##### Git Push:
 COLOR 3
-rem git push
+git push
 COLOR 2
 ECHO.
 ECHO.

@@ -633,7 +633,7 @@ Private Sub String_Remove_DoubleQuot(text As String) As String
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
-	MyLog(Index & " - " & Value)
+	MyLog(Index & " - " & Value, True)
 	HideKeyboard
 	#if B4i
 		Dim tf As View = TextField.TextField
@@ -704,7 +704,7 @@ Private Sub resetTextboxToolbar
 	End If
 End Sub
 
-Public Sub MyLog(text As String)
+Public Sub MyLog(text As String, AlwaysShow As Boolean)
 '	Dim obj As B4XView = Sender
 '	Try
 		LogColor(text, Colors.Black)
@@ -738,7 +738,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 End Sub
 
 Private Sub TextboxHeightChange(text As String)
-	MyLog("TextboxHeightChange: " & text)
+	MyLog("TextboxHeightChange: " & text, True)
 	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
@@ -1251,13 +1251,14 @@ Sub WriteQuestion(message As String) 'Right Side
 	
 	If (labelWidth > clvMessages.AsView.Width) Then
 		labelWidth = clvMessages.AsView.Width - 10%x
-		pnlQuestion.Width = labelWidth
+		pnlQuestion.Width = labelWidth - 10%x
+		pnlQuestion.Left = clvMessages.sv.Width - pnlQuestion.Width - 5%x
 	Else
 		pnlQuestion.Width = labelWidth + 10%x
+		pnlQuestion.Left = clvMessages.sv.Width - labelWidth - 15%x
 	End If
 	
 '	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWidth - 10%x
-	pnlQuestion.Left = clvMessages.sv.Width - labelWidth - 15%x
 	p.SetLayoutAnimated(0, 15%x, 0, labelWidth, p.Height + 2%y)
 	
 '	webQuestionExtra.Initialize(webQuestion)
@@ -1275,7 +1276,7 @@ End Sub
 
 Sub WriteAnswer(message As String) 'Left Side
 	
-	MyLog($"WriteAnswer: ${message}"$)
+	MyLog($"WriteAnswer: ${message}"$, True)
 	
 	Dim m As textMessage
 		m.Initialize
@@ -1317,8 +1318,9 @@ Sub WriteAnswer(message As String) 'Left Side
 		labelWidth = lblAnswer.GetWidth
 	
 	If (labelWidth > clvMessages.AsView.Width) Then
-		labelWidth = clvMessages.AsView.Width - 10%x
-		pnlAnswer.Width = labelWidth
+		labelWidth = clvMessages.AsView.Width - 5%x
+		pnlAnswer.Width = labelWidth - 15%x
+'		pnlAnswer.Left = 15%x
 	Else
 		pnlAnswer.Width = labelWidth + 5%x
 	End If
@@ -1610,22 +1612,52 @@ Private Sub icConfigTopMenu_Click
 	
 	If (General.Pref.IsDevMode) Then
 		
-		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100"
+		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100."
 		
 		Dim myStrings As List
 			myStrings.Initialize
 			myStrings.Add("Hi there, How are you?")
 '			myStrings.Add("🤔")
-'			myStrings.Add(v)
-			myStrings.Add(v & CRLF & CRLF & v & CRLF & CRLF & v)
-			myStrings.Add(v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v & CRLF & CRLF & v)
-'			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
+			myStrings.Add(v)
+'			myStrings.Add(v & CRLF & v & CRLF & v)
+'			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
+			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 '			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
 			index = Rnd(0, myStrings.Size - 1)
-	
-		WriteAnswer(myStrings.Get(index))
+		
+		WriteQuestion(myStrings.Get(index))
+		
+		If Rnd(0, 2) = 1 Then
+			If Rnd(0, 2) Mod 2 = 1 Then
+				WriteAnswer(myStrings.Get(index))
+			Else
+				WriteQuestion(myStrings.Get(index))
+			End If
+		Else
+			Log("Do something: Proccessing")
+			
+			Dim m As textMessage
+				m.Initialize
+				m.message = WaitingText '"Proccessing..."
+				m.assistant = True
+			
+			Dim p As B4XView = xui.CreatePanel("")
+				p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 10%y)
+				p.LoadLayout("clvWaitingText")
+				p.Tag = WaitingText
+			
+			lblWaitingText.Text = m.message
+			panWaitingText.Height = lblWaitingText.GetHeight
+			panWaitingText.Width = 80%x
+			lblWaitingText.FallbackLineSpacing = False
+			
+			clvMessages.Add(p, m)
+			
+			AdjustSize_Clv(0)
+			
+		End If
 		
 	Else
 		Drawer.LeftOpen = Not (Drawer.LeftOpen)
