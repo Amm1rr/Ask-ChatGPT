@@ -146,9 +146,9 @@ Public Sub TextAlling(vertical As String, horizontal As String)
     
 	vertical = vertical.ToUpperCase
 	horizontal = horizontal.ToUpperCase
-    
+	
 	mlbl.SetTextAlignment(vertical, horizontal)
-    
+	
 '	Dim ver As Int
 '	Dim hor As Int
 '    
@@ -188,12 +188,14 @@ private Sub draw
 		
 		mlbl.Font = tfnt
 		
+		
 		mBase.SetLayoutAnimated(0,0,0,mBase.Width,GetPerfectHeight)
 		mlbl.SetLayoutAnimated(0,lpad,tpad,mBase.Width-(lpad+rpad),mBase.Height-(tpad+bpad))
-	
+		
 		mlbl.TextColor = tclr
 		mlbl.Color = bclr
-	
+		
+		
 		XUIViewsUtils.SetTextOrCSBuilderToLabel(mlbl,txt)
 		
 	End If

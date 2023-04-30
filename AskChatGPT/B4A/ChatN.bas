@@ -485,24 +485,21 @@ Private Sub LoadCLVSetup
 	
 	Dim myStrings As List
 		myStrings.Initialize
-		myStrings.Add("What whould you like to know?")
-		myStrings.Add("Hi there, How are you?")
-		myStrings.Add("How can I help?")
-		myStrings.Add("💻")
-		myStrings.Add("👩")
-		myStrings.Add("🧑")
-		myStrings.Add("💡")
-		myStrings.Add("Just Ask... 🤔")
+		myStrings.Add("What whould you like to know?" & CRLF)
+		myStrings.Add("Hi there, How are you?" & CRLF)
+		myStrings.Add("How can I help?" & CRLF)
+		myStrings.Add("💻" & CRLF)
+		myStrings.Add("👩" & CRLF)
+		myStrings.Add("🧑" & CRLF)
+		myStrings.Add("💡" & CRLF)
+		myStrings.Add("Just Ask... 🤔" & CRLF)
 		myStrings.Add("I know all languages that might you know 😀")
 		myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
 		myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
-		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
-		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
-		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
 	
 	Dim index As Int
-	index = Rnd(0, myStrings.Size - 1)
+		index = Rnd(0, myStrings.Size - 1)
 	
 	WriteAnswer(myStrings.Get(index))
 	
@@ -1216,7 +1213,6 @@ Sub WriteQuestion(message As String) 'Right Side
 		m.Initialize
 		m.message = message
 		m.assistant = False
-		
 	
 	Dim p As B4XView = xui.CreatePanel("ques")
 	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
@@ -1231,10 +1227,10 @@ Sub WriteQuestion(message As String) 'Right Side
 		lblQuestion.TextAlling("CENTER", "LEFT")
 	End If
 	
-	lblAnswer.FallbackLineSpacing = False
+	lblQuestion.FallbackLineSpacing = False
 	
 '	lblQuestion.SetPadding(20dip,10dip,20dip,10dip)
-'	lblQuestion.SetPadding(6%x,0,0,0)
+	lblQuestion.SetPadding(2%x,2%x,2%x,2%x)
 '	lblQuestion.SetBackColor(Colors.White)
 '	lblQuestion.SetCorners(0dip)
 '	lblQuestion.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
@@ -1250,16 +1246,15 @@ Sub WriteQuestion(message As String) 'Right Side
 		labelWidth = lblQuestion.GetWidth
 	
 	If (labelWidth > clvMessages.AsView.Width) Then
-		labelWidth = clvMessages.AsView.Width - 10%x
-		pnlQuestion.Width = labelWidth - 10%x
-		pnlQuestion.Left = clvMessages.sv.Width - pnlQuestion.Width - 5%x
+		pnlQuestion.Left = 15%x
+		pnlQuestion.Width = clvMessages.AsView.Width - pnlQuestion.Left - 5%x
 	Else
-		pnlQuestion.Width = labelWidth + 10%x
-		pnlQuestion.Left = clvMessages.sv.Width - labelWidth - 15%x
+		pnlQuestion.Width = labelWidth + 5%x
+		pnlQuestion.Left = clvMessages.sv.Width - pnlQuestion.Width - 5%x
 	End If
 	
 '	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWidth - 10%x
-	p.SetLayoutAnimated(0, 15%x, 0, labelWidth, p.Height + 2%y)
+	p.SetLayoutAnimated(0, 15%x, 0, pnlQuestion.Width, p.Height + 2%y)
 	
 '	webQuestionExtra.Initialize(webQuestion)
 '	jsi.Initialize
@@ -1287,7 +1282,7 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 ''	panMain.Parent.As(B4XView).AddView(p,0,0, clvMessages.AsView.Width,200dip)
 ''	panMain.AddView(p,0,0,clvMessages.AsView.Width,200dip)
-	mainparent.AddView(p,0,0,clvMessages.AsView.Width,50dip)
+	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
 	
 	p.LoadLayout("clvAnswerRow")
 	p.RemoveViewFromParent
@@ -1302,7 +1297,7 @@ Sub WriteAnswer(message As String) 'Left Side
 	lblAnswer.FallbackLineSpacing = False
 	
 '	lblAnswer.SetPadding(20dip,10dip,20dip,10dip)
-'	lblAnswer.SetPadding(6%x,0,0,0)
+	lblAnswer.SetPadding(2%x,2%x,2%x,2%x)
 '	lblAnswer.SetBackColor(Colors.White)
 	lblAnswer.SetCorners(0dip)
 '	lblAnswer.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
@@ -1318,10 +1313,10 @@ Sub WriteAnswer(message As String) 'Left Side
 		labelWidth = lblAnswer.GetWidth
 	
 	If (labelWidth > clvMessages.AsView.Width) Then
-		labelWidth = clvMessages.AsView.Width - 5%x
-		pnlAnswer.Width = labelWidth - 15%x
-'		pnlAnswer.Left = 15%x
+		pnlAnswer.Left = 5%x
+		pnlAnswer.Width = clvMessages.AsView.Width - 20%x
 	Else
+		pnlAnswer.Left = 5%x
 		pnlAnswer.Width = labelWidth + 5%x
 	End If
 	
@@ -1619,15 +1614,13 @@ Private Sub icConfigTopMenu_Click
 			myStrings.Add("Hi there, How are you?")
 '			myStrings.Add("🤔")
 			myStrings.Add(v)
-'			myStrings.Add(v & CRLF & v & CRLF & v)
+			myStrings.Add(v.SubString2(0, Rnd(5, 70)))
 '			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
 			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 '			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
 			index = Rnd(0, myStrings.Size - 1)
-		
-		WriteQuestion(myStrings.Get(index))
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
@@ -1658,6 +1651,9 @@ Private Sub icConfigTopMenu_Click
 			AdjustSize_Clv(0)
 			
 		End If
+		
+		WriteAnswer(myStrings.Get(2))
+		WriteQuestion(myStrings.Get(2))
 		
 	Else
 		Drawer.LeftOpen = Not (Drawer.LeftOpen)
