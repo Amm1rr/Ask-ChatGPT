@@ -485,14 +485,14 @@ Private Sub LoadCLVSetup
 	
 	Dim myStrings As List
 		myStrings.Initialize
-		myStrings.Add("What whould you like to know?" & CRLF)
-		myStrings.Add("Hi there, How are you?" & CRLF)
-		myStrings.Add("How can I help?" & CRLF)
-		myStrings.Add("💻" & CRLF)
-		myStrings.Add("👩" & CRLF)
-		myStrings.Add("🧑" & CRLF)
-		myStrings.Add("💡" & CRLF)
-		myStrings.Add("Just Ask... 🤔" & CRLF)
+		myStrings.Add("What whould you like to know?")
+		myStrings.Add("Hi there, How are you?")
+		myStrings.Add("How can I help?")
+		myStrings.Add("💻")
+		myStrings.Add("👩")
+		myStrings.Add("🧑")
+		myStrings.Add("💡")
+		myStrings.Add("Just Ask... 🤔")
 		myStrings.Add("I know all languages that might you know 😀")
 		myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
 		myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
@@ -1250,10 +1250,12 @@ Sub WriteQuestion(message As String) 'Right Side
 		pnlQuestion.Width = clvMessages.AsView.Width - pnlQuestion.Left - 5%x
 	Else
 		pnlQuestion.Width = labelWidth + 5%x
-		pnlQuestion.Left = clvMessages.sv.Width - pnlQuestion.Width - 5%x
+		pnlQuestion.Left = clvMessages.AsView.Width - pnlQuestion.Width - 5%x
 	End If
 	
-'	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWidth - 10%x
+	imgQuestion.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Gray-Tipped.png", imgQuestion.Width, imgQuestion.Height, False)).Gravity = Gravity.CENTER
+	
+'	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWxidth - 10%x
 	p.SetLayoutAnimated(0, 15%x, 0, pnlQuestion.Width, p.Height + 2%y)
 	
 '	webQuestionExtra.Initialize(webQuestion)
@@ -1319,6 +1321,8 @@ Sub WriteAnswer(message As String) 'Left Side
 		pnlAnswer.Left = 5%x
 		pnlAnswer.Width = labelWidth + 5%x
 	End If
+	
+	imgAnswer.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "puton.png", imgAnswer.Width, imgAnswer.Height, False)).Gravity = Gravity.CENTER
 	
 	p.SetLayoutAnimated(0, 0, 0, labelWidth, p.Height + 2%y)
 	
@@ -1614,13 +1618,16 @@ Private Sub icConfigTopMenu_Click
 			myStrings.Add("Hi there, How are you?")
 '			myStrings.Add("🤔")
 			myStrings.Add(v)
-			myStrings.Add(v.SubString2(0, Rnd(5, 70)))
+			myStrings.Add(v.SubString2(0, Rnd(5, 100)))
 '			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
 			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 '			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
-			index = Rnd(0, myStrings.Size - 1)
+			index = 10 Mod (myStrings.Size - 1)
+		
+'		Dim index As Int
+'			index = Rnd(10, myStrings.Size - 1)
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
