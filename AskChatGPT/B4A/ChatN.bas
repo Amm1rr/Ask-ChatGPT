@@ -1207,69 +1207,97 @@ Private Sub ChangeHeight(height As Int)
 	LogColor(webAnswerExtra.GetContentHeight, Colors.Magenta)
 End Sub
 
-Sub WriteQuestion(message As String) 'Right Side
+Public Sub Ask(question As String, assistant As String, questionHolder As String)
+	
+	If (question = "") Then
+		txtQuestion.RequestFocus
+		ShowKeyboard
+		Return
+	End If
+	
+	
+'	Dim msg As textMessage
+'		msg.Initialize
+'		msg.message = question
+'		msg.assistant = True
+'	clvMessages.AddTextItem(WaitingText, msg)
 	
 	Dim m As textMessage
-		m.Initialize
-		m.message = message
-		m.assistant = False
+	m.Initialize
+	m.message = WaitingText '"Proccessing..."
+	m.assistant = True
 	
-	Dim p As B4XView = xui.CreatePanel("ques")
-	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
+	Dim p As B4XView = xui.CreatePanel("")
+	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
+	p.LoadLayout("clvWaitingText")
+	p.Tag = WaitingText
 	
-	p.LoadLayout("clvQuestionRow")
-	p.RemoveViewFromParent
-	p.Tag = "Question"
+	lblWaitingText.Text = m.message
+	panWaitingText.Height = lblWaitingText.GetHeight + 2%y
+	lblWaitingText.FallbackLineSpacing = False
 	
-	If (AnswerRtl) Then
-		lblQuestion.TextAlling("CENTER", "RIGHT")
-	Else
-		lblQuestion.TextAlling("CENTER", "LEFT")
-	End If
-	
-	lblQuestion.FallbackLineSpacing = False
-	
-'	lblQuestion.SetPadding(20dip,10dip,20dip,10dip)
-	lblQuestion.SetPadding(2%x,2%x,2%x,2%x)
-'	lblQuestion.SetBackColor(Colors.White)
-'	lblQuestion.SetCorners(0dip)
-'	lblQuestion.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
-	lblQuestion.Text = message
-	p.Height = lblQuestion.GetHeight
-	pnlQuestion.Height = p.Height
-	
-	'##########################
-	'#						  #
-	'#   	  Width   		  #
-	
-	Dim labelWidth As Int
-		labelWidth = lblQuestion.GetWidth
-	
-	If (labelWidth > clvMessages.AsView.Width) Then
-		pnlQuestion.Left = 15%x
-		pnlQuestion.Width = clvMessages.AsView.Width - pnlQuestion.Left - 5%x
-	Else
-		pnlQuestion.Width = labelWidth + 5%x
-		pnlQuestion.Left = clvMessages.AsView.Width - pnlQuestion.Width - 5%x
-	End If
-	
-	imgQuestion.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Gray-Tipped.png", imgQuestion.Width, imgQuestion.Height, False)).Gravity = Gravity.CENTER
-	
-'	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWxidth - 10%x
-	p.SetLayoutAnimated(0, 15%x, 0, pnlQuestion.Width, p.Height + 2%y)
-	
-'	webQuestionExtra.Initialize(webQuestion)
-'	jsi.Initialize
-'	webQuestionExtra.AddJavascriptInterface(jsi,"B4A")
-'	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
-	
+'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
+'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 	clvMessages.Add(p, m)
+	
 	AdjustSize_Clv(0)
 	
-'	setScrollBarEnabled(webAnswer.As(View), True, True)
+'	If (History.Length > 1000) Then
+'		History = History.SubString(History.Length / 2)
+'	End If
+	
+	Dim AIType As Int
+	If (chkGrammar.Checked) Then
+		AIType = wrk_chat.AITYPE_Grammar
+	Else If (chkTranslate.Checked) Or (chkToFarsi.Checked) Then
+		AIType = wrk_chat.AITYPE_Translate
+	Else If (chkChat.Checked) Then
+		AIType = wrk_chat.AITYPE_Practice
+	Else
+		AIType = wrk_chat.AITYPE_Chat
+	End If
+	
+	Wait For (wrk_chat.Query(questionHolder, _
+							 question, _
+							 assistant, _
+							 Temperature, _
+							 AIType)) Complete (response As Map)
+	
+	Dim responsetext As String 	= response.Get("response")
+	Dim contine 	 As Boolean = response.Get("continue")
+	
+'	History = Null
+	If (History = Null) Or (History = "") Then History = "Our Conversetion History:"
+	History = History & CRLF & "Me: " & question 	'Me:
+	History = History & CRLF & "You: " & responsetext		'You:
+'	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
+'	History = "You are a helpful assistant."
+	
+	clvMessages.RemoveAt(clvMessages.Size - 1)
+	AdjustSize_Clv(0)
+	
+	If (txtQuestion.Text.Length < 1) Then
+		Select responsetext
+			Case wrk_chat.TimeoutText:
+				txtQuestion.Text = questionHolder
+			Case wrk_chat.OpenApiHostError:
+				txtQuestion.Text = questionHolder
+			Case wrk_chat.InstructureError
+				chkTranslate.Checked = True
+				txtQuestion.Text = questionHolder
+				imgSend_Click
+				
+		End Select
+	End If
+	
+'	Log("Ask:" & responsetext)
+	WriteAnswer(responsetext)
+	
+	LogColor("Continue:" & contine, Colors.Blue)
+	
+	Return
 	
 End Sub
-
 
 Sub WriteAnswer(message As String) 'Left Side
 	
@@ -1314,12 +1342,37 @@ Sub WriteAnswer(message As String) 'Left Side
 	Dim labelWidth As Int
 		labelWidth = lblAnswer.GetWidth
 	
-	If (labelWidth > clvMessages.AsView.Width) Then
+	' Check if the label width is equal to or larger than the available width in the view
+	If (labelWidth >= (clvMessages.AsView.Width)) Then
+		LogColor("Answer Bigger: " & labelWidth, Colors.Red)
 		pnlAnswer.Left = 5%x
-		pnlAnswer.Width = clvMessages.AsView.Width - 20%x
+		pnlAnswer.Width = clvMessages.AsView.Width - pnlAnswer.Left - 15%x
 	Else
-		pnlAnswer.Left = 5%x
-		pnlAnswer.Width = labelWidth + 5%x
+		LogColor("Answer Smaller: " & labelWidth, Colors.Blue)
+		
+		Dim wid As Int = labelWidth + 5%x
+		Dim Left As Int = 5%x
+		pnlAnswer.Left = Left
+		
+		' Check if the panel overflows the ScrollView width
+		If ((Left + wid) >= clvMessages.sv.Width) Then
+			
+			' Adjust panel position based on available space
+			If (Left - 5%x) < 5%x Then
+				Log("Answer Smaller: Width: " & pnlAnswer.Width)
+				pnlAnswer.Width = clvMessages.sv.Width - 15%x
+			Else
+				pnlAnswer.Width = wid
+				Log("Answer Smaller: Inside: " & pnlAnswer.Width)
+			End If
+		Else
+			If (wid >= clvMessages.sv.Width - 15%x) Then
+				Log("Answer Else: " & pnlAnswer.Left)
+				pnlAnswer.Width = clvMessages.sv.Width - 15%x
+			Else
+				pnlAnswer.Width = wid
+			End If
+		End If
 	End If
 	
 	imgAnswer.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "puton.png", imgAnswer.Width, imgAnswer.Height, False)).Gravity = Gravity.CENTER
@@ -1344,101 +1397,94 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 End Sub
 
+Sub WriteQuestion(message As String) 'Right Side
+	
+	Dim m As textMessage
+	m.Initialize
+	m.message = message
+	m.assistant = False
+	
+	Dim p As B4XView = xui.CreatePanel("ques")
+	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
+	
+	p.LoadLayout("clvQuestionRow")
+	p.RemoveViewFromParent
+	p.Tag = "Question"
+	
+	If (AnswerRtl) Then
+		lblQuestion.TextAlling("CENTER", "RIGHT")
+	Else
+		lblQuestion.TextAlling("CENTER", "LEFT")
+	End If
+	
+	lblQuestion.FallbackLineSpacing = False
+	
+'	lblQuestion.SetPadding(20dip,10dip,20dip,10dip)
+	lblQuestion.SetPadding(2%x,2%x,2%x,2%x)
+'	lblQuestion.SetBackColor(Colors.White)
+'	lblQuestion.SetCorners(0dip)
+'	lblQuestion.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
+	lblQuestion.Text = message
+	p.Height = lblQuestion.GetHeight
+	pnlQuestion.Height = p.Height
+	
+	'##########################
+	'#						  #
+	'#   	  Width   		  #
+	
+	Dim labelWidth As Int
+	labelWidth = lblQuestion.GetWidth
+
+	' Check if the label width is equal to or larger than the available width in the view
+	If (labelWidth >= (clvMessages.AsView.Width - 5%x)) Then
+'		LogColor("Bigger: " & labelWidth, Colors.Red)
+		pnlQuestion.Left = 15%x
+		pnlQuestion.Width = clvMessages.AsView.Width - pnlQuestion.Left - 5%x
+	Else
+'		LogColor("Smaller: " & labelWidth, Colors.Blue)
+		
+		Dim wid As Int = labelWidth + 5%x
+		Dim Left As Int = clvMessages.AsView.Width - pnlQuestion.Width
+		
+		' Check if the panel overflows the ScrollView width
+		If ((Left + wid) >= clvMessages.sv.Width) Then
+			
+			' Adjust panel position based on available space
+			If (Left - 15%x) < 15%x Then
+'				Log("Smaller: Left: " & pnlQuestion.Left)
+				pnlQuestion.Left = 15%x
+			Else
+				pnlQuestion.Left = pnlQuestion.Width - 5%x
+'				Log("Smaller: Inside: " & pnlQuestion.Left)
+			End If
+		Else
+'			Log("Else: " & pnlQuestion.Left)
+			pnlQuestion.Width = wid
+			pnlQuestion.Left = clvMessages.sv.Width - pnlQuestion.Width - 5%x
+		End If
+	End If
+	
+	imgQuestion.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Gray-Tipped.png", imgQuestion.Width, imgQuestion.Height, False)).Gravity = Gravity.CENTER
+	
+'	lblQuestion.mBase.Left = clvMessages.sv.Width - labelWxidth - 10%x
+	p.SetLayoutAnimated(0, 15%x, 0, pnlQuestion.Width, p.Height + 2%y)
+	
+'	webQuestionExtra.Initialize(webQuestion)
+'	jsi.Initialize
+'	webQuestionExtra.AddJavascriptInterface(jsi,"B4A")
+'	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
+	
+	clvMessages.Add(p, m)
+	AdjustSize_Clv(0)
+	
+'	setScrollBarEnabled(webAnswer.As(View), True, True)
+	
+End Sub
+
 Sub HideKeyboard
 	panBottom.Height = 7%y
 	txtQuestion.Height = 7%y
 	ime.HideKeyboard
-End Sub
-
-Public Sub Ask(question As String, assistant As String, questionHolder As String)
-	
-	If (question = "") Then
-		txtQuestion.RequestFocus
-		ShowKeyboard
-		Return
-	End If
-	
-	
-'	Dim msg As textMessage
-'		msg.Initialize
-'		msg.message = question
-'		msg.assistant = True
-'	clvMessages.AddTextItem(WaitingText, msg)
-	
-	Dim m As textMessage
-		m.Initialize
-		m.message = WaitingText '"Proccessing..."
-		m.assistant = True
-	
-	Dim p As B4XView = xui.CreatePanel("")
-		p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
-		p.LoadLayout("clvWaitingText")
-		p.Tag = WaitingText
-	
-	lblWaitingText.Text = m.message
-	panWaitingText.Height = lblWaitingText.GetHeight + 2%y
-	lblWaitingText.FallbackLineSpacing = False
-	
-'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
-'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
-	clvMessages.Add(p, m)
-	
-	AdjustSize_Clv(0)
-	
-'	If (History.Length > 1000) Then
-'		History = History.SubString(History.Length / 2)
-'	End If
-	
-	Dim AIType As Int
-	If (chkGrammar.Checked) Then
-		AIType = wrk_chat.AITYPE_Grammar
-	Else If (chkTranslate.Checked) Or (chkToFarsi.Checked) Then
-		AIType = wrk_chat.AITYPE_Translate
-	Else If (chkChat.Checked) Then
-		AIType = wrk_chat.AITYPE_Practice
-	Else
-		AIType = wrk_chat.AITYPE_Chat
-	End If
-	
-	Wait For (wrk_chat.Query(questionHolder, _
-							 question, _
-							 assistant, _
-							 Temperature, _
-							 AIType)) Complete (response As Map)
-	
-	Dim responsetext As String 	= response.Get("response")
-	Dim contine 	 As Boolean = response.Get("continue")
-	
-	History = Null
-	History = History & CRLF & question 	'Me:
-	History = History & CRLF & responsetext		'You:
-'	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
-'	History = "You are a helpful assistant."
-	
-	clvMessages.RemoveAt(clvMessages.Size - 1)
-	AdjustSize_Clv(0)
-	
-	If (txtQuestion.Text.Length < 1) Then
-		Select responsetext
-			Case wrk_chat.TimeoutText:
-				txtQuestion.Text = questionHolder
-			Case wrk_chat.OpenApiHostError:
-				txtQuestion.Text = questionHolder
-			Case wrk_chat.InstructureError
-				chkTranslate.Checked = True
-				txtQuestion.Text = questionHolder
-				imgSend_Click
-				
-		End Select
-	End If
-	
-'	Log("Ask:" & responsetext)
-	WriteAnswer(responsetext)
-	
-	LogColor("Continue:" & contine, Colors.Blue)
-	
-	Return
-	
 End Sub
 
 Public Sub ShowKeyboard
