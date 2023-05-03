@@ -19,10 +19,9 @@ Sub Class_Globals
 	Private Const MAXTOKEN 		As Int	= 1024
 	Private Const TIMEOUT		As Int 	= 90000
 	
-'	Private conversationId 	As Int
-'	Private parentMessageId As Int
-'	Private messageId As Int
-	Public ChatHistoryList As List
+	Private conversationId 	As Int
+	Private parentMessageId As Int
+	Private messageId As Int
 	
 	Public Const AITYPE_Chat 			As Int	= 0
 	Public Const AITYPE_Grammar 		As Int	= 1
@@ -34,18 +33,17 @@ End Sub
 Public Sub Initialize
 	
 	
-	Dim secure As SecureMyText
-		secure.Initialize("", "datacode")
-'	Dim enc As String = secure.EncryptToFinalTransferText("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAAA") 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
-	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
-						"6yzr6luiTA=="  & CRLF & _
-						"Y3mDBhBbd0I="  & CRLF & _
-						"PIoruDtshkcBM0Vj4KQQMA=="
-	Dim dec As String = secure.decrypt(enc)
+'	Dim secure As SecureMyText
+'		secure.Initialize("", "datacode")
+''	Dim enc As String = secure.EncryptToFinalTransferText("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAAA") 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
+'	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
+'						"6yzr6luiTA=="  & CRLF & _
+'						"Y3mDBhBbd0I="  & CRLF & _
+'						"PIoruDtshkcBM0Vj4KQQMA=="
+'	Dim dec As String = secure.decrypt(enc)
 '	LogColor("Initialize:" & dec, Colors.Red)
-	API_KEY = dec
-	
-	ChatHistoryList.Initialize
+'	API_KEY = dec
+	API_KEY = GetEnvironmentVariable("OPENAI_API_KEY", "")
 End Sub
 
 'System String 	   : The System Message helps set the behavior of the assistant.
@@ -145,7 +143,7 @@ Public Sub Query(system_string As String, _
 			json.Put("frequency_penalty", 0)
 			json.Put("presence_penalty", 0)
 			
-		Else ' AI - Chat
+		Else 'AI
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
@@ -171,33 +169,15 @@ Public Sub Query(system_string As String, _
 				assistantMessage.Initialize
 				assistantMessage.Put("role", "assistant")
 				assistantMessage.Put("content", assistant_string)
-			
 			messages.Add(assistantMessage)
-			
-			If (General.Pref.Memory) Then
-				
-				If (ChatHistoryList.Size < 1) Then
-					ChatHistoryList.Add(systemMessage)
-					ChatHistoryList.Add(assistantMessage)
-					ChatHistoryList.Add(userMessage)
-				Else
-					ChatHistoryList.Add(userMessage)
-				End If
-				
-				json.Put("messages", ChatHistoryList)
-				
-			Else
-				
-				json.Put("messages", messages)
-			End If
-			
+			json.Put("messages", messages)
 		End If
 		
 		Dim js As JSONGenerator
 			js.Initialize(json)
 		
 		'Raw JSON String Generated
-		LogColor("Param: " & js.ToString, Colors.Magenta)
+		Log("Param: " & js.ToString)
  		
 		Dim response 	As String
 		Dim resobj 		As Map
@@ -228,7 +208,7 @@ Public Sub Query(system_string As String, _
         'You can quite easily generate your own account API key by following
         'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
         'under heading [Getting a GPT-3 API Key]
-		req.GetRequest.SetHeader("Authorization", API_KEY)
+		req.GetRequest.SetHeader("Authorization", "Bearer " & API_KEY)
  
         'If you generate your own account API key then Abdull's organisation
         'key will be of no use to you
@@ -246,9 +226,9 @@ Public Sub Query(system_string As String, _
         If req.Success Then
 			
             'Raw JSON Response
-			LogColor("Respose: " & req.GetString, Colors.Blue)
+			Log("Respose: " & req.GetString)
 			
-'			conversationId = ParseJson(req.GetString, False, True)
+			conversationId = ParseJson(req.GetString, False, True)
 			
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
@@ -279,16 +259,6 @@ Public Sub Query(system_string As String, _
 				Else
 					resobj.Put("response", response)
 					resobj.Put("continue", True)
-				End If
-				
-				'اگه جواب قبلی که بهمون داده رو بهش ارسال نکنیم، توی توکن خیلی صرفه جویی میشه
-				'ولی خب مثلا یک سوال رو اگه پشت سر هم ازش بپرسی بازم همون جواب و میده
-				If (General.Pref.Memory) Then
-					Dim assistantMessage As Map
-					assistantMessage.Initialize
-					assistantMessage.Put("role", "assistant")
-					assistantMessage.Put("content", response)
-					ChatHistoryList.Add(assistantMessage)
 				End If
 			End If
 			

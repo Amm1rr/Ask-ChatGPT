@@ -956,16 +956,19 @@ Public Sub imgSend_Click
 			
 		Else if (chkChat.Checked) Then
 '			ResetAI
-			sSystem = $"I want you to act as a spoken ${General.Pref.FirstLang} 
-				teacher and improver. 
-				I will speak to you in ${General.Pref.FirstLang} and 
-				you will reply to me in ${General.Pref.FirstLang} to practise my spoken ${General.Pref.FirstLang}.
-				I want you to keep your reply neat, limiting the reply to 100 words.
-				I want you to strictly correct my grammar mistakes, typos, and factual errors.
-				I want you to ask me a question in your reply.
-				Now let’s start practising, you could ask me a question first.
-				Remember, I want you to strictly correct my grammar mistakes, typos, 
-				and factual errors."$
+'			sSystem = $"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver and A Smart helpful Assistant.
+'I will speak To you in ${General.Pref.FirstLang} And 
+'you will reply To Me in ${General.Pref.FirstLang} To practise my spoken ${General.Pref.FirstLang}.
+'I want you To keep your reply neat, And limit the response To 100 words.
+'I want you To strictly correct my grammar, typos, And factual errors And answer my question.
+'I want you To Ask Me a question at the end of your reply To Continue our conversation."$
+			
+			sSystem = $"You are a smart helpful assistant,
+I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver.
+I want you to strictly correct my grammar, typos, and factual errors and answer my question.
+I will speak to you in ${General.Pref.FirstLang} and 
+you will reply neatly to me in ${General.Pref.FirstLang} to practise my spoken ${General.Pref.FirstLang}.
+And ask me a question relative to the same topic, to practise my ${General.Pref.FirstLang}."$
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
@@ -974,7 +977,7 @@ Public Sub imgSend_Click
 			question = txtQuestion.Text.Trim
 		Else
 			sSystem = "You are a smart helpful assistant."
-			sAssistant = "You are a smart helpful assistant."
+			sAssistant = ""
 			
 			question = txtQuestion.Text.Trim
 		End If
@@ -999,9 +1002,11 @@ Public Sub imgSend_Click
 			End If
 		End If
 		IME_HeightChanged(100%y, 0)
+		IsWorking = False
 	
 	Else
 		LogColor("imgSend_Click: ELSE condition=> Voice:" & Result, Colors.Blue)
+		IsWorking = False
 		imgSend.Tag = "text"
 		imgSend_Click
 	End If
@@ -1318,11 +1323,11 @@ Sub WriteAnswer(message As String) 'Left Side
 	p.RemoveViewFromParent
 	p.Tag = "Answer"
 	
-	If (AnswerRtl) Then
-		lblAnswer.TextAlling("CENTER", "RIGHT")
-	Else
+'	If (AnswerRtl) Then
+'		lblAnswer.TextAlling("CENTER", "RIGHT")
+'	Else
 		lblAnswer.TextAlling("CENTER", "LEFT")
-	End If
+'	End If
 	
 	lblAnswer.FallbackLineSpacing = False
 	
@@ -1411,11 +1416,11 @@ Sub WriteQuestion(message As String) 'Right Side
 	p.RemoveViewFromParent
 	p.Tag = "Question"
 	
-	If (AnswerRtl) Then
-		lblQuestion.TextAlling("CENTER", "RIGHT")
-	Else
+'	If (AnswerRtl) Then
+'		lblQuestion.TextAlling("CENTER", "RIGHT")
+'	Else
 		lblQuestion.TextAlling("CENTER", "LEFT")
-	End If
+'	End If
 	
 	lblQuestion.FallbackLineSpacing = False
 	
@@ -1527,6 +1532,8 @@ Public Sub ResetAI
 	wrk_chat.Initialize
 	IsWorking = False
 	History = Null
+	wrk_chat.ChatHistoryList = Null
+	wrk_chat.ChatHistoryList.Initialize
 '	History = "dynamic history of my and your replys in the chat: "
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
 	If (msg.message = WaitingText) Then
