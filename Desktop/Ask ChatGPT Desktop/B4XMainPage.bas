@@ -51,3 +51,24 @@ Private Sub Button1_Click
 	xui.MsgboxAsync(responsetext, contine)
 	
 End Sub
+
+Private Sub OldMethod
+	Dim chat As ChatGPT
+	chat.Initialize
+	
+	Dim questionHolder 	As String = "Translate"
+	Dim question 		As String = "Translate book into Persian"
+	Dim assistant 		As String = "You are a Smart helpfull AI Assistant."
+	Dim Temperature		As Double = 0
+	
+	Wait For (chat.Query(questionHolder, _
+							 question, _
+							 assistant, _
+							 Temperature, _
+							 0)) Complete (response As Map)
+	
+	Dim responsetext As String 	= response.Get("response")
+	Dim contine 	 As Boolean = response.Get("continue")
+	
+	xui.MsgboxAsync(responsetext, contine)
+End Sub

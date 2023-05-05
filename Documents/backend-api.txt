@@ -1,0 +1,60 @@
+
+https://hackernoon.com/how-i-successfully-reverse-engineered-chatgpt-to-create-an-unofficial-api-wrapper
+
+I just tried sending the same conversation_id, but with a different message text as I saw in the browser logs. And it worked! After trying other combinations, I found out which parameters were required, which could be random.
+
+
+The final code for sending the message:
+
+
+session.headers.update({
+
+    "accept": "text/event-stream",
+
+    "X-OpenAI-Assistant-App-Id": "",
+
+    "Authorization": f"Bearer {token}"
+
+})
+
+params = {
+
+    "action": "next",
+
+    "messages": [
+
+        {
+
+            "id": str(uuid.uuid4()),  # <-- random!
+
+            "role": "user",
+
+            "content": {
+
+                "content_type": "text",
+
+                "parts": ["<message>"]
+
+            }
+
+        }
+
+    ],
+
+    "parent_message_id": "",  # <-- empty!
+
+    "model": "<chatgpt_model>"
+
+}
+
+with session.stream(
+
+    "POST", "https://chat.openai.com/backend-api/conversation",
+
+    json=params, headers={"content-type": "application/json"}
+
+) as response:
+
+    for chunk in response.iter_bytes():
+
+        print(chunk)

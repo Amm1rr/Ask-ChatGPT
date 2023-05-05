@@ -19,10 +19,6 @@ Sub Class_Globals
 	Private Const MAXTOKEN 		As Int	= 1024
 	Private Const TIMEOUT		As Int 	= 90000
 	
-	Private conversationId 	As Int
-	Private parentMessageId As Int
-	Private messageId As Int
-	
 	Public Const AITYPE_Chat 			As Int	= 0
 	Public Const AITYPE_Grammar 		As Int	= 1
 	Public Const AITYPE_Translate 		As Int 	= 2
@@ -117,6 +113,59 @@ Public Sub Query(system_string As String, _
 '	/// <param name="logProbs">Include the Log probabilities on the logprobs most likely tokens, which can be found in <see cref="CompletionResult.Completions"/> -> <see cref="Choice.Logprobs"/>. So For example, If logprobs Is 10, the API will Return a list of the 10 most likely tokens. If logprobs Is supplied, the API will always Return the logprob of the sampled token, so there may be up To logprobs+1 elements in the response.</param>
 '	/// <param name="echo">Echo back the prompt in addition To the completion.</param>
 '	/// <param name="stopSequences">One Or more sequences where the API will stop generating further tokens. The returned text will Not contain the stop sequence.</param>
+
+
+	const aiResponse = await fetch("", {
+                "headers": {
+                    "authority": "chat.openai.com",
+                    "accept": " text/event-stream",
+                    "authorization": ` Bearer ${OPENAI_AUTHORIZATION_KEY}`,
+                    "content-type": "application/json",
+                    "cookie": `${OPENAI_COOKIE}`,
+                    "origin": "https://chat.openai.com",
+                    "referer": "https://chat.openai.com/chat",
+                    "sec-ch-ua": `"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"`,
+                    "sec-ch-ua-mobile": `?0`,
+                    "sec-ch-ua-platform": `macOS`,
+                    "sec-fetch-dest": `empty`,
+                    "sec-fetch-mode": `cors`,
+                    "sec-fetch-site": `same-origin`,
+                    "user-agent": `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36`,
+                    "x-openai-assistant-app-id": "",
+                },
+                "body": json.stringify({
+                    "action": "next",
+                    "messages": [{
+                        "id": "70933386-7449-4433-a22e-73b31d146419",
+                        "role": "user",
+                        "content": {"content_type": "text", "parts": text.split(" ")}
+                    }],
+                    "parent_message_id": "35178823-dd3f-4667-9dfd-2b48c877efc1",
+                    "model": "text-davinci-002-render"
+                }),
+                "method": "POST"
+            });
+
+            If (aiResponse.status === 200) {
+                const results = await aiResponse.text();
+                const aiText = parseGPTResponse(results);
+
+                const channelSegments = message.cid.split(":");
+                const channel = serverClient.channel(channelSegments[0], channelSegments[1]);
+                message.text = "";
+                channel.sendMessage({
+                    text: aiText,
+                    user: {
+                        id: "admin",
+                        image: "https://openai.com/content/images/2022/05/openai-avatar.png",
+                        name: "ChatGPT bot",
+                    },
+                }).Catch((error) => console.error(error));
+                Return response.json({
+                    status: True,
+                    text: "",
+                });
+            }
 		
 		' Create a JSON object
 		Dim json As Map
@@ -197,7 +246,6 @@ Public Sub Query(system_string As String, _
 				
 			Case AITYPE_Translate, AITYPE_Grammar
 				req.PostString("https://api.openai.com/v1/completions", js.ToString)
-			
 				
 		End Select
 		
@@ -209,7 +257,7 @@ Public Sub Query(system_string As String, _
         'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
         'under heading [Getting a GPT-3 API Key]
 		req.GetRequest.SetHeader("Authorization", "Bearer " & API_KEY)
- 
+		
         'If you generate your own account API key then Abdull's organisation
         'key will be of no use to you
         'req.GetRequest.SetHeader("OpenAI-Organization", "org-TV3YOqDRg5DXvAUcL7dC6lI9")

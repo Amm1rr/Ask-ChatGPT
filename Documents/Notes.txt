@@ -1,0 +1,19 @@
+
+Products has Backend-Api:
+-----
+https://github1s.com/Nash0x7E2/gpt-chat/blob/HEAD/server/src/index.js
+
+https://github1s.com/ztjhz/BetterChatGPT/blob/HEAD/src/api/api.ts
+
+https://getstream.io/blog/build-a-chat-app-with-openai-chatgpt/
+
+https://pkg.go.dev/github.com/yangkequn/chatgpt-go#section-readme
+
+
+Create Token:
+-----
+you can manually get an accessToken by logging in to the ChatGPT webapp and then opening https://chat.openai.com/api/auth/session, which will return a JSON object containing your accessToken string.
+
+
+Backend-api:
+https://github.com/terminalcommandnewsletter/everything-chatgpt
