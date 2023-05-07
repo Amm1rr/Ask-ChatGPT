@@ -142,7 +142,8 @@ Public Sub Initialize(parent As B4XView)
 	
 	'Calls the function of adjusting the size of the keyboard
 	IME_HeightChanged(100%y,0)
-	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 6 'After 6 lines, the EditText will increase, and after that, the scroll will appear
+	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 8 'After 6 lines, the EditText will increase, and after that, the scroll will appear
+	TextboxHeightChange("Size Test!")
 	
 	LoadCLVSetup
 	
@@ -767,7 +768,7 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		lblCopy.Visible =  False
 	End If
 	
-'	TextboxHeightChange(New)
+	TextboxHeightChange(New)
 	
 End Sub
 
@@ -778,37 +779,49 @@ Private Sub TextboxHeightChange(text As String)
 	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
-	If i > 7%y Then 'It is small, we are going to increase to the limit
+	
+	If i > 8%y Then 'It is small, we are going to increase to the limit
 		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Red)
 		
 		If (panBottom.Height > i) Then
 			LogColor(i, Colors.Red)
 			
-'			panBottom.Height = i
-'			txtQuestion.Height = i
-'			panBottom.Top = panToolbar.Top + panToolbar.Height
-			panBottom.Top = 100%x
-			txtQuestion.Top = panBottom.Top
+			panBottom.Height = i
+			txtQuestion.Height = i
+			panBottom.Top = heightKeyboard - panBottom.Height
+			txtQuestion.Top = 1%y
 			panToolbar.Top = panBottom.Top - panToolbar.Height
 			AdjustSize_Clv(panBottom.Height, False)
 		Else
 			LogColor(i, Colors.Blue)
 			
-'			panBottom.Height = i
-'			txtQuestion.Height = i
-'			panBottom.Top = panToolbar.Top + panToolbar.Height
-			panBottom.Top = 100%x - panBottom.Height
-			txtQuestion.Top = panBottom.Top
+			panBottom.Height = i
+			txtQuestion.Height = i
+			panBottom.Top = heightKeyboard - panBottom.Height
+			txtQuestion.Top = 1%y
 			panToolbar.Top = panBottom.Top - panToolbar.Height
 			AdjustSize_Clv(panBottom.Height, False)
 		End If
 	Else
-		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Blue)
-'		panBottom.Height = 100%y * 0.2
-		panBottom.Top = panToolbar.Top + panToolbar.Height
-		txtQuestion.Top = panBottom.Top
-'		txtQuestion.Height = panBottom.Height
-		AdjustSize_Clv(0, False)
+		If (i < 9%y) Then
+			LogColor("Smaller: " & text & " - " & i, Colors.Red)
+			panBottom.Height = 9%y
+			txtQuestion.Height = panBottom.Height - 1
+			panBottom.Top = heightKeyboard - panBottom.Height 'panToolbar.Top + panToolbar.Height
+			txtQuestion.Top = 1%y
+			panToolbar.Top = panBottom.Top - panToolbar.Height
+			AdjustSize_Clv(0, False)
+			
+		Else
+			
+			LogColor("Normal: " & text & " - " & i, Colors.Blue)
+'			panBottom.Height = 100%y * 0.2
+			panBottom.Top = panToolbar.Top + panToolbar.Height
+			txtQuestion.Top = panBottom.Top
+			panBottom.Height = i
+			txtQuestion.Height = panBottom.Height - 1
+			AdjustSize_Clv(0, False)
+		End If
 	End If
 End Sub
 
@@ -835,10 +848,13 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	
 	MyLog("IME_HeightChanged: NewHeight= " & NewHeight, False)
 	
+	heightKeyboard = NewHeight
+	
 	If (NewHeight > OldHeight) Then 'Full Screen
 		LogColor("Full: " & NewHeight, Colors.Red)
 		
 		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
+		txtQuestion.SetLayout(1%x, 1%y, panBottom.Width - 15%x, panBottom.Height - 1)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, NewHeight - panBottom.Height - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
@@ -846,6 +862,7 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		LogColor("Half: " & NewHeight, Colors.Red)
 		
 		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
+		txtQuestion.SetLayout(1%x, 1%y, panBottom.Width - 15%x, panBottom.Height - 1)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
