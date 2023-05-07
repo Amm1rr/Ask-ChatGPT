@@ -9,6 +9,7 @@ Sub Process_Globals
 	Private xui As XUI
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
+	Public  IsDebug					As Boolean = True
 End Sub
 
 #Region Save and Load Settings

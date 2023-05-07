@@ -95,6 +95,8 @@ End Sub
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize(parent As B4XView)
 	
+	MyLog("Initilize", True)
+	
 	mainparent = parent
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
@@ -133,7 +135,7 @@ Public Sub Initialize(parent As B4XView)
 	cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
 	panBottom.Background = cc
 	txtQuestion.Background = Null
-	General.setPadding(txtQuestion,0,0,0,0) 'REMOVE PADDING DO EDITTEXT
+	General.setPadding(txtQuestion,5dip,5dip,5dip,5dip) 'REMOVE PADDING DO EDITTEXT
 	
 	imgSend.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Voice.png", imgSend.Width, imgSend.Height, True)).Gravity = Gravity.CENTER
 	imgSend.Tag = "voice"
@@ -181,9 +183,23 @@ Public Sub Initialize(parent As B4XView)
 	
 	Check_First_Sec_Lang_Visibility
 	
+	SetChatBackground("Bg-Chat03.jpg")
+	
+End Sub
+
+Private Sub SetChatBackground(fileName As String)
+	
+	MyLog("SetChatBackground", True)
+	
+	panMain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, fileName, clvMessages.sv.Width, clvMessages.sv.Height, False)).Gravity = Gravity.FILL
+	
+'	Dim BackgroundImage As Bitmap
+'	BackgroundImage.Initialize(File.DirAssets, "Bg-Chat2.jpg")
+'	parent.SetBitmap(BackgroundImage)
 End Sub
 
 Public Sub MemoryChanged
+	MyLog("MemoryChanged", False)
 	If (General.Pref.Memory) Then
 		imgBrain.SetVisibleAnimated(300, True)
 '		imgBrain.SetColorAnimated(0, Colors.ARGB(100,116,165,255), Colors.ARGB(100,116,165,105))
@@ -196,6 +212,7 @@ Public Sub MemoryChanged
 End Sub
 
 Public Sub DevModeCheck
+	MyLog("DevModeCheck", False)
 	icConfigTopMenu.Visible = General.Pref.IsDevMode
 End Sub
 
@@ -328,7 +345,7 @@ End Sub
 
 
 Private Sub Drawer_StateChanged (Open As Boolean)
-	LogColor("State: " & Open, Colors.Cyan)
+	MyLog("Drawer State Open: " & Open, True)
 	If (Open) Then
 		UpDown1Drawer.Value = General.Pref.Creativity 'Temperature * 10
 		chkAutoSendDrawer.Checked = General.Pref.AutoSend
@@ -607,7 +624,7 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 End Sub
 
 
-Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
+Private Sub clvMessagesSS_ItemLongClick (Index As Int, Value As Object)
 	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
 	Dim msg As textMessage = Value
 	If (msg.message = WaitingText) Then Return
@@ -630,12 +647,23 @@ Private Sub String_Remove_DoubleQuot(text As String) As String
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
-	MyLog(Index & " - " & Value, True)
+	MyLog("clvMessages_ItemClick: " & Index & " - " & Value, True)
 	HideKeyboard
 	#if B4i
 		Dim tf As View = TextField.TextField
 		tf.ResignFocus
 	#End If
+	
+	If (Index < 1) Then
+		SetChatBackground($"Bg-Chat03.jpg"$)
+	else If (Index < 10) Then
+		SetChatBackground($"Bg-Chat0${Index}.jpg"$)
+	else If (Index > 10) Then
+		Index = 10
+		SetChatBackground($"Bg-Chat${Index}.jpg"$)
+	Else
+		SetChatBackground($"Bg-Chat${Index}.jpg"$)
+	End If
 	
 '	resetTextboxToolbar
 '	AdjustSize_Clv(0)
@@ -704,7 +732,16 @@ End Sub
 Public Sub MyLog(text As String, AlwaysShow As Boolean)
 '	Dim obj As B4XView = Sender
 '	Try
-		LogColor(text, Colors.Black)
+
+		If (AlwaysShow) Then
+			LogColor(text, Colors.Black)
+			Return
+		End If
+		
+		If (General.IsDebug) Then
+			LogColor(text, Colors.Black)
+			Return
+		End If
 		
 '	Catch
 '		LogColor($"${obj} & ": " text"$, Colors.Blue)
@@ -713,8 +750,8 @@ Public Sub MyLog(text As String, AlwaysShow As Boolean)
 End Sub
 
 Sub txtQuestion_TextChanged (Old As String, New As String)
-'	MyLog("txtQuestion_TextChanged: " & Old & " - " & New)
 	
+	MyLog("txtQuestion_TextChanged: " & Old & " - " & New, False)
 	
 	'Voice to Text Icon
 	If New.Length > 0 Then
@@ -730,31 +767,92 @@ Sub txtQuestion_TextChanged (Old As String, New As String)
 		lblCopy.Visible =  False
 	End If
 	
-	TextboxHeightChange(New)
+'	TextboxHeightChange(New)
 	
 End Sub
 
 Private Sub TextboxHeightChange(text As String)
-	MyLog("TextboxHeightChange: " & text, True)
+	
+	MyLog("TextboxHeightChange: " & text, False)
+	
 	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
 	If i > 7%y Then 'It is small, we are going to increase to the limit
-		panBottom.Height = i
-		txtQuestion.Height = i
-		panBottom.Top = heightKeyboard - panBottom.Height - 3%y
-		AdjustSize_Clv(0)
+		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Red)
+		
+		If (panBottom.Height > i) Then
+			LogColor(i, Colors.Red)
+			
+'			panBottom.Height = i
+'			txtQuestion.Height = i
+'			panBottom.Top = panToolbar.Top + panToolbar.Height
+			panBottom.Top = 100%x
+			txtQuestion.Top = panBottom.Top
+			panToolbar.Top = panBottom.Top - panToolbar.Height
+			AdjustSize_Clv(panBottom.Height, False)
+		Else
+			LogColor(i, Colors.Blue)
+			
+'			panBottom.Height = i
+'			txtQuestion.Height = i
+'			panBottom.Top = panToolbar.Top + panToolbar.Height
+			panBottom.Top = 100%x - panBottom.Height
+			txtQuestion.Top = panBottom.Top
+			panToolbar.Top = panBottom.Top - panToolbar.Height
+			AdjustSize_Clv(panBottom.Height, False)
+		End If
+	Else
+		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Blue)
+'		panBottom.Height = 100%y * 0.2
+		panBottom.Top = panToolbar.Top + panToolbar.Height
+		txtQuestion.Top = panBottom.Top
+'		txtQuestion.Height = panBottom.Height
+		AdjustSize_Clv(0, False)
 	End If
+End Sub
+
+public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
+	Try
+		MyLog("AdjustSize_Clv: " & height, True)
+		clvMessages.AsView.Top = pTopMenu.Height
+		clvMessages.Base_Resize(clvMessages.AsView.Width, panBottom.Top - pTopMenu.Height)
+''		If (height > 0) Then clvMessages.ResizeItem(clvMessages.Size - 1, height + panBottom.Top + panBottom.Height)
+'		panToolbar.SetLayoutAnimated(0, 0%x, (clvMessages.sv.Height + pTopMenu.Height) - panToolbar.Height, 100%x, panToolbar.Height)
+		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
+		If (GotoEnd) Then 
+			If clvMessages.Size > 0 Then ScrollToLastItem(clvMessages)
+		End If
+		panTextToolbar.SetLayout(txtQuestion.Width - 30%x, txtQuestion.Height - 5%x, 77%x, 11%y)
+		
+	Catch
+		MyLog("AdjustSize_Clv: " & height, True)
+		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
+	End Try
 End Sub
 
 Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	
-	heightKeyboard = NewHeight
-	panBottom.SetLayout(panBottom.Left, heightKeyboard - panBottom.Height - 1%y, panBottom.Width, panBottom.Height)
-	imgSend.SetLayout(imgSend.Left, heightKeyboard - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
-'	panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
-'	panToolbar.Top = NewHeight - panToolbar.Height - 200
-	AdjustSize_Clv(0)
+	MyLog("IME_HeightChanged: NewHeight= " & NewHeight, False)
+	
+	If (NewHeight > OldHeight) Then 'Full Screen
+		LogColor("Full: " & NewHeight, Colors.Red)
+		
+		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
+		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
+		panToolbar.SetLayoutAnimated(0, panToolbar.Left, NewHeight - panBottom.Height - panToolbar.Height, panToolbar.Width, panToolbar.Height)
+		AdjustSize_Clv(0, False)
+	Else							' Half Screen
+		LogColor("Half: " & NewHeight, Colors.Red)
+		
+		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
+		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
+		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
+		AdjustSize_Clv(0, False)
+		
+	End If
+	
+'	clvMessages.sv.Height = NewHeight
 	
 	
 '	Dim tpc As TouchPanelCreator
@@ -856,29 +954,13 @@ Public Sub imgSend_Click
 		
 		ClickSimulation
 		
-		Dim sText As String
 		Dim question As String = txtQuestion.Text.Trim
 		Dim sAssistant As String
 		Dim sSystem As String
 		
-		Dim MARKDOWN As String = ""'"I want you Respond using MARKDOWN."
-		
 		If (chkGrammar.Checked) Then
-			ResetAI
-'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.FirstLang)} translator, 
-'						Proofreader, Punctuation corrector, spelling corrector, 
-'						and improver. 
-'						I will write anything to you and you will detect the language, 
-'						translate and write correct version of it, in ${General.Pref.FirstLang} 
-'							and don't explain.
-'						I want you to only reply to the corrections, improvements, 
-'						and nothing else, so don't explain.
-'						When there is no need for any Correction, write "Ok!" 
-'							and don't explain.
-'						When I need to tell you something I will do so in curly 
-'						braces {like this} ."$
 			
-'			sSystem = $"Only Fix ${General.Pref.FirstLang} grammar and correct it to standard ${General.Pref.FirstLang}."$
+			ResetAI
 			
 			If (General.IsAWord(question)) Then
 				sSystem = $"Fix word into English or Translate word into English:"$
@@ -893,23 +975,8 @@ Public Sub imgSend_Click
 		Else If (chkTranslate.Checked) Then
 			
 			ResetAI
-'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.FirstLang)} translator,
-'						spelling corrector and improver.
-'			I will speak to you in any language and you will detect the language, 
-'			translate it and answer in the corrected and improved version of my text, 
-'			in ${General.Pref.FirstLang}.
-'			I want you to only reply with the correction, the improvements 
-'			and nothing else, do not write explanations.
-'			When my text is only a word, act as ${General.Pref.FirstLang} Dictionary as well and show 
-'			definitions and synonyms and don't interpret it."$
 			
-'			sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it.
-'			When my text Is only a word, act As ${General.a_OR_an(General.Pref.FirstLang)} Dictionary as well and show 
-'			definitions and synonyms using orginal text language but exaplains using ${General.Pref.FirstLang} and don't interpret it."$
 			If (General.IsAWord(question)) Then
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary,
-'							Show definitions and synonyms using orginal text 
-'							language but for exaplains using ${General.Pref.FirstLang}."$
 				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
 			Else
 '				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
@@ -925,24 +992,10 @@ Public Sub imgSend_Click
 			
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
-			'     “ ”
-'			sSystem = $"I want you to act as ${General.a_OR_an(General.Pref.SecondLang)} translator,
-'						spelling corrector and improver.
-'			I will speak to you in any language and you will detect the language, 
-'			translate it and answer in the corrected and improved version of my text, 
-'			in ${General.Pref.SecondLang}.
-'			I want you to only reply with the correction, the improvements 
-'			and nothing else, do not write explanations.
-'			When my text is only a word, act as ${General.Pref.SecondLang} Dictionary as well and show 
-'			definitions and synonyms and don't interpret it."$
 			
 			If (General.IsAWord(question)) Then
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary,
-'							Show definitions and synonyms using orginal text 
-'							language but for exaplains using ${General.Pref.SecondLang}."$
 				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
 			Else
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} translation engine that can only translate text and cannot interpret it."$
 				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
 			End If
 			
@@ -950,18 +1003,9 @@ Public Sub imgSend_Click
 			
 			question = sSystem & " The Text Is: " & CRLF & txtQuestion.Text.Trim
 			
-'			sAssistant = $"Act as ${General.a_OR_an(General.Pref.SecondLang)} Translator and Improver."$
-'			sAssistant = $"You are a translation engine that can only translate text and cannot interpret it."$
 			sAssistant = $"Translate into ${General.Pref.SecondLang}."$
 			
 		Else if (chkChat.Checked) Then
-'			ResetAI
-'			sSystem = $"I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver and A Smart helpful Assistant.
-'I will speak To you in ${General.Pref.FirstLang} And 
-'you will reply To Me in ${General.Pref.FirstLang} To practise my spoken ${General.Pref.FirstLang}.
-'I want you To keep your reply neat, And limit the response To 100 words.
-'I want you To strictly correct my grammar, typos, And factual errors And answer my question.
-'I want you To Ask Me a question at the end of your reply To Continue our conversation."$
 			
 			sSystem = $"You are a smart helpful assistant,
 I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver.
@@ -1171,23 +1215,6 @@ Private Sub RecognizeVoice As ResumableSub
 	Return ""
 End Sub
 
-
-
-public Sub AdjustSize_Clv(height As Int)
-	Try
-		clvMessages.AsView.Top = pTopMenu.Height
-		clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height - panToolbar.Height - 1%y
-		clvMessages.Base_Resize(clvMessages.AsView.Width, clvMessages.AsView.Height + height)
-		If (height > 0) Then clvMessages.ResizeItem(clvMessages.Size - 1, height + panToolbar.Height + panBottom.Height)
-		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height - 0.2%y, panToolbar.Width, panToolbar.Height)
-		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
-		If clvMessages.Size > 0 Then clvMessages.JumpToItem(clvMessages.Size - 1)
-		panTextToolbar.SetLayout(txtQuestion.Width - 30%x, txtQuestion.Height - 5%x, 77%x, 11%y)
-	Catch
-		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
-	End Try
-End Sub
-
 'Sub webAnswer_PageFinished (Url As String)
 '	LogColor("PageFinished: " & Url, Colors.Blue)
 '	webAnswerExtra.ExecuteJavascript("B4A.CallSub('SetWVHeight',true, document.documentElement.scrollHeight);")
@@ -1245,7 +1272,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 '	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 	clvMessages.Add(p, m)
 	
-	AdjustSize_Clv(0)
+	AdjustSize_Clv(0, True)
 	
 '	If (History.Length > 1000) Then
 '		History = History.SubString(History.Length / 2)
@@ -1279,7 +1306,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 '	History = "You are a helpful assistant."
 	
 	clvMessages.RemoveAt(clvMessages.Size - 1)
-	AdjustSize_Clv(0)
+	AdjustSize_Clv(0, True)
 	
 	If (txtQuestion.Text.Length < 1) Then
 		Select responsetext
@@ -1297,6 +1324,8 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	
 '	Log("Ask:" & responsetext)
 	WriteAnswer(responsetext)
+	
+	ScrollToLastItem(clvMessages)
 	
 	LogColor("Continue:" & contine, Colors.Blue)
 	
@@ -1395,8 +1424,9 @@ Sub WriteAnswer(message As String) 'Left Side
 '	clvMessages.ResizeItem(clvMessages.Size - 1, p.Height + panToolbar.Height + panBottom.Height + 10dip)
 '	clvMessages.ResizeItem(clvMessages.Size - 1, lblAnswer.GetHeight)
 	
-	IsWorking = False
+	AdjustSize_Clv(0, True)
 	
+	IsWorking = False
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
@@ -1404,10 +1434,12 @@ End Sub
 
 Sub WriteQuestion(message As String) 'Right Side
 	
+	MyLog($"WriteQuestion: ${message}"$, True)
+	
 	Dim m As textMessage
-	m.Initialize
-	m.message = message
-	m.assistant = False
+		m.Initialize
+		m.message = message
+		m.assistant = False
 	
 	Dim p As B4XView = xui.CreatePanel("ques")
 	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
@@ -1480,15 +1512,13 @@ Sub WriteQuestion(message As String) 'Right Side
 '	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	clvMessages.Add(p, m)
-	AdjustSize_Clv(0)
+	AdjustSize_Clv(0, True)
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
 End Sub
 
 Sub HideKeyboard
-	panBottom.Height = 7%y
-	txtQuestion.Height = 7%y
 	ime.HideKeyboard
 End Sub
 
@@ -1529,6 +1559,7 @@ Private Sub lblClearText_LongClick
 End Sub
 
 Public Sub ResetAI
+	MyLog("ResetAI", True)
 	wrk_chat.Initialize
 	IsWorking = False
 	History = Null
@@ -1542,6 +1573,7 @@ Public Sub ResetAI
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
+	MyLog("txtQuestion_FocusChanged: " & HasFocus, True)
 '	resetTextboxToolbar
 	If Not (HasFocus) Then HideKeyboard
 End Sub
@@ -1659,6 +1691,8 @@ Private Sub chkChat_CheckedChange(Checked As Boolean)
 End Sub
 
 Private Sub icConfigTopMenu_Click
+
+	MyLog("icConfigTopMenu_Click", True)
 	
 	ClickSimulation
 	
@@ -1708,12 +1742,10 @@ Private Sub icConfigTopMenu_Click
 			
 			clvMessages.Add(p, m)
 			
-			AdjustSize_Clv(0)
+			AdjustSize_Clv(0, True)
 			
 		End If
 		
-		WriteAnswer(myStrings.Get(2))
-		WriteQuestion(myStrings.Get(2))
 		
 	Else
 		Drawer.LeftOpen = Not (Drawer.LeftOpen)
