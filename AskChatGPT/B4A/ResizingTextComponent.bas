@@ -144,9 +144,10 @@ End Sub
 'Gravity.Bottom	Gravity.Right
 Public Sub TextAlling(vertical As String, horizontal As String)
     
-'	vertical = vertical.ToUpperCase
-'	horizontal = horizontal.ToUpperCase
+	vertical = vertical.ToUpperCase
+	horizontal = horizontal.ToUpperCase
 '	mlbl.SetTextAlignment(vertical, horizontal)
+	mlbl.SetTextAlignment("Center", "LEFT")
 	
 	
 '	Dim ver As Int

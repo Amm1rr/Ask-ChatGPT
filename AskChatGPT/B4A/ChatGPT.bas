@@ -13,7 +13,7 @@ Version=12.2
 Sub Class_Globals
 	Private API_KEY 			As String
 	Public TimeoutText 			As String = "Timeout" & CRLF & "Server is busy. Just try again." & CRLF & "سرور شلوغ است، مجددا امتحان کنید."
-	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
+	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد."
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
 	Private Const MAXTOKEN 		As Int	= 2000
@@ -295,9 +295,10 @@ Public Sub Query(system_string As String, _
         Else
 			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
 				response = TimeoutText & " Error:"
-				
-			Else If (req.ErrorMessage = "java.net.UnknownHostException Unable To resolve host ""api.openai.com"": No address associated with hostname") Then
-				response = OpenApiHostError
+			Else If (req.ErrorMessage = "java.net.UnknownHostException: Unable to resolve host ""api.openai.com"": No address associated with hostname") Then
+				response = OpenApiHostError & ". (Code 1)"
+			Else If (req.ErrorMessage = "java.net.ConnectException: Failed to connect to api.openai.com/104.18.7.192:443") Then
+				response = OpenApiHostError & ". (Code 2)"
 			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
 				response = InstructureError
 			Else

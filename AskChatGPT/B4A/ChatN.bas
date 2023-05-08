@@ -1298,6 +1298,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	Dim p As B4XView = xui.CreatePanel("")
 	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
 	p.LoadLayout("clvWaitingText")
+	p.RemoveViewFromParent
 	p.Tag = WaitingText
 	
 	lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
@@ -1393,11 +1394,11 @@ Sub WriteAnswer(message As String) 'Left Side
 	p.RemoveViewFromParent
 	p.Tag = "Answer"
 	
-'	If (AnswerRtl) Then
-'		lblAnswer.TextAlling("CENTER", "RIGHT")
-'	Else
+	If (AnswerRtl) Then
+		lblAnswer.TextAlling("CENTER", "RIGHT")
+	Else
 		lblAnswer.TextAlling("CENTER", "LEFT")
-'	End If
+	End If
 	
 	lblAnswer.FallbackLineSpacing = False
 	
@@ -1490,15 +1491,14 @@ Sub WriteQuestion(message As String) 'Right Side
 	p.RemoveViewFromParent
 	p.Tag = "Question"
 	
-'	If (AnswerRtl) Then
-'		lblQuestion.TextAlling("CENTER", "RIGHT")
-'	Else
+	If (AnswerRtl) Then
+		lblQuestion.TextAlling("CENTER", "RIGHT")
+	Else
 		lblQuestion.TextAlling("CENTER", "LEFT")
-'	End If
+	End If
 	
 	lblQuestion.FallbackLineSpacing = False
 	
-'	lblQuestion.SetPadding(20dip,10dip,20dip,10dip)
 	lblQuestion.SetPadding(2%x,2%x,2%x,2%x)
 '	lblQuestion.SetBackColor(Colors.White)
 '	lblQuestion.SetCorners(0dip)
