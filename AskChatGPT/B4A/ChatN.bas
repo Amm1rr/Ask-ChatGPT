@@ -70,7 +70,7 @@ Sub Class_Globals
 	Private AnswerRtl As Boolean = False
 	Private dd 	As DDD
 	Private Drawer As B4XDrawerAdvanced
-	Private Temperature As Double = 0.99
+	Private Temperature As Double = 1 '0.99
 	
 	'Touch Handler
 	Private base As B4XView
@@ -1043,16 +1043,19 @@ Public Sub imgSend_Click
 			
 		Else if (chkChat.Checked) Then
 			
-			sSystem = $"You are a smart helpful assistant,
-I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver.
-I want you to strictly correct my grammar, typos, and factual errors and answer my question.
-I will speak to you in ${General.Pref.FirstLang} and 
-you will reply neatly to me in ${General.Pref.FirstLang} to practise my spoken ${General.Pref.FirstLang}.
-And ask me a question relative to the same topic, to practise my ${General.Pref.FirstLang}."$
+'			sSystem = $"You are a smart helpful assistant,
+'I want you to act as a spoken ${General.Pref.FirstLang} teacher and improver.
+'I want you to strictly correct my grammar, typos, and factual errors and answer my question.
+'I will speak to you in ${General.Pref.FirstLang} and 
+'you will reply neatly to me in ${General.Pref.FirstLang} to practise my spoken ${General.Pref.FirstLang}.
+'And ask me a question relative to the same topic, to practise my ${General.Pref.FirstLang}."$
+			
+			sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors FIRST Reply Correct ${General.Pref.FirstLang} Version of my question and THEN answer that neatly."$
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
+'			sAssistant = $"Act as a Spoken ${General.Pref.FirstLang} Teacher and Improver."$
+			sAssistant = $"Reply Corrected ${General.Pref.FirstLang} and Answer to question:"$
 			
 			question = txtQuestion.Text.Trim
 		Else
@@ -1657,7 +1660,7 @@ Private Sub ControlCheckBox
 	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
 	
 	If chkTranslate.Checked Then
-		chkChat.Checked = False
+'		chkChat.Checked = False
 		If (IsLangRTL(Firstlang) = True) Then
 			chkVoiceLang.Checked = True
 		Else

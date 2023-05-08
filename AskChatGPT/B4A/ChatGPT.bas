@@ -75,13 +75,13 @@ Public Sub Query(system_string As String, _
         'an optional setting to control response generation
 		'یک تنظیم اختیاری برای کنترل تولید پاسخ.
 		
-		'"model": "text-davinci-003" OR "gpt-3.5-turbo"
+		'"model": "text-davinci-003" OR "gpt-3.5-turbo" OR "gpt-4"
 		'model to be used
         'see https://beta.openai.com/docs/models/gpt-3
 		'مدلی که باید استفاده شود
  		
         '"max_tokens": 350
-        'maximum tokens in prompt AND response
+        'maximum tokens in prompt AND response4
 		'حداکثر تعداد توکن‌ها در پرسش و پاسخ
  		
         '"temperature": 0.5
@@ -147,7 +147,8 @@ Public Sub Query(system_string As String, _
 			
 		Else ' AI - Chat
 			json.Initialize
-			json.Put("model", "gpt-3.5-turbo")
+'			json.Put("model", "gpt-3.5-turbo")
+			json.Put("model", "gpt-4")
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
@@ -182,6 +183,7 @@ Public Sub Query(system_string As String, _
 					ChatHistoryList.Add(userMessage)
 				Else
 					ChatHistoryList.Add(userMessage)
+					ChatHistoryList.Add(assistantMessage)
 				End If
 				
 				json.Put("messages", ChatHistoryList)
