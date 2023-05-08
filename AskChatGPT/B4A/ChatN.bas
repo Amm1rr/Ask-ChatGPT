@@ -657,15 +657,17 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 		tf.ResignFocus
 	#End If
 	
-	If (Index < 1) Then
-		SetChatBackground($"Bg-Chat03.jpg"$)
-	else If (Index < 10) Then
-		SetChatBackground($"Bg-Chat0${Index}.jpg"$)
-	else If (Index > 10) Then
-		Index = 10
-		SetChatBackground($"Bg-Chat${Index}.jpg"$)
-	Else
-		SetChatBackground($"Bg-Chat${Index}.jpg"$)
+	If (chkVoiceLang.Checked) Then
+		If (Index < 1) Then
+			SetChatBackground($"Bg-Chat03.jpg"$)
+		else If (Index < 10) Then
+			SetChatBackground($"Bg-Chat0${Index}.jpg"$)
+		else If (Index > 10) Then
+			Index = 10
+			SetChatBackground($"Bg-Chat${Index}.jpg"$)
+		Else
+			SetChatBackground($"Bg-Chat${Index}.jpg"$)
+		End If
 	End If
 	
 '	resetTextboxToolbar
