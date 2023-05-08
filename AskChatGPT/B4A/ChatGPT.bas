@@ -152,6 +152,7 @@ Public Sub Query(system_string As String, _
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
+'			If (AI_Type = AITYPE_Chat) Then json.Put("temperature", 0.68)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
 			
