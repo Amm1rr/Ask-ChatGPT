@@ -296,9 +296,9 @@ Public Sub Query(system_string As String, _
 			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
 				response = TimeoutText & " Error:"
 			Else If (req.ErrorMessage = "java.net.UnknownHostException: Unable to resolve host ""api.openai.com"": No address associated with hostname") Then
-				response = OpenApiHostError & ". (Code 1)"
+				response = OpenApiHostError & " (Code 1)"
 			Else If (req.ErrorMessage = "java.net.ConnectException: Failed to connect to api.openai.com/104.18.7.192:443") Then
-				response = OpenApiHostError & ". (Code 2)"
+				response = OpenApiHostError & " (Code 2)"
 			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
 				response = InstructureError
 			Else

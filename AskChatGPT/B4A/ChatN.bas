@@ -1353,12 +1353,14 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	If (txtQuestion.Text.Length < 1) Then
 		Select responsetext
 			Case wrk_chat.TimeoutText:
-				txtQuestion.Text = questionHolder
-			Case wrk_chat.OpenApiHostError:
-				txtQuestion.Text = questionHolder
+				txtQuestion.Text = question
+			Case wrk_chat.OpenApiHostError  & " (Code 1)":
+				txtQuestion.Text = question
+			Case wrk_chat.OpenApiHostError  & " (Code 2)":
+				txtQuestion.Text = question
 			Case wrk_chat.InstructureError
 				chkTranslate.Checked = True
-				txtQuestion.Text = questionHolder
+				txtQuestion.Text = question
 				imgSend_Click
 				
 		End Select
