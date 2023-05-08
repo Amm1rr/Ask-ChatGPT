@@ -16,7 +16,7 @@ Sub Class_Globals
 	Public OpenApiHostError 	As String = "api.openai.com is unreachable." & CRLF & "دسترسی به سرور وجود ندارد"
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
-	Private Const MAXTOKEN 		As Int	= 1024
+	Private Const MAXTOKEN 		As Int	= 2000
 	Private Const TIMEOUT		As Int 	= 90000
 	
 '	Private conversationId 	As Int

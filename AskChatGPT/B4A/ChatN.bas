@@ -17,6 +17,8 @@ Sub Class_Globals
 	Private heightKeyboard As Int
 	Private MaximumSize As Int = 0
 	
+	Private HalfMode As Boolean
+	
 
 	'CHAT
 	Public txtQuestion As EditText
@@ -625,7 +627,7 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 End Sub
 
 
-Private Sub clvMessagesSS_ItemLongClick (Index As Int, Value As Object)
+Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
 	Dim msg As textMessage = Value
 	If (msg.message = WaitingText) Then Return
@@ -829,7 +831,18 @@ public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
 	Try
 		MyLog("AdjustSize_Clv: " & height, True)
 		clvMessages.AsView.Top = pTopMenu.Height
-		clvMessages.Base_Resize(clvMessages.AsView.Width, panBottom.Top - pTopMenu.Height)
+			
+		If (HalfMode) Then
+			clvMessages.AsView.Height = panBottom.Top - pTopMenu.Height
+			
+			AddSeperator
+		Else
+			clvMessages.AsView.Height = panToolbar.Top - pTopMenu.Height
+			
+			RemoveSeperator
+		End If
+		clvMessages.Base_Resize(clvMessages.AsView.Width, clvMessages.AsView.Height)
+		
 ''		If (height > 0) Then clvMessages.ResizeItem(clvMessages.Size - 1, height + panBottom.Top + panBottom.Height)
 '		panToolbar.SetLayoutAnimated(0, 0%x, (clvMessages.sv.Height + pTopMenu.Height) - panToolbar.Height, 100%x, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
@@ -853,6 +866,8 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	If (NewHeight > OldHeight) Then 'Full Screen
 		LogColor("Full: " & NewHeight, Colors.Red)
 		
+		HalfMode = False
+		
 		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
 		txtQuestion.SetLayout(1%x, 1%y, panBottom.Width - 15%x, panBottom.Height - 1)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
@@ -860,6 +875,8 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		AdjustSize_Clv(0, False)
 	Else							' Half Screen
 		LogColor("Half: " & NewHeight, Colors.Red)
+		
+		HalfMode = True
 		
 		panBottom.SetLayout(panBottom.Left, NewHeight - panBottom.Height, panBottom.Width, panBottom.Height)
 		txtQuestion.SetLayout(1%x, 1%y, panBottom.Width - 15%x, panBottom.Height - 1)
@@ -1272,21 +1289,26 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 '	clvMessages.AddTextItem(WaitingText, msg)
 	
 	Dim m As textMessage
-	m.Initialize
-	m.message = WaitingText '"Proccessing..."
-	m.assistant = True
+		m.Initialize
+		m.message = WaitingText '"Proccessing..."
+		m.assistant = True
 	
 	Dim p As B4XView = xui.CreatePanel("")
-	p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 12%y)
+	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
 	p.LoadLayout("clvWaitingText")
 	p.Tag = WaitingText
 	
+	lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
 	lblWaitingText.Text = m.message
-	panWaitingText.Height = lblWaitingText.GetHeight + 2%y
+	panWaitingText.Height = lblWaitingText.GetHeight
 	lblWaitingText.FallbackLineSpacing = False
 	
 '	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
 '	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
+
+	p.SetLayoutAnimated(50,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
+	
+	RemoveSeperator
 	clvMessages.Add(p, m)
 	
 	AdjustSize_Clv(0, True)
@@ -1435,6 +1457,7 @@ Sub WriteAnswer(message As String) 'Left Side
 '	webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
+	RemoveSeperator
 	clvMessages.Add(p, m)
 '	clvMessages.AddTextItem(message, m)
 
@@ -1528,6 +1551,7 @@ Sub WriteQuestion(message As String) 'Right Side
 '	webQuestionExtra.AddJavascriptInterface(jsi,"B4A")
 '	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
+	RemoveSeperator
 	clvMessages.Add(p, m)
 	AdjustSize_Clv(0, True)
 	
@@ -1748,26 +1772,42 @@ Private Sub icConfigTopMenu_Click
 				m.assistant = True
 			
 			Dim p As B4XView = xui.CreatePanel("")
-				p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width + 8%x, 10%y)
+				mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
 				p.LoadLayout("clvWaitingText")
+				p.RemoveViewFromParent
 				p.Tag = WaitingText
 			
+			lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
 			lblWaitingText.Text = m.message
 			panWaitingText.Height = lblWaitingText.GetHeight
 			panWaitingText.Width = 80%x
 			lblWaitingText.FallbackLineSpacing = False
 			
+			p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
+			
+			RemoveSeperator
 			clvMessages.Add(p, m)
 			
 			AdjustSize_Clv(0, True)
 			
 		End If
 		
-		
 	Else
 		Drawer.LeftOpen = Not (Drawer.LeftOpen)
 	End If
 	
+End Sub
+
+Private Sub RemoveSeperator
+	If (clvMessages.Size < 1) Then Return
+	If (clvMessages.GetValue(clvMessages.Size-1) = "SEPERATOR") Then
+		clvMessages.RemoveAt(clvMessages.Size-1)
+	End If
+End Sub
+
+Private Sub AddSeperator
+	If (clvMessages.GetValue(clvMessages.Size-1) <> "SEPERATOR") Then Return
+	clvMessages.AddTextItem("", "SEPERATOR")
 End Sub
 
 Private Sub icMenuTopMenu_Click
