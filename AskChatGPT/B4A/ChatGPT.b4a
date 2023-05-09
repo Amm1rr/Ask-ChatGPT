@@ -150,7 +150,7 @@ Sub Activity_Resume
 	ChatN1.MyLog("Main.Activity_Resum", True)
 	
 	ChatN1.AdjustSize_Clv(0, False)
-'	ChatN1.IME_HeightChanged(100%y, 0)
+	ChatN1.IME_HeightChanged(100%y, 0)
 	
 	If IsRelevantIntent(Activity.GetStartingIntent) Then
 		
