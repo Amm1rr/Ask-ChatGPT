@@ -148,8 +148,8 @@ Public Sub Query(system_string As String, _
 			
 		Else ' AI - Chat
 			json.Initialize
-'			json.Put("model", "gpt-3.5-turbo")
-			json.Put("model", "gpt-4")
+			json.Put("model", "gpt-3.5-turbo")
+'			json.Put("model", "gpt-4")
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
