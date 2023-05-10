@@ -18,7 +18,8 @@ File23=PROMPTS.md
 File24=puton.png
 File25=roboto-regular.ttf
 File26=settings.png
-File27=voice.png
+File27=Share.bal
+File28=voice.png
 File3=Bg-Chat02.jpg
 File4=Bg-Chat03.jpg
 File5=Bg-Chat04.jpg
@@ -46,6 +47,7 @@ FileGroup24=Default Group
 FileGroup25=Default Group
 FileGroup26=Default Group
 FileGroup27=Default Group
+FileGroup28=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
 FileGroup5=Default Group
@@ -54,38 +56,39 @@ FileGroup7=Default Group
 FileGroup8=Default Group
 FileGroup9=Default Group
 Group=Default Group
-Library1=as_textfieldadvanced
-Library10=md2html4a.11
-Library11=okhttputils2
-Library12=phone
-Library13=reflection
-Library14=securemytext
-Library15=viewsex
-Library16=webviewextras2
-Library17=xcustomlistview
-Library18=xui views
-Library19=randomaccessfile
-Library2=b4xdraweradvanced
-Library3=bctextengine
-Library4=clipboard
-Library5=core
-Library6=designerutils
-Library7=ime2
-Library8=json
-Library9=keyvaluestore2
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="image/*" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~
+Library1=amir_smoothcheckbox
+Library10=keyvaluestore2
+Library11=md2html4a.11
+Library12=okhttputils2
+Library13=phone
+Library14=randomaccessfile
+Library15=reflection
+Library16=securemytext
+Library17=viewsex
+Library18=webviewextras2
+Library19=xcustomlistview
+Library2=as_textfieldadvanced
+Library20=xui views
+Library3=b4xdraweradvanced
+Library4=bctextengine
+Library5=clipboard
+Library6=core
+Library7=designerutils
+Library8=ime2
+Library9=json
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~'  <data android:mimeType="image/*" />~\n~~\n~SetApplicationAttribute(android:launchMode,  "standard")~\n~SetActivityAttribute("main", android:launchMode, "standard")~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~~\n~'########## Transparent 		# First Method: Without Transparent Statusbar~\n~' این روش نور وضعیت رو سیاه رنگ میکنه ولی از طریق کد~\n~' نوار وضعیت رو شفاف کردم~\n~~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@android:style/Theme.Translucent")~\n~SetActivityAttribute (Reciver, android:theme, "@android:style/Theme.Translucent")~\n~~\n~'########## Transparent 		# Seconde Method: With Transparent Statusbar~\n~' این متد نوار وظیفه رو همرنگ پس زمینه میکنه ولی در هنگار اجرای اولیه ی اکتیویتی~\n~' یه لِگ کوچیک داره که زیاد جالب نیست، با جستجوی بیشتر احتمالا میشه مشکلش رو حل کرد.~\n~~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@style/Theme_Main")~\n~'SetActivityAttribute (Reciver, android:theme, "@style/Theme_Main")~\n~~\n~'CreateResource (values, theme_main.xml,~\n~'<resources>~\n~'	<style name="Theme_Main" parent="android:Theme">~\n~'		<item name="android:windowIsTranslucent">true</item>~\n~'		<item name="android:windowBackground">@android:color/transparent</item>~\n~'		<item name="android:windowContentOverlay">@null</item>~\n~'		<item name="android:windowNoTitle">true</item>~\n~'		<item name="android:windowIsFloating">true</item>~\n~'		<item name="android:backgroundDimEnabled">false</item>~\n~'</style>~\n~'</resources>~\n~')~\n~
 Module1=ACTION_PROCESS_TEXT
 Module10=UpDown
 Module2=Bart
 Module3=ChatGPT
 Module4=ChatN
-Module5=ChatNew
-Module6=CLVNested
-Module7=General
+Module5=CLVNested
+Module6=General
+Module7=Reciver
 Module8=ResizingTextComponent
 Module9=Starter
-NumberOfFiles=27
-NumberOfLibraries=19
+NumberOfFiles=28
+NumberOfLibraries=20
 NumberOfModules=10
 Version=12.2
 @EndOfDesignText@
@@ -109,7 +112,7 @@ Sub Process_Globals
 	Private OldIntent 				As Intent
 	Public	Voicer 					As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
-	Public 	strActoinTextSelected	As String
+	Public 	TextHolder				As String
 	
 	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
@@ -128,9 +131,7 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	General.LoadSetting
 	
-	
-'	chat1.Initialize(Activity)
-	ChatN1.Initialize(Activity)
+	ChatN1.Initialize(Activity, "")
 	Activity.Title = "Ask ChatGPT"
 	
 	Voicer.Initialize("vr")
@@ -139,9 +140,6 @@ Sub Activity_Create(FirstTime As Boolean)
 	ime.AddHeightChangedEvent
 	
 	ChatN1.txtQuestion.RequestFocus
-	
-'	ChatN1.panMain.RemoveAllViews
-'	Activity.AddView(ChatN1.panMain, 0, ChatN1.pTopMenu.Height, Activity.Width, ChatN1.clvMessages.sv.Height)
 	
 End Sub
 
@@ -154,6 +152,7 @@ Sub Activity_Resume
 	
 	If IsRelevantIntent(Activity.GetStartingIntent) Then
 		
+		ChatN1.MyLog("Main.Activity_Resume Shared Text", True)
 		
 		Dim intent As JavaObject = Activity.GetStartingIntent
 		
@@ -164,10 +163,11 @@ Sub Activity_Resume
 		Dim sharedText 	As String = intnew.GetExtra("android.intent.extra.TEXT") 'Get the shared text
 '		LogColor("Here: " & sharedText, Colors.Red)
 		
-		ChatN1.txtQuestion.Text = sharedText
+'		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
-		If (General.Pref.AutoSend) Then _
-			ChatN1.imgSend_Click
+		
+		Dim chat As ChatN
+			chat.Initialize(Activity, sharedText)
 		
 		#Region Shared a Image
 '		'### It's Image
@@ -182,16 +182,10 @@ Sub Activity_Resume
 '		End Try
 		#End Region
 		
-	Else If (strActoinTextSelected <> "") Then
-		
-'		LogColor("Sec: " & strActoinTextSelected, Colors.Magenta)
-		ChatN1.txtQuestion.Text = strActoinTextSelected
-		strActoinTextSelected = ""
-		Sleep(0)
-		If (General.Pref.AutoSend) Then _
-			ChatN1.imgSend_Click
-		
 	End If
+	
+	ChatN1.txtQuestion.Text = TextHolder
+	
 End Sub
 
 'Share Text
@@ -260,6 +254,7 @@ Private Sub SendToTwitter(text As String)
 End Sub
 
 Sub Activity_Pause (UserClosed As Boolean)
+	TextHolder = ChatN1.txtQuestion.Text
 	General.SaveSetting
 End Sub
 

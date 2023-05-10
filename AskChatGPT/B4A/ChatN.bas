@@ -95,9 +95,9 @@ Sub Class_Globals
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
-Public Sub Initialize(parent As B4XView)
+Public Sub Initialize(parent As B4XView, text As String)
 	
-	MyLog("Initilize", True)
+	MyLog($"Initilize, ${text}"$, True)
 	
 	mainparent = parent
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
@@ -187,6 +187,12 @@ Public Sub Initialize(parent As B4XView)
 	Check_First_Sec_Lang_Visibility
 	
 	SetChatBackground("Bg-Chat03.jpg")
+	
+	If Not (text = "") Then
+		LogColor("Shared " & text, Colors.Red)
+		txtQuestion.Text = text
+		imgSend_Click
+	End If
 	
 End Sub
 

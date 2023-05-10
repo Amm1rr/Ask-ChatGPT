@@ -12,7 +12,7 @@ Version=8.8
 Sub Process_Globals
 	'These global variables will be declared once when the application starts.
 	'These variables can be accessed from all modules.
-
+	Public SharedText As String
 End Sub
 
 Sub Globals
@@ -25,14 +25,19 @@ Sub Activity_Create(FirstTime As Boolean)
 	'Do not forget to load the layout file created with the visual designer. For example:
 	'Activity.LoadLayout("Layout1")
 	
+	LogColor($"Share Initilize, ${FirstTime}"$, Colors.Blue)
+	
 	Try
 		If Activity.GetStartingIntent.Action="android.intent.action.PROCESS_TEXT" Then
-			Main.strActoinTextSelected = Activity.GetStartingIntent.GetExtra("android.intent.extra.PROCESS_TEXT")
-			StartActivity(Main)
+			SharedText = Activity.GetStartingIntent.GetExtra("android.intent.extra.PROCESS_TEXT")
+			StartActivity(Reciver)
+			
 		End If
 	Catch
 		LogColor("ACTION_PROCESS_TEXT - Activity_Create:" & CRLF & LastException, Colors.Red)
 	End Try
+	
+	LogColor("Activity Finish", Colors.Blue)
 	Activity.Finish
 End Sub
 
