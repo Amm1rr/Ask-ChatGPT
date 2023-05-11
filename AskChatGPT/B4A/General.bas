@@ -6,15 +6,34 @@ Version=12.2
 @EndOfDesignText@
 
 Sub Process_Globals
-	Private xui As XUI
+	Private xui 					As XUI
+	Private ColorLog				As Int = Colors.LightGray
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
-	Public  IsDebug					As Boolean = True
+	Public  IsDebug					As Boolean = False
 End Sub
 
 #Region Save and Load Settings
 
+Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
+	
+	DateTime.DateFormat = "HH:mm:ss.SSS"
+	Dim time As String  = DateTime.Date(DateTime.Now)
+	
+	If (AlwaysShow) Then
+		LogColor(text & TAB & " (" & time & ")", color)
+		Return
+	End If
+		
+	If (IsDebug) Then
+		LogColor(text & TAB & " (" & time & ")", color)
+		Return
+	End If
+End Sub
+
 Public Sub SaveSetting
+	
+	MyLog("General.SaveSetting", ColorLog, False)
 	
 	If Not(Sett.IsInitialized) Then
 		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
@@ -34,6 +53,8 @@ End Sub
 
 Public Sub LoadSetting
 	
+	MyLog("General.LoadSetting", ColorLog, False)
+	
 	If Not(Sett.IsInitialized) Then
 		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
 	End If
@@ -51,7 +72,9 @@ Public Sub LoadSetting
 End Sub
 
 Private Sub GetLangFirstStr(txt As Object) As String
-
+	
+	MyLog("General.GetLangFirstStr: " & txt, ColorLog, False)
+	
 	If IsNull(txt) Then Return "English"
 	
 	Dim val As String = txt.As(String)
@@ -62,17 +85,20 @@ Private Sub GetLangFirstStr(txt As Object) As String
 End Sub
 
 Private Sub GetDefaultMemory(val As Object) As Boolean
+'	MyLog("General.GetDefaultMemory: " & val, ColorLog, False)
 	If IsNull(val) Then Return True
 	Return val.As(Boolean)
 End Sub
 
 Public Sub IsNull(txt As String) As Boolean
+'	MyLog("General.IsNull: " & txt, ColorLog, False)
 	If (txt = Null) Or (txt.ToLowerCase) = "null" Then Return True
 	Return False
 End Sub
 
 'Return correct work with A or AN
 Public Sub a_OR_an(word As String) As String
+	MyLog("General.a_OR_an: " & word, ColorLog, False)
 	Dim firstLetter As String
 		firstLetter = word.SubString2(0, 1).ToLowerCase
 	
@@ -85,6 +111,7 @@ Public Sub a_OR_an(word As String) As String
 End Sub
 
 Public Sub IsAWord(text As String) As Boolean
+	MyLog("General.IsAWord: " & text, ColorLog, False)
 	Dim words() As String = Regex.Split("\s+", text.Trim)
 	If words.Length = 1 Then
 		Return True
@@ -94,13 +121,15 @@ Public Sub IsAWord(text As String) As Boolean
 End Sub
 
 Private Sub GetLangSecStr(txt As Object) As String
-	
+	MyLog("General.GetLangSecStr: " & txt, ColorLog, False)
 	If IsNull(txt) Then Return "(None)"
 	Return txt.As(String)
 	
 End Sub
 
 Private Sub GetCreativityInt(val As Object) As Int
+	
+'	MyLog("General.GetCreativityInt: " & val, ColorLog, False)
 
 	If IsNull(val) Then Return 5
 	If (val < 0)   Then Return 5
@@ -114,6 +143,7 @@ Private Sub GetCreativityInt(val As Object) As Int
 End Sub
 
 Private Sub GetBoolean(val As Object) As Boolean
+'	MyLog("General.GetBoolean: " & val, ColorLog, False)
 	If IsNull(val) Then Return False
 	Return val.As(Boolean)
 End Sub
@@ -121,6 +151,7 @@ End Sub
 #End Region Setting
 
 Sub Size_textVertical(lb As Label,text As String) As Int
+	MyLog("General.Size_textVertical: " & text, ColorLog, False)
 	If text.Length < 1 Then Return 0
 	Private su As StringUtils
 	Return su.MeasureMultilineTextHeight(lb,text)
@@ -128,6 +159,7 @@ End Sub
 
 
 Sub Set_StatusBarColor(clr As Int)
+	MyLog("General.Set_StatusBarColor: " & clr, ColorLog, False)
 	Dim p As Phone
 	If p.SdkVersion >= 21 Then
 		Dim jo As JavaObject
@@ -141,6 +173,7 @@ End Sub
 
 
 Sub Round_Image (iv As ImageView, pasta As String, imagem As String )
+	MyLog("General.Round_Image: " & imagem, ColorLog, False)
 	Private Input As B4XBitmap = LoadBitmapResize(pasta,imagem,iv.Width,iv.Height,True)
 	If Input.Width <> Input.Height Then
 		Dim l As Int = Min(Input.Width, Input.Height)
@@ -161,10 +194,8 @@ Sub Round_Image (iv As ImageView, pasta As String, imagem As String )
 	iv.Bitmap = res
 End Sub
 
-
-
-
 Sub Size_textHorizontal(lb As Label, text As String) As Int
+	MyLog("General.Size_textHorizontal: " & text, ColorLog, False)
 	Private bmp As Bitmap
 	bmp.InitializeMutable(1dip, 1dip)
 	Private cvs As Canvas
@@ -172,9 +203,8 @@ Sub Size_textHorizontal(lb As Label, text As String) As Int
 	Return cvs.MeasureStringWidth(text, lb.Typeface , lb.TextSize)
 End Sub
 
-
-
 Sub setPadding(v As View, Left As Int, Top As Int, Right As Int, Bottom As Int)
+	MyLog("General.setPadding", ColorLog, False)
 	Dim jo = v As JavaObject
 	jo.RunMethod("setPadding", Array As Object(Left, Top, Right, Bottom))
 End Sub

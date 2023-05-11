@@ -30,6 +30,8 @@ Sub Class_Globals
 	Private icMenuTopMenu As ImageView
 	Private icConfigTopMenu As ImageView
 	
+	Private ColorLog As Int = Colors.Black
+	
 	Private WaitingText As String = "Proccessing..."
 	Private History 	As String
 	Public IsWorking As Boolean
@@ -97,7 +99,7 @@ End Sub
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize(parent As B4XView, text As String)
 	
-	MyLog($"Initilize, ${text}"$, True)
+	MyLog($"Initilize: ${text}"$, ColorLog, True)
 	
 	mainparent = parent
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
@@ -123,9 +125,9 @@ Public Sub Initialize(parent As B4XView, text As String)
 '	History = "You are a helpful assistant."
 	
 	'TOP MENU
-	Private csTitle As CSBuilder
-	csTitle.Initialize
-	csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
+	Dim csTitle As CSBuilder
+		csTitle.Initialize
+		csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
 	lblTitleTopMenu.Text = csTitle
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
 	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
@@ -133,8 +135,8 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	MemoryChanged
 	
-	Private cc As ColorDrawable
-	cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
+	Dim cc As ColorDrawable
+		cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
 	panBottom.Background = cc
 	txtQuestion.Background = Null
 	General.setPadding(txtQuestion,5dip,5dip,5dip,5dip) 'REMOVE PADDING DO EDITTEXT
@@ -188,17 +190,19 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	SetChatBackground("Bg-Chat03.jpg")
 	
-	If Not (text = "") Then
-		LogColor("Shared " & text, Colors.Red)
-		txtQuestion.Text = text
-		imgSend_Click
-	End If
+	LogColor("ChatN.Init text: " & text, Colors.Red)
+	txtQuestion.Text = text
+'	If Not (text = "") Then
+'		LogColor("ChatN.Initialize.ReciveText: " & text, Colors.Blue)
+'		txtQuestion.Text = text
+''		imgSend_Click
+'	End If
 	
 End Sub
 
 Private Sub SetChatBackground(fileName As String)
 	
-	MyLog("SetChatBackground", True)
+	MyLog("SetChatBackground", ColorLog, True)
 	
 	panMain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, fileName, clvMessages.sv.Width, clvMessages.sv.Height, False)).Gravity = Gravity.FILL
 	
@@ -208,7 +212,7 @@ Private Sub SetChatBackground(fileName As String)
 End Sub
 
 Public Sub MemoryChanged
-	MyLog("MemoryChanged", False)
+	MyLog("MemoryChanged", ColorLog, False)
 	If (General.Pref.Memory) Then
 		imgBrain.SetVisibleAnimated(300, True)
 '		imgBrain.SetColorAnimated(0, Colors.ARGB(100,116,165,255), Colors.ARGB(100,116,165,105))
@@ -221,7 +225,7 @@ Public Sub MemoryChanged
 End Sub
 
 Public Sub DevModeCheck
-	MyLog("DevModeCheck", False)
+	MyLog("DevModeCheck", ColorLog, False)
 	icConfigTopMenu.Visible = General.Pref.IsDevMode
 End Sub
 
@@ -354,7 +358,7 @@ End Sub
 
 
 Private Sub Drawer_StateChanged (Open As Boolean)
-	MyLog("Drawer State Open: " & Open, True)
+	MyLog("Drawer State Open: " & Open, ColorLog, True)
 	If (Open) Then
 		UpDown1Drawer.Value = General.Pref.Creativity 'Temperature * 10
 		chkAutoSendDrawer.Checked = General.Pref.AutoSend
@@ -656,7 +660,7 @@ Private Sub String_Remove_DoubleQuot(text As String) As String
 End Sub
 
 Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
-	MyLog("clvMessages_ItemClick: " & Index & " - " & Value, True)
+	MyLog("clvMessages_ItemClick: " & Index & " - " & Value, ColorLog, True)
 	HideKeyboard
 	#if B4i
 		Dim tf As View = TextField.TextField
@@ -740,29 +744,33 @@ Private Sub resetTextboxToolbar
 	End If
 End Sub
 
-Public Sub MyLog(text As String, AlwaysShow As Boolean)
-'	Dim obj As B4XView = Sender
-'	Try
-
-		If (AlwaysShow) Then
-			LogColor(text, Colors.Black)
-			Return
-		End If
-		
-		If (General.IsDebug) Then
-			LogColor(text, Colors.Black)
-			Return
-		End If
-		
-'	Catch
-'		LogColor($"${obj} & ": " text"$, Colors.Blue)
-'		Log(LastException)
-'	End Try
+Private Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
+''	Dim obj As B4XView = Sender
+''	Try
+		General.MyLog("ChatN." & text, ColorLog, AlwaysShow)
+'		
+'		DateTime.DateFormat="HH:mm:ss.SSS"
+'		Dim time As String = DateTime.Date(DateTime.Now)
+'		
+'		If (AlwaysShow) Then
+'			LogColor(text & TAB & " (" & time & ")", color)
+'			Return
+'		End If
+'		
+'		If (General.IsDebug) Then
+'			LogColor(text & TAB & " (" & time & ")", color)
+'			Return
+'		End If
+'		
+''	Catch
+''		LogColor($"${obj} & ": " text"$, Colors.Blue)
+''		Log(LastException)
+''	End Try
 End Sub
 
 Sub txtQuestion_TextChanged (Old As String, New As String)
 	
-	MyLog("txtQuestion_TextChanged: " & Old & " - " & New, False)
+	MyLog("txtQuestion_TextChanged: " & Old & " - " & New, ColorLog, False)
 	
 	'Voice to Text Icon
 	If New.Length > 0 Then
@@ -784,17 +792,17 @@ End Sub
 
 Private Sub TextboxHeightChange(text As String)
 	
-	MyLog("TextboxHeightChange: " & text, False)
+	MyLog("TextboxHeightChange: " & text, ColorLog, False)
 	
 	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
 	
 	If i > 8%y Then 'It is small, we are going to increase to the limit
-		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Red)
+'		LogColor("TextboxHeightChange: " & text & " - " & i, Colors.Red)
 		
 		If (panBottom.Height > i) Then
-			LogColor(i, Colors.Red)
+'			LogColor("ChatN." & i, Colors.Red)
 			
 			panBottom.Height = i
 			txtQuestion.Height = i
@@ -803,7 +811,7 @@ Private Sub TextboxHeightChange(text As String)
 			panToolbar.Top = panBottom.Top - panToolbar.Height
 			AdjustSize_Clv(panBottom.Height, False)
 		Else
-			LogColor(i, Colors.Blue)
+'			LogColor("ChatN." & i, Colors.Blue)
 			
 			panBottom.Height = i
 			txtQuestion.Height = i
@@ -814,7 +822,7 @@ Private Sub TextboxHeightChange(text As String)
 		End If
 	Else
 		If (i < 9%y) Then
-			LogColor("Smaller: " & text & " - " & i, Colors.Red)
+'			LogColor("ChatN.Smaller: " & text & " - " & i, Colors.Red)
 			panBottom.Height = 9%y
 			txtQuestion.Height = panBottom.Height - 1
 			panBottom.Top = heightKeyboard - panBottom.Height 'panToolbar.Top + panToolbar.Height
@@ -824,7 +832,7 @@ Private Sub TextboxHeightChange(text As String)
 			
 		Else
 			
-			LogColor("Normal: " & text & " - " & i, Colors.Blue)
+'			LogColor("ChatN.Normal: " & text & " - " & i, Colors.Blue)
 '			panBottom.Height = 100%y * 0.2
 			panBottom.Top = panToolbar.Top + panToolbar.Height
 			txtQuestion.Top = panBottom.Top
@@ -837,7 +845,7 @@ End Sub
 
 public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
 	Try
-		MyLog("AdjustSize_Clv: " & height, True)
+		MyLog("AdjustSize_Clv: " & height, ColorLog, False)
 		clvMessages.AsView.Top = pTopMenu.Height
 			
 		If (HalfMode) Then
@@ -860,19 +868,19 @@ public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
 		panTextToolbar.SetLayout(txtQuestion.Width - 30%x, txtQuestion.Height - 5%x, 77%x, 11%y)
 		
 	Catch
-		MyLog("AdjustSize_Clv: " & height, True)
+		MyLog("AdjustSize_Clv: " & height, ColorLog, True)
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
 End Sub
 
 Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	
-	MyLog("IME_HeightChanged: NewHeight= " & NewHeight, False)
+	MyLog("IME_HeightChanged: NewHeight= " & NewHeight, ColorLog, False)
 	
 	heightKeyboard = NewHeight
 	
 	If (NewHeight > OldHeight) Then 'Full Screen
-		LogColor("Full: " & NewHeight, Colors.Red)
+		LogColor("ChatN.IME_HeightChanged.Full: " & NewHeight, ColorLog)
 		
 		HalfMode = False
 		
@@ -882,7 +890,7 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, NewHeight - panBottom.Height - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
 	Else							' Half Screen
-		LogColor("Half: " & NewHeight, Colors.Red)
+		LogColor("ChatN.IME_HeightChanged.Half: " & NewHeight, ColorLog)
 		
 		HalfMode = True
 		
@@ -908,6 +916,7 @@ End Sub
 
 
 Public Sub ScrollToLastItem(CLV As CustomListView)
+'	MyLog("ScrollToLastItem", ColorLog, False)
 	Sleep(50)
 	If CLV.Size > 0 Then
 		If CLV.sv.ScrollViewContentHeight > CLV.sv.Height Then
@@ -916,10 +925,9 @@ Public Sub ScrollToLastItem(CLV As CustomListView)
 	End If
 End Sub
 
-
-
-
 Private Sub imgSend_LongClick
+
+	MyLog("imgSend_LongClick", ColorLog, True)
 	
 	Dim SecLang As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
 	If (SecLang = "(None)") Then Return
@@ -939,6 +947,8 @@ Private Sub imgSend_LongClick
 End Sub
 
 Private Sub csTitle_Click (Tag As Object)
+	
+	MyLog("csTitle_Click: " & Tag, ColorLog, True)
 	
 	' If the user clicked on
 	' the word "Amm1rr" Tag is 1.
@@ -963,12 +973,15 @@ Private Sub csTitle_Click (Tag As Object)
 End Sub
 
 Sub setScrollBarEnabled(v As View, vertical As Boolean, horizontal As Boolean)
+	MyLog("setScrollBarEnabled", ColorLog, False)
 	Dim jo = v As JavaObject
 		jo.RunMethod("setVerticalScrollBarEnabled"  , Array As Object (vertical  ))
 		jo.RunMethod("setHorizontalScrollBarEnabled", Array As Object (horizontal))
 End Sub
 
 Public Sub imgSend_Click
+	
+	MyLog("imgSend_Click", ColorLog, True)
 	
 	If (IsWorking) Then Return
 	
@@ -1069,7 +1082,6 @@ Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfull
 		txtQuestion.Text = ""
 		
 	Else If Main.voicer.IsSupported Then	
-		Log("imgSend_Click: Voice" & imgSend.Tag)
 		
 		ClickSimulation
 		VoiceLang("en")
@@ -1087,10 +1099,10 @@ Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfull
 		IsWorking = False
 	
 	Else
-		LogColor("imgSend_Click: ELSE condition=> Voice:" & Result, Colors.Blue)
+		LogColor("imgSend_Click: ELSE condition=> Voice:" & Result, Colors.Cyan)
 		IsWorking = False
 		imgSend.Tag = "text"
-		imgSend_Click
+'		imgSend_Click
 	End If
 	
 '	#if B4J
@@ -1107,6 +1119,8 @@ Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfull
 End Sub
 
 Private Sub VoiceLang(lng As String)
+	
+	MyLog("VoiceLang: " & lng, ColorLog, False)
 	
 	If lng.Length > 0 Then
 		
@@ -1245,6 +1259,9 @@ Private Sub VoiceLang(lng As String)
 End Sub
 
 Private Sub RecognizeVoice As ResumableSub
+	
+	MyLog("RecognizeVoice", ColorLog, False)
+	
 	Main.voicer.Listen
 	Wait For vr_Result (Success As Boolean, Texts As List)
 	If Success And Texts.Size > 0 Then
@@ -1270,6 +1287,7 @@ End Sub
 'End Sub
 
 Private Sub ChangeHeight(height As Int)
+'	MyLog("ChangeHeight: " & height, ColorLog, False)
 	Dim y As Int = DipToCurrent(webAnswerExtra.GetContentHeight) * webAnswerExtra.GetScale / 100
 	webAnswerExtra.FlingScroll(0, y * 100)
 	pnlAnswer.Height = webAnswerExtra.GetContentHeight
@@ -1381,7 +1399,7 @@ End Sub
 
 Sub WriteAnswer(message As String) 'Left Side
 	
-	MyLog($"WriteAnswer: ${message}"$, True)
+	MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
 	
 	Dim m As textMessage
 		m.Initialize
@@ -1424,11 +1442,11 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	' Check if the label width is equal to or larger than the available width in the view
 	If (labelWidth >= (clvMessages.AsView.Width)) Then
-		LogColor("Answer Bigger: " & labelWidth, Colors.Red)
+'		LogColor("Answer Bigger: " & labelWidth, Colors.Red)
 		pnlAnswer.Left = 5%x
 		pnlAnswer.Width = clvMessages.AsView.Width - pnlAnswer.Left - 15%x
 	Else
-		LogColor("Answer Smaller: " & labelWidth, Colors.Blue)
+'		LogColor("Answer Smaller: " & labelWidth, Colors.Blue)
 		
 		Dim wid As Int = labelWidth + 5%x
 		Dim Left As Int = 5%x
@@ -1439,15 +1457,15 @@ Sub WriteAnswer(message As String) 'Left Side
 			
 			' Adjust panel position based on available space
 			If (Left - 5%x) < 5%x Then
-				Log("Answer Smaller: Width: " & pnlAnswer.Width)
+'				Log("Answer Smaller: Width: " & pnlAnswer.Width)
 				pnlAnswer.Width = clvMessages.sv.Width - 15%x
 			Else
 				pnlAnswer.Width = wid
-				Log("Answer Smaller: Inside: " & pnlAnswer.Width)
+'				Log("Answer Smaller: Inside: " & pnlAnswer.Width)
 			End If
 		Else
 			If (wid >= clvMessages.sv.Width - 15%x) Then
-				Log("Answer Else: " & pnlAnswer.Left)
+'				Log("Answer Else: " & pnlAnswer.Left)
 				pnlAnswer.Width = clvMessages.sv.Width - 15%x
 			Else
 				pnlAnswer.Width = wid
@@ -1481,7 +1499,7 @@ End Sub
 
 Sub WriteQuestion(message As String) 'Right Side
 	
-	MyLog($"WriteQuestion: ${message}"$, True)
+	MyLog($"WriteQuestion: ${message}"$, ColorLog, True)
 	
 	Dim m As textMessage
 		m.Initialize
@@ -1606,7 +1624,7 @@ Private Sub lblClearText_LongClick
 End Sub
 
 Public Sub ResetAI
-	MyLog("ResetAI", True)
+	MyLog("ResetAI", ColorLog, True)
 	wrk_chat.Initialize
 	IsWorking = False
 	History = Null
@@ -1620,7 +1638,7 @@ Public Sub ResetAI
 End Sub
 
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
-	MyLog("txtQuestion_FocusChanged: " & HasFocus, True)
+'	MyLog("txtQuestion_FocusChanged: " & HasFocus, ColorLog, False)
 '	resetTextboxToolbar
 	If Not (HasFocus) Then HideKeyboard
 End Sub
@@ -1654,6 +1672,8 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 End Sub
 
 Private Sub ControlCheckBox
+	
+	MyLog("ControlCheckBox", ColorLog, False)
 	
 	Dim Firstlang 	As String = cmbLangDrawerFirst.GetItem(cmbLangDrawerFirst.SelectedIndex)
 	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
@@ -1739,7 +1759,7 @@ End Sub
 
 Private Sub icConfigTopMenu_Click
 
-	MyLog("icConfigTopMenu_Click", True)
+	MyLog("icConfigTopMenu_Click", ColorLog, True)
 	
 	ClickSimulation
 	
@@ -1939,5 +1959,5 @@ End Sub
 
 
 Private Sub panTextToolbar_Click
-	Log("Click")
+	
 End Sub

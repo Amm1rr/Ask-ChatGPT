@@ -76,20 +76,19 @@ Library6=core
 Library7=designerutils
 Library8=ime2
 Library9=json
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(Main,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~'  <data android:mimeType="image/*" />~\n~~\n~SetApplicationAttribute(android:launchMode,  "standard")~\n~SetActivityAttribute("main", android:launchMode, "standard")~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~~\n~'########## Transparent 		# First Method: Without Transparent Statusbar~\n~' این روش نور وضعیت رو سیاه رنگ میکنه ولی از طریق کد~\n~' نوار وضعیت رو شفاف کردم~\n~~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@android:style/Theme.Translucent")~\n~SetActivityAttribute (Reciver, android:theme, "@android:style/Theme.Translucent")~\n~~\n~'########## Transparent 		# Seconde Method: With Transparent Statusbar~\n~' این متد نوار وظیفه رو همرنگ پس زمینه میکنه ولی در هنگار اجرای اولیه ی اکتیویتی~\n~' یه لِگ کوچیک داره که زیاد جالب نیست، با جستجوی بیشتر احتمالا میشه مشکلش رو حل کرد.~\n~~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@style/Theme_Main")~\n~'SetActivityAttribute (Reciver, android:theme, "@style/Theme_Main")~\n~~\n~'CreateResource (values, theme_main.xml,~\n~'<resources>~\n~'	<style name="Theme_Main" parent="android:Theme">~\n~'		<item name="android:windowIsTranslucent">true</item>~\n~'		<item name="android:windowBackground">@android:color/transparent</item>~\n~'		<item name="android:windowContentOverlay">@null</item>~\n~'		<item name="android:windowNoTitle">true</item>~\n~'		<item name="android:windowIsFloating">true</item>~\n~'		<item name="android:backgroundDimEnabled">false</item>~\n~'</style>~\n~'</resources>~\n~')~\n~
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~'  <data android:mimeType="image/*" />~\n~~\n~SetApplicationAttribute(android:launchMode,  "singleTask")~\n~'SetActivityAttribute(main, android:launchMode, "standard")~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:launchMode, "singleTop")~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~~\n~'########## Transparent 		# First Method: Without Transparent Statusbar~\n~' این روش نور وضعیت رو سیاه رنگ میکنه ولی از طریق کد~\n~' نوار وضعیت رو شفاف کردم~\n~~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@android:style/Theme.Translucent")~\n~'SetActivityAttribute (Reciver, android:theme, "@android:style/Theme.Translucent")~\n~~\n~'########## Transparent 		# Seconde Method: With Transparent Statusbar~\n~' این متد نوار وظیفه رو همرنگ پس زمینه میکنه ولی در هنگار اجرای اولیه ی اکتیویتی~\n~' یه لِگ کوچیک داره که زیاد جالب نیست، با جستجوی بیشتر احتمالا میشه مشکلش رو حل کرد.~\n~~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@style/Theme_Main")~\n~~\n~CreateResource (values, theme_main.xml,~\n~<resources>~\n~	<style name="Theme_Main" parent="android:Theme">~\n~		<item name="android:windowIsTranslucent">true</item>~\n~		<item name="android:windowBackground">@android:color/transparent</item>~\n~		<item name="android:windowContentOverlay">@null</item>~\n~		<item name="android:windowNoTitle">true</item>~\n~		<item name="android:windowIsFloating">true</item>~\n~		<item name="android:backgroundDimEnabled">false</item>~\n~</style>~\n~</resources>~\n~)~\n~
 Module1=ACTION_PROCESS_TEXT
-Module10=UpDown
 Module2=Bart
 Module3=ChatGPT
 Module4=ChatN
 Module5=CLVNested
 Module6=General
-Module7=Reciver
-Module8=ResizingTextComponent
-Module9=Starter
+Module7=ResizingTextComponent
+Module8=Starter
+Module9=UpDown
 NumberOfFiles=28
 NumberOfLibraries=20
-NumberOfModules=10
+NumberOfModules=9
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -110,9 +109,12 @@ Version=12.2
 
 Sub Process_Globals
 	Private OldIntent 				As Intent
+	Private TextHolder				As String
+	Private ColorLog				As Int 	= Colors.Magenta
 	Public	Voicer 					As VoiceRecognition
 	Public 	ActionBarHomeClicked 	As Boolean
-	Public 	TextHolder				As String
+	Public 	TextShared				As String
+	Public  intpub					As Intent
 	
 	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
@@ -127,11 +129,39 @@ Sub Globals
 	Private ime 				As IME2
 End Sub
 
+Private Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
+	General.MyLog("Main." & text, color, AlwaysShow)
+End Sub
+
 Sub Activity_Create(FirstTime As Boolean)
+	
+	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
 	
 	General.LoadSetting
 	
-	ChatN1.Initialize(Activity, "")
+	intpub = Activity.GetStartingIntent
+	If Not (ChatN1.IsInitialized) Then ChatN1.Initialize(Activity, "")
+'	If (TextShared = "[NEW]") Then
+'		
+'		LogColor("Main.Create [New]", Colors.Red)
+'		
+'		ChatN1.Initialize(Activity, "")
+''		TextShared = ""
+'
+'	Else If (TextShared <> "") Then
+'		
+'		LogColor("Main.Create SHARED", Colors.Red)
+'		
+'		ChatN1.Initialize(Activity, TextShared)
+'		intpub = Null
+''		TextShared = ""
+'	Else
+'		
+'		LogColor("Main.Create Else", Colors.Red)
+'		
+'		ChatN1.Initialize(Activity, "")
+'		ChatN1.txtQuestion.RequestFocus
+'	End If
 	Activity.Title = "Ask ChatGPT"
 	
 	Voicer.Initialize("vr")
@@ -139,35 +169,53 @@ Sub Activity_Create(FirstTime As Boolean)
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
-	ChatN1.txtQuestion.RequestFocus
 	
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+	TextHolder = ChatN1.txtQuestion.Text
+	MyLog("Activity_Pause: " & TextHolder, ColorLog, True)
+	ChatN1.IME_HeightChanged(100%y, 0)
+	General.SaveSetting
 End Sub
 
 Sub Activity_Resume
 	
-	ChatN1.MyLog("Main.Activity_Resum", True)
+	MyLog("Activity_Resume: " & TextShared, ColorLog, True)
 	
-	ChatN1.AdjustSize_Clv(0, False)
 	ChatN1.IME_HeightChanged(100%y, 0)
 	
-	If IsRelevantIntent(Activity.GetStartingIntent) Then
+	If (TextShared = "[NEW]") Then
+		LogColor("Main.Resume [New]", Colors.Red)
 		
-		ChatN1.MyLog("Main.Activity_Resume Shared Text", True)
+		ChatN1.ResetAI
+		ChatN1.txtQuestion.Text = ""
+		
+'		Sleep(0)
+'		Dim chat As ChatN
+'			chat.Initialize(Activity, "")
+'			ChatN1.ResetAI
+		TextShared = ""
+		
+'	Else If IsRelevantIntent(Activity.GetStartingIntent) Then
+	Else If IsRelevantIntent(intpub) Then
+		
+		LogColor("Main.Resume.SHARE", Colors.Red)
 		
 		Dim intent As JavaObject = Activity.GetStartingIntent
 		
 		Dim cType As String = intent.RunMethod("getType", Null)
 		If Not (cType.Contains("text")) Then Return
 		
-		Dim intnew 		As Intent = Activity.GetStartingIntent
-		Dim sharedText 	As String = intnew.GetExtra("android.intent.extra.TEXT") 'Get the shared text
-'		LogColor("Here: " & sharedText, Colors.Red)
+		TextShared = Activity.GetStartingIntent.GetExtra("android.intent.extra.TEXT") 'Get the shared text
 		
-'		ChatN1.txtQuestion.Text = sharedText
 		Sleep(0)
 		
-		Dim chat As ChatN
-			chat.Initialize(Activity, sharedText)
+		CallSubDelayed2(ACTION_PROCESS_TEXT, "Activity_Create", False)
+'		ChatN1.ResetAI
+'		ChatN1.txtQuestion.Text = TextShared
+		
+		TextShared = ""
 		
 		#Region Shared a Image
 '		'### It's Image
@@ -181,15 +229,27 @@ Sub Activity_Resume
 '			Log(LastException)
 '		End Try
 		#End Region
-		
+	
+	Else If (TextShared <> "") Then
+		LogColor("Main.Resume.OpenIn: " & TextShared, Colors.Red)
+		ChatN1.ResetAI
+		ChatN1.txtQuestion.Text = TextShared
+	Else If (TextHolder <> "") Then
+		LogColor("Main.Resume: " & TextHolder, Colors.Red)
+		ChatN1.ResetAI
+		ChatN1.txtQuestion.Text = TextHolder
+	Else
+		'Do Somthing
+		LogColor("Main.Resume.Else: " & TextShared & " - " & TextHolder, Colors.Red)
+		ChatN1.ResetAI
 	End If
 	
-	ChatN1.txtQuestion.Text = TextHolder
 	
 End Sub
 
-'Share Text
+'Recive Text
 Private Sub IsRelevantIntent(in As Intent) As Boolean
+	MyLog("IsRelevantIntent", ColorLog, False)
 	If in.IsInitialized And in <> OldIntent And in.Action = in.ACTION_SEND Then
 		OldIntent = in
 		Return True
@@ -198,6 +258,7 @@ Private Sub IsRelevantIntent(in As Intent) As Boolean
 End Sub
 
 Private Sub ShareText(text As String)
+	MyLog("ShareText: " & text, ColorLog, False)
 	Dim in As Intent
 		in.Initialize(in.ACTION_SEND, "")
 		in.PutExtra("android.intent.extra.TEXT", text)
@@ -207,6 +268,7 @@ Private Sub ShareText(text As String)
 End Sub
 
 Private Sub SendToInstagram(text As String)
+'	MyLog("SendToInstagram: " & text, ColorLog, False)
 '	Dim u As Uri 'ContentResolver library
 '	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
 '	Dim inten As Intent
@@ -220,6 +282,7 @@ Private Sub SendToInstagram(text As String)
 End Sub
 
 Private Sub SendToTwitter(text As String)
+'	MyLog("SendToTwitter: " & text, ColorLog, False)
 '	Dim u As Uri 'ContentResolver library
 '	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
 '	Dim inten As Intent
@@ -251,11 +314,6 @@ Private Sub SendToTwitter(text As String)
 '			Exit
 '		End If
 '	Next
-End Sub
-
-Sub Activity_Pause (UserClosed As Boolean)
-	TextHolder = ChatN1.txtQuestion.Text
-	General.SaveSetting
 End Sub
 
 #if Java
