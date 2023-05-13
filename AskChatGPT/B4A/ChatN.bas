@@ -1986,6 +1986,8 @@ End Sub
 
 Private Sub SaveList
 	
+	btnSave.Enabled = False
+	
 	Dim count 	As Int  = clvMessages.Size - 1
 	Dim map1 	As Map
 	Dim lst 	As List
@@ -2005,7 +2007,9 @@ Private Sub SaveList
 	Dim jso As JSONGenerator
 		jso.Initialize2(lst)
 	
-	File.WriteString(File.DirInternal, "AskChatGPT.conf", jso.ToString)
+	File.WriteString(File.DirInternal, General.SaveFileName, jso.ToString)
+	
+	btnSave.Enabled = True
 	
 	LogColor(jso.ToString, Colors.Red)
 	
@@ -2013,13 +2017,16 @@ End Sub
 
 Private Sub LoadList
 	
-	clvMessages.Clear
 	
-	If Not (File.Exists(File.DirInternal, "AskChatGPT.conf")) Then Return
+	If Not (File.Exists(File.DirInternal, General.SaveFileName)) Then Return
 	
-	Dim txt As String = File.ReadString(File.DirInternal, "AskChatGPT.conf")
+	Dim txt As String = File.ReadString(File.DirInternal, General.SaveFileName)
 	
 	If (txt.Length < 1) Then Return
+	
+	btnSave.Enabled = False
+	
+	clvMessages.Clear
 	
 	Dim JSON As JSONParser
 		JSON.Initialize(txt)
@@ -2044,6 +2051,9 @@ Private Sub LoadList
 		Else if (msg.msgtype = typeMSG.question) Then
 			WriteQuestion(msg.message)
 		End If
+		Sleep(0)
 	Next
+	
+	btnSave.Enabled = True
 	
 End Sub

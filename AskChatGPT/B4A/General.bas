@@ -11,6 +11,7 @@ Sub Process_Globals
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
 	Public  IsDebug					As Boolean = False
+	Public SaveFileName				As String = "AskChatGPT.save"
 End Sub
 
 #Region Save and Load Settings
