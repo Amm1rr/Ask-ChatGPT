@@ -7,7 +7,10 @@ Version=12.2
 
 Sub Class_Globals
 	
-	Type textMessage (message As String, assistant As Boolean)
+	Type textMessage (message As String	,assistant As Boolean ,msgtype 		As Int)
+	Type typeMessage (answer  As Int	,question  As Int	  ,waitingtxt 	As Int)
+	Private  typeMSG As typeMessage
+	
 	Private su As StringUtils
 	Private wrk_chat As ChatGPT
 	Private xui As XUI
@@ -94,6 +97,8 @@ Sub Class_Globals
 	Private lblWaitingText As ResizingTextComponent
 	Private panWaitingText As Panel
 	Private lblSample As Label
+	Private btnLoad As Button
+	Private btnSave As Button
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -148,6 +153,11 @@ Public Sub Initialize(parent As B4XView, text As String)
 	IME_HeightChanged(100%y,0)
 	MaximumSize = su.MeasureMultilineTextHeight(txtQuestion,"Size Test!") * 8 'After 6 lines, the EditText will increase, and after that, the scroll will appear
 	TextboxHeightChange("Size Test!")
+	
+	typeMSG.Initialize
+	typeMSG.answer = 0
+	typeMSG.question = 1
+	typeMSG.waitingtxt = 3
 	
 	LoadCLVSetup
 	
@@ -365,6 +375,7 @@ Private Sub Drawer_StateChanged (Open As Boolean)
 	Else
 		General.SaveSetting
 	End If
+	
 End Sub
 
 Sub LocationOnScreen(View As View) As List
@@ -646,6 +657,7 @@ Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	Dim msg As textMessage = Value
 	cp.setText(String_Remove_DoubleQuot(msg.message))
 	resetTextboxToolbar
+	Log(msg)
 End Sub
 
 'Remove first and last Double Quotation charachters
@@ -993,7 +1005,7 @@ Public Sub imgSend_Click
 '	Return
 	
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-	If (msg.message = WaitingText) Then Return
+	If (msg.msgtype = typeMSG.waitingtxt) Then Return
 	
 	If Not (General.Pref.Memory) Then ResetAI
 	
@@ -1001,10 +1013,10 @@ Public Sub imgSend_Click
 	If (imgSend.Tag = "text") Then
 		
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-		If (msg.message = WaitingText) Then Return
+		If (msg.msgtype = typeMSG.waitingtxt) Then Return
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
-
+		
 		If (txtQuestion.Text.Trim.Length < 1) Then Return
 		
 		ClickSimulation
@@ -1303,17 +1315,11 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		Return
 	End If
 	
-	
-'	Dim msg As textMessage
-'		msg.Initialize
-'		msg.message = question
-'		msg.assistant = True
-'	clvMessages.AddTextItem(WaitingText, msg)
-	
 	Dim m As textMessage
 		m.Initialize
 		m.message = WaitingText '"Proccessing..."
 		m.assistant = True
+		m.msgtype = typeMSG.waitingtxt
 	
 	Dim p As B4XView = xui.CreatePanel("")
 	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
@@ -1404,7 +1410,8 @@ Sub WriteAnswer(message As String) 'Left Side
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
-	m.assistant = True
+		m.assistant = True
+		m.msgtype = typeMSG.answer
 	
 	Dim p As B4XView = xui.CreatePanel("answ")
 	
@@ -1505,6 +1512,7 @@ Sub WriteQuestion(message As String) 'Right Side
 		m.Initialize
 		m.message = message
 		m.assistant = False
+		m.msgtype = typeMSG.question
 	
 	Dim p As B4XView = xui.CreatePanel("ques")
 	panMain.AddView(p,0,0, clvMessages.AsView.Width, 200dip)
@@ -1632,7 +1640,7 @@ Public Sub ResetAI
 	wrk_chat.ChatHistoryList.Initialize
 '	History = "dynamic history of my and your replys in the chat: "
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-	If (msg.message = WaitingText) Then
+	If (msg.msgtype = typeMSG.waitingtxt) Then
 		clvMessages.RemoveAt(clvMessages.Size - 1)
 	End If
 End Sub
@@ -1795,7 +1803,8 @@ Private Sub icConfigTopMenu_Click
 			Dim m As textMessage
 				m.Initialize
 				m.message = WaitingText '"Proccessing..."
-				m.assistant = True
+				m.assistant = False
+				m.msgtype = typeMSG.waitingtxt
 			
 			Dim p As B4XView = xui.CreatePanel("")
 				mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
@@ -1934,10 +1943,6 @@ End Sub
 'End Sub
 
 Private Sub lblTitleTopMenu_Click
-	lblTitleTopMenu_LongClick
-End Sub
-
-Private Sub lblTitleTopMenu_LongClick
 	If (General.Pref.Memory) Then
 		General.Pref.Memory = False
 		ToastMessageShow("Memory Deactivated", False)
@@ -1949,15 +1954,96 @@ Private Sub lblTitleTopMenu_LongClick
 	General.SaveSetting
 End Sub
 
+Private Sub lblTitleTopMenu_LongClick
+	
+	MyLog("lblTitleTopMenu_LongClick", ColorLog, True)
+	
+	lblTitleTopMenu_Click
+	
+End Sub
+
 Private Sub imgBrain_Click
-	lblTitleTopMenu_LongClick
+	lblTitleTopMenu_Click
 End Sub
 
 Private Sub imgBrain_LongClick
-	lblTitleTopMenu_LongClick
+	lblTitleTopMenu_Click
 End Sub
 
 
 Private Sub panTextToolbar_Click
+	
+End Sub
+
+
+Private Sub btnSave_Click
+	SaveList
+End Sub
+
+Private Sub btnLoad_Click
+	LoadList
+End Sub
+
+Private Sub SaveList
+	
+	Dim count 	As Int  = clvMessages.Size - 1
+	Dim map1 	As Map
+	Dim lst 	As List
+		lst.Initialize
+	
+	For i = 0 To count
+		Dim msg As textMessage = clvMessages.GetValue(i)
+		map1.Initialize
+		If (msg.msgtype <> typeMSG.waitingtxt) Then
+			map1.Put("assistant", msg.assistant)
+			map1.Put("message", msg.message)
+			map1.Put("msgtype", msg.msgtype)
+			lst.Add(map1)
+		End If
+	Next
+	
+	Dim jso As JSONGenerator
+		jso.Initialize2(lst)
+	
+	File.WriteString(File.DirInternal, "AskChatGPT.conf", jso.ToString)
+	
+	LogColor(jso.ToString, Colors.Red)
+	
+End Sub
+
+Private Sub LoadList
+	
+	clvMessages.Clear
+	
+	If Not (File.Exists(File.DirInternal, "AskChatGPT.conf")) Then Return
+	
+	Dim txt As String = File.ReadString(File.DirInternal, "AskChatGPT.conf")
+	
+	If (txt.Length < 1) Then Return
+	
+	Dim JSON As JSONParser
+		JSON.Initialize(txt)
+	
+	Dim lst As List
+		lst = JSON.NextArray
+	
+	Dim count As Int = lst.Size - 1
+	
+	For i = 0 To count
+		
+		Dim m As Map = lst.Get(i)
+		
+		Dim msg As textMessage
+			msg.Initialize
+'			msg.assistant = m.Get("assistant")
+			msg.message = m.Get("message")
+			msg.msgtype = m.Get("msgtype")
+		
+		If (msg.msgtype = typeMSG.answer) Then
+			WriteAnswer(msg.message)
+		Else if (msg.msgtype = typeMSG.question) Then
+			WriteQuestion(msg.message)
+		End If
+	Next
 	
 End Sub

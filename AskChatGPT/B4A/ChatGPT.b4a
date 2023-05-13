@@ -121,7 +121,7 @@ Sub Process_Globals
 				 Creativity As Int, _
 				 AutoSend 	As Boolean, _
 				 Memory 	As Boolean, _
-				 IsDevMode 	As Boolean)		'If its in Development Mode, just for MySelf
+				 IsDevMode 	As Boolean)		'If its in Debug Mode, just for MySelf
 End Sub
 
 Sub Globals
@@ -169,14 +169,15 @@ Sub Activity_Create(FirstTime As Boolean)
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
 	
-	
 End Sub
 
 Sub Activity_Pause (UserClosed As Boolean)
+	
 	TextHolder = ChatN1.txtQuestion.Text
 	MyLog("Activity_Pause: " & TextHolder, ColorLog, True)
 	ChatN1.IME_HeightChanged(100%y, 0)
 	General.SaveSetting
+	
 End Sub
 
 Sub Activity_Resume
