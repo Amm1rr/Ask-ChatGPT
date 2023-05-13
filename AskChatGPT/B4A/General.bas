@@ -7,11 +7,12 @@ Version=12.2
 
 Sub Process_Globals
 	Private xui 					As XUI
-	Private ColorLog				As Int = Colors.LightGray
+	Private ColorLog				As Int 		= Colors.LightGray
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
-	Public  IsDebug					As Boolean = False
-	Public SaveFileName				As String = "AskChatGPT.save"
+	Public  IsDebug					As Boolean 	= False
+	Public 	SaveFileName			As String 	= "AskChatGPT.save"
+	Public 	ConfigFileName			As String 	= "AskChatGPT.conf"
 End Sub
 
 #Region Save and Load Settings
@@ -37,7 +38,7 @@ Public Sub SaveSetting
 	MyLog("General.SaveSetting", ColorLog, False)
 	
 	If Not(Sett.IsInitialized) Then
-		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
+		Sett.Initialize(File.DirInternal, ConfigFileName)
 	End If
 
 	Sett.Put("FirstLang", Pref.FirstLang)

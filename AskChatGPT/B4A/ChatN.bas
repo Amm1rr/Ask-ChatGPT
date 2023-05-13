@@ -1498,6 +1498,8 @@ Sub WriteAnswer(message As String) 'Left Side
 	
 	AdjustSize_Clv(0, True)
 	
+	SaveList
+	
 	IsWorking = False
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
