@@ -66,7 +66,7 @@ Public Sub LoadSetting
 	If Not(Sett.IsInitialized) Then
 		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
 	End If
-
+	
 	Pref.FirstLang = GetLangFirstStr(Sett.Get("FirstLang").As(String))
 	Pref.SecondLang = GetLangSecStr(Sett.Get("SecondLang"))
 	Pref.Creativity = GetCreativityInt(Sett.Get("Creativity"))
@@ -120,9 +120,10 @@ Public Sub LoadSettingDB
 	Dim CurSettingSql As ResultSet = sql.ExecQuery("SELECT * FROM Config")
 '	Log(CurSettingSql)
 	
+	LogColor("Config Row Count: " & CurSettingSql.RowCount, Colors.Red)
 	If (CurSettingSql.RowCount < 1) Then
 		Pref.FirstLang = "English"
-		Pref.SecondLang =  ""
+		Pref.SecondLang =  "(None)"
 		Pref.Creativity = 4
 		Pref.AutoSend = False
 		Pref.Memory = True
@@ -147,13 +148,27 @@ Public Sub SaveSettingDB
 	
 	MyLog("General.SaveSettingDB", ColorLog, True)
 	
-	Dim query As String = $"INSERT OR REPLACE INTO 
-				Config('FirstLang', 'SecondLang', 'Creativity', 'AutoSend', 'Memory', 'IsDevMode') 
-				VALUES('${Pref.FirstLang}', '${Pref.SecondLang}', '${Pref.Creativity}', '${Pref.AutoSend}', '${Pref.Memory}', '${Pref.IsDevMode}')"$
+	sql.BeginTransaction
+
+	sql.ExecNonQuery("DELETE FROM Config")
 	
-	sql.ExecNonQuery(query)
+	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, IsDevMode) VALUES(?, ?, ?, ?, ?, ?)"
+	Dim Args(6) As Object
+		Args(0) = Pref.FirstLang
+		Args(1) = Pref.SecondLang
+		Args(2) = Pref.Creativity
+		Args(3) = Pref.AutoSend
+		Args(4) = Pref.Memory
+		Args(5) = Pref.IsDevMode
+
+	Log(query)
+
+	sql.ExecNonQuery2(query, Args)
+
+	sql.TransactionSuccessful
+	sql.EndTransaction
 	
-	ToastMessageShow("Settings Saved !", False)
+'	ToastMessageShow("Settings Saved !", False)
 End Sub
 
 Private Sub ValToBool(value As Object) As Boolean

@@ -240,13 +240,26 @@ End Sub
 
 Public Sub DevModeCheck
 	MyLog("DevModeCheck", ColorLog, False)
-	icConfigTopMenu.Visible = General.Pref.IsDevMode
+	If General.Pref.IsDevMode Then
+		Dim csTitle As CSBuilder
+			csTitle.Initialize
+			csTitle.Color(Colors.White).Append("Dev Chat").Color(Colors.Yellow).Append("GPT").PopAll
+	Else
+		Dim csTitle As CSBuilder
+			csTitle.Initialize
+			csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
+	End If
+	
+	lblTitleTopMenu.Text = csTitle
 End Sub
 
 Public Sub Check_First_Sec_Lang_Visibility
-	If (General.Pref.SecondLang = "(None)") Then
+	
+	MyLog("Check_First_Sec_Lang_Visibility: " & General.Pref.SecondLang, ColorLog, True)
+	
+	If (General.Pref.SecondLang = "(None)") Or (General.Pref.SecondLang = "") Then
 		chkToFarsi.Visible = False
-		chkTranslate.Visible = False
+'		chkTranslate.Visible = False
 	Else
 		chkToFarsi.Visible = True
 		chkTranslate.Visible = True
@@ -254,6 +267,8 @@ Public Sub Check_First_Sec_Lang_Visibility
 End Sub
 
 Private Sub LoadLanguage
+	
+	MyLog("LoadLanguage", ColorLog, True)
 	
 	If Not (LanguageList.IsInitialized) Then LanguageList.Initialize
 	
@@ -358,6 +373,7 @@ Private Sub LoadLanguage
 	
 	cmbLangDrawerSec.SetItems(LanguageList)
 	If (indexSec > -1) Then
+		LogColor(General.Pref.SecondLang, Colors.Red)
 		cmbLangDrawerSec.SelectedIndex = indexSec
 		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.Visible = True
@@ -365,7 +381,7 @@ Private Sub LoadLanguage
 	Else
 		cmbLangDrawerSec.SelectedIndex = lenght
 		chkToFarsi.Visible = False
-		chkTranslate.Visible = False
+		chkTranslate.Visible = True
 	End If
 	
 End Sub
@@ -1008,16 +1024,20 @@ Public Sub imgSend_Click
 '	bartAI.translate(txtQuestion.Text, "en", "fa")
 '	Return
 	
-	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-	If (msg.msgtype = typeMSG.waitingtxt) Then Return
+	If (clvMessages.Size > 0) Then
+		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+		If (msg.msgtype = typeMSG.waitingtxt) Then Return
+	End If
 	
 	If Not (General.Pref.Memory) Then ResetAI
 	
 	
 	If (imgSend.Tag = "text") Then
 		
-		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-		If (msg.msgtype = typeMSG.waitingtxt) Then Return
+		If (clvMessages.Size > 0) Then
+			Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+			If (msg.msgtype = typeMSG.waitingtxt) Then Return
+		End If
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 		
@@ -1832,7 +1852,6 @@ Private Sub lblPaste_Click
 	End If
 End Sub
 
-
 Private Sub chkChat_CheckedChange(Checked As Boolean)
 	ClickSimulation
 	ChatConversation = Checked
@@ -1844,22 +1863,28 @@ Private Sub icConfigTopMenu_Click
 	
 	ClickSimulation
 	
-	If (General.Pref.IsDevMode) Then
+	Drawer.RightOpen = Not (Drawer.RightOpen)
+	
+End Sub
+
+Private Sub SimulateMessage
+	
+'	If (General.Pref.IsDevMode) Then
 		
 		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100."
 		
 		Dim myStrings As List
-			myStrings.Initialize
-			myStrings.Add("Hi there, How are you?")
+		myStrings.Initialize
+		myStrings.Add("Hi there, How are you?")
 '			myStrings.Add("🤔")
-			myStrings.Add(v)
-			myStrings.Add(v.SubString2(0, Rnd(5, 100)))
+		myStrings.Add(v)
+		myStrings.Add(v.SubString2(0, Rnd(5, 100)))
 '			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
-			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
+		myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 '			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
-			index = 10 Mod (myStrings.Size - 1)
+		index = 10 Mod (myStrings.Size - 1)
 		
 '		Dim index As Int
 '			index = Rnd(10, myStrings.Size - 1)
@@ -1874,16 +1899,16 @@ Private Sub icConfigTopMenu_Click
 			Log("Do something: Proccessing")
 			
 			Dim m As textMessage
-				m.Initialize
-				m.message = WaitingText '"Proccessing..."
-				m.assistant = False
-				m.msgtype = typeMSG.waitingtxt
+			m.Initialize
+			m.message = WaitingText '"Proccessing..."
+			m.assistant = False
+			m.msgtype = typeMSG.waitingtxt
 			
 			Dim p As B4XView = xui.CreatePanel("")
-				mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
-				p.LoadLayout("clvWaitingText")
-				p.RemoveViewFromParent
-				p.Tag = WaitingText
+			mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
+			p.LoadLayout("clvWaitingText")
+			p.RemoveViewFromParent
+			p.Tag = WaitingText
 			
 			lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
 			lblWaitingText.Text = m.message
@@ -1899,11 +1924,8 @@ Private Sub icConfigTopMenu_Click
 			AdjustSize_Clv(0, True)
 			
 		End If
-		
-	Else
-		Drawer.RightOpen = Not (Drawer.RightOpen)
-	End If
-	
+'	End If
+
 End Sub
 
 Private Sub RemoveSeperator
@@ -1952,13 +1974,17 @@ Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
 End Sub
 
 Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
+	
+	MyLog("cmbLangDrawerSec_SelectedIndexChanged", ColorLog, True)
+	
 	General.Pref.SecondLang = cmbLangDrawerSec.GetItem(Index)
 	
 	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
-		chkTranslate.SetVisibleAnimated(150, False)
+'		chkTranslate.SetVisibleAnimated(150, False)
 		chkVoiceLang.Checked = False
 	Else
+		LogColor(General.Pref.SecondLang, Colors.Red)
 		chkToFarsi.Text = General.Pref.SecondLang
 		chkToFarsi.SetVisibleAnimated(300, True)
 		chkTranslate.SetVisibleAnimated(300, True)
@@ -2018,10 +2044,10 @@ End Sub
 Private Sub lblTitleTopMenu_Click
 	If (General.Pref.Memory) Then
 		General.Pref.Memory = False
-		ToastMessageShow("Memory Deactivated", False)
+'		ToastMessageShow("Memory Deactivated", False)
 	Else
 		General.Pref.Memory = True
-		ToastMessageShow("Memory Activated", True)
+'		ToastMessageShow("Memory Activated", True)
 	End If
 	MemoryChanged
 	General.SaveSetting
@@ -2031,7 +2057,7 @@ Private Sub lblTitleTopMenu_LongClick
 	
 	MyLog("lblTitleTopMenu_LongClick", ColorLog, True)
 	
-	lblTitleTopMenu_Click
+	If (General.Pref.IsDevMode) Then SimulateMessage
 	
 End Sub
 
@@ -2039,9 +2065,9 @@ Private Sub imgBrain_Click
 	lblTitleTopMenu_Click
 End Sub
 
-Private Sub imgBrain_LongClick
-	lblTitleTopMenu_Click
-End Sub
+'Private Sub imgBrain_LongClick
+'	
+'End Sub
 
 
 Private Sub panTextToolbar_Click
@@ -2179,6 +2205,7 @@ Private Sub LoadMessage(Value As String)
 	If (Value.Trim.Length < 1) Then Return
 	
 	imgSend.Enabled = False
+	clvMessages.sv.Visible = False
 	
 	clvMessages.Clear
 	
@@ -2205,9 +2232,10 @@ Private Sub LoadMessage(Value As String)
 		Else if (msg.msgtype = typeMSG.question) Then
 			WriteQuestion(msg.message)
 		End If
-		Sleep(0)
 	Next
 	
+	Sleep(250)
+	clvMessages.sv.SetVisibleAnimated(250, True)
 	imgSend.Enabled = True
 	
 End Sub
