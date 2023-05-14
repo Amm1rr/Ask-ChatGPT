@@ -16,10 +16,11 @@ File21=message.png
 File22=montserrat-medium.ttf
 File23=PROMPTS.md
 File24=puton.png
-File25=roboto-regular.ttf
-File26=settings.png
-File27=Share.bal
-File28=voice.png
+File25=RightDrawer.bal
+File26=roboto-regular.ttf
+File27=settings.png
+File28=Share.bal
+File29=voice.png
 File3=Bg-Chat02.jpg
 File4=Bg-Chat03.jpg
 File5=Bg-Chat04.jpg
@@ -48,6 +49,7 @@ FileGroup25=Default Group
 FileGroup26=Default Group
 FileGroup27=Default Group
 FileGroup28=Default Group
+FileGroup29=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
 FileGroup5=Default Group
@@ -69,6 +71,7 @@ Library18=webviewextras2
 Library19=xcustomlistview
 Library2=as_textfieldadvanced
 Library20=xui views
+Library21=sql
 Library3=b4xdraweradvanced
 Library4=bctextengine
 Library5=clipboard
@@ -86,8 +89,8 @@ Module6=General
 Module7=ResizingTextComponent
 Module8=Starter
 Module9=UpDown
-NumberOfFiles=28
-NumberOfLibraries=20
+NumberOfFiles=29
+NumberOfLibraries=21
 NumberOfModules=9
 Version=12.2
 @EndOfDesignText@
@@ -137,7 +140,8 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
 	
-	General.LoadSetting
+'	General.LoadSetting
+	General.LoadSettingDB
 	
 	intpub = Activity.GetStartingIntent
 	If Not (ChatN1.IsInitialized) Then ChatN1.Initialize(Activity, "")
@@ -177,6 +181,8 @@ Sub Activity_Pause (UserClosed As Boolean)
 	MyLog("Activity_Pause: " & TextHolder, ColorLog, True)
 	ChatN1.IME_HeightChanged(100%y, 0)
 	General.SaveSetting
+	
+	If (UserClosed) Then General.sql.Close
 	
 End Sub
 

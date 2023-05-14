@@ -13,6 +13,8 @@ Sub Process_Globals
 	Public  IsDebug					As Boolean 	= False
 	Public 	SaveFileName			As String 	= "AskChatGPT.save"
 	Public 	ConfigFileName			As String 	= "AskChatGPT.conf"
+	Public 	SQLFileName				As String 	= "AskChatGPT.db"
+	Public 	sql						As SQL
 End Sub
 
 #Region Save and Load Settings
@@ -34,6 +36,10 @@ Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 End Sub
 
 Public Sub SaveSetting
+	
+	SaveSettingDB
+	
+	Return
 	
 	MyLog("General.SaveSetting", ColorLog, False)
 	
@@ -71,6 +77,108 @@ Public Sub LoadSetting
 '	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
 '			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
 '			 ${Pref.IsDevMode}"$, Colors.Blue)
+End Sub
+
+Private Sub CreateDB
+	
+	MyLog("General.CreateDB", ColorLog, True)
+	
+	If File.Exists(File.DirInternal, SQLFileName) Then
+		sql.Initialize(File.DirInternal, SQLFileName, False)
+		Return
+	End If
+	
+	Dim tblConfig As String = $"CREATE TABLE "Config" (
+	"FirstLang"	TEXT Not Null DEFAULT 'English',
+	"SecondLang"	TEXT,
+	"Creativity"	INTEGER DEFAULT 4,
+	"AutoSend"	INTEGER DEFAULT 0,
+	"Memory"	INTEGER DEFAULT 1,
+	"IsDevMode"	INTEGER DEFAULT 0
+	);"$
+	
+	Dim tblMessages As String = $"CREATE TABLE "Messages" (
+	"ID"	INTEGER NOT NULL DEFAULT 0 UNIQUE,
+	"JsonMessage"	TEXT,
+	"Title"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);"$
+	
+	sql.Initialize(File.DirInternal, SQLFileName, True)
+	sql.ExecNonQuery(tblConfig)
+	sql.ExecNonQuery(tblMessages)
+	
+End Sub
+
+
+Public Sub LoadSettingDB
+	
+	MyLog("General.LoadSettingDB", ColorLog, True)
+	
+	CreateDB
+	
+	Dim CurSettingSql As ResultSet = sql.ExecQuery("SELECT * FROM Config")
+'	Log(CurSettingSql)
+	
+	If (CurSettingSql.RowCount < 1) Then
+		Pref.FirstLang = "English"
+		Pref.SecondLang =  ""
+		Pref.Creativity = 4
+		Pref.AutoSend = False
+		Pref.Memory = True
+		Pref.IsDevMode = IsDebug
+		
+		SaveSettingDB
+	Else
+		CurSettingSql.Position = 0
+		Pref.FirstLang = CurSettingSql.GetString("FirstLang")
+		Pref.SecondLang =  CurSettingSql.GetString("SecondLang")
+		Pref.Creativity = CurSettingSql.GetInt("Creativity")
+		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
+		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
+		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
+	End If
+	
+	CurSettingSql.Close
+	
+End Sub
+
+Public Sub SaveSettingDB
+	
+	MyLog("General.SaveSettingDB", ColorLog, True)
+	
+	Dim query As String = $"INSERT OR REPLACE INTO 
+				Config('FirstLang', 'SecondLang', 'Creativity', 'AutoSend', 'Memory', 'IsDevMode') 
+				VALUES('${Pref.FirstLang}', '${Pref.SecondLang}', '${Pref.Creativity}', '${Pref.AutoSend}', '${Pref.Memory}', '${Pref.IsDevMode}')"$
+	
+	sql.ExecNonQuery(query)
+	
+	ToastMessageShow("Settings Saved !", False)
+End Sub
+
+Private Sub ValToBool(value As Object) As Boolean
+	
+	MyLog("ValToBool", ColorLog, False)
+	
+	If (value = Null) Then Return False
+	If (value.As(String).Length <= 0) Then Return False
+	If (value.As(String).ToLowerCase = "false") Then Return False
+	If (value.As(String).ToLowerCase = "true") Then Return True
+	If (value.As(String).ToLowerCase = "null") Then Return False
+	
+	Dim tmp As Int
+	Try
+		tmp = value.As(Int)
+	Catch
+		tmp = 0
+	End Try
+	
+	If (tmp > 0) Then
+		Return True
+	Else
+		Return False
+	End If
+	
 End Sub
 
 Private Sub GetLangFirstStr(txt As Object) As String

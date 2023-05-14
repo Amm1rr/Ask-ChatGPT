@@ -201,7 +201,7 @@ Public Sub Query(system_string As String, _
 			js.Initialize(json)
 		
 		'Raw JSON String Generated
-		LogColor("Param: " & js.ToString, Colors.Magenta)
+'		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
 		Dim response 	As String
 		Dim resobj 		As Map
@@ -250,7 +250,7 @@ Public Sub Query(system_string As String, _
         If req.Success Then
 			
             'Raw JSON Response
-			LogColor("Respose: " & req.GetString, Colors.Blue)
+'			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 '			conversationId = ParseJson(req.GetString, False, True)
 			
