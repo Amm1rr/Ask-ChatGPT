@@ -96,7 +96,7 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 13
+	#VersionCode: 14
 	#VersionName: Develop
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
@@ -139,6 +139,7 @@ End Sub
 Sub Activity_Create(FirstTime As Boolean)
 	
 	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
+	
 	
 '	General.LoadSetting
 	General.LoadSettingDB

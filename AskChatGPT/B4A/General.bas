@@ -85,6 +85,7 @@ Private Sub CreateDB
 	
 	If File.Exists(File.DirInternal, SQLFileName) Then
 		sql.Initialize(File.DirInternal, SQLFileName, False)
+		sql.BeginTransaction
 		Return
 	End If
 	
@@ -105,9 +106,9 @@ Private Sub CreateDB
 );"$
 	
 	sql.Initialize(File.DirInternal, SQLFileName, True)
+	sql.BeginTransaction
 	sql.ExecNonQuery(tblConfig)
 	sql.ExecNonQuery(tblMessages)
-	
 End Sub
 
 
@@ -148,8 +149,8 @@ Public Sub SaveSettingDB
 	
 	MyLog("General.SaveSettingDB", ColorLog, True)
 	
-	sql.BeginTransaction
-
+'	sql.BeginTransaction
+	
 	sql.ExecNonQuery("DELETE FROM Config")
 	
 	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, IsDevMode) VALUES(?, ?, ?, ?, ?, ?)"
@@ -160,13 +161,13 @@ Public Sub SaveSettingDB
 		Args(3) = Pref.AutoSend
 		Args(4) = Pref.Memory
 		Args(5) = Pref.IsDevMode
-
+	
 	Log(query)
-
+	
 	sql.ExecNonQuery2(query, Args)
-
-	sql.TransactionSuccessful
-	sql.EndTransaction
+	
+'	sql.TransactionSuccessful
+'	sql.EndTransaction
 	
 '	ToastMessageShow("Settings Saved !", False)
 End Sub

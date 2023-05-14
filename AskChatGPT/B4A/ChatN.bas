@@ -212,6 +212,9 @@ Public Sub Initialize(parent As B4XView, text As String)
 ''		imgSend_Click
 '	End If
 	
+	General.sql.TransactionSuccessful
+	General.sql.EndTransaction
+	
 End Sub
 
 Private Sub SetChatBackground(fileName As String)
@@ -562,7 +565,7 @@ Private Sub LoadCLVSetup
 	Dim index As Int
 		index = Rnd(0, myStrings.Size - 1)
 	
-	WriteAnswer(myStrings.Get(index), False)
+	WriteAnswer(myStrings.Get(index), False, "")
 	
 End Sub
 
@@ -779,7 +782,7 @@ End Sub
 Private Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 ''	Dim obj As B4XView = Sender
 ''	Try
-		General.MyLog("ChatN." & text, ColorLog, AlwaysShow)
+		General.MyLog("ChatN." & text, color, AlwaysShow)
 '		
 '		DateTime.DateFormat="HH:mm:ss.SSS"
 '		Dim time As String = DateTime.Date(DateTime.Now)
@@ -1031,6 +1034,7 @@ Public Sub imgSend_Click
 	
 	If Not (General.Pref.Memory) Then ResetAI
 	
+	Dim questionHolder As String = txtQuestion.Text.Trim
 	
 	If (imgSend.Tag = "text") Then
 		
@@ -1041,11 +1045,11 @@ Public Sub imgSend_Click
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 		
-		If (txtQuestion.Text.Trim.Length < 1) Then Return
+		If (questionHolder.Trim.Length < 1) Then Return
 		
 		ClickSimulation
 		
-		Dim question As String = txtQuestion.Text.Trim
+		Dim question As String = questionHolder
 		Dim sAssistant As String
 		Dim sSystem As String
 		
@@ -1061,7 +1065,7 @@ Public Sub imgSend_Click
 			
 			sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
 			
-			question = sSystem & txtQuestion.Text.Trim
+			question = sSystem & questionHolder
 			
 		Else If (chkTranslate.Checked) Then
 			
@@ -1076,7 +1080,7 @@ Public Sub imgSend_Click
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			question = sSystem & " The Text Is: " & CRLF & txtQuestion.Text.Trim
+			question = sSystem & " The Text Is: " & CRLF & questionHolder
 			
 '			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
 			sAssistant = $"Translate into ${General.Pref.FirstLang}."$
@@ -1092,7 +1096,7 @@ Public Sub imgSend_Click
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
-			question = sSystem & " The Text Is: " & CRLF & txtQuestion.Text.Trim
+			question = sSystem & " The Text Is: " & CRLF & questionHolder
 			
 			sAssistant = $"Translate into ${General.Pref.SecondLang}."$
 			
@@ -1105,16 +1109,16 @@ Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfull
 			
 			sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
 			
-			question = txtQuestion.Text.Trim
+			question = questionHolder
 		Else
 			sSystem = "You are a smart helpful assistant."
 			sAssistant = ""
 			
-			question = txtQuestion.Text.Trim
+			question = questionHolder
 		End If
 		
-		WriteQuestion(txtQuestion.Text)
-		Ask(question, sAssistant, sSystem)
+		WriteQuestion(questionHolder)
+		Ask(question, sAssistant, sSystem, questionHolder)
 		txtQuestion.Text = ""
 		
 	Else If Main.voicer.IsSupported Then	
@@ -1333,7 +1337,7 @@ End Sub
 
 Private Sub SaveMessage(title As String)
 	
-	General.MyLog("SaveMessage", ColorLog, True)
+	MyLog("SaveMessage", ColorLog, True)
 	
 	btnSave.Enabled = False
 	
@@ -1344,7 +1348,8 @@ Private Sub SaveMessage(title As String)
 	
 	For i = 0 To count
 		Dim msg As textMessage = clvMessages.GetValue(i)
-		map1.Initialize
+			map1.Initialize
+			
 		If (msg.msgtype <> typeMSG.waitingtxt) Then
 			map1.Put("assistant", msg.assistant)
 			map1.Put("message", msg.message)
@@ -1354,34 +1359,42 @@ Private Sub SaveMessage(title As String)
 	Next
 	
 	Dim jso As JSONGenerator
-	jso.Initialize2(lst)
+		jso.Initialize2(lst)
 	
 	If (MessageIndex = -1) Then
-		LogColor("New: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
+		
+		LogColor("New: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
+		
 		Dim query As String = "INSERT INTO Messages(JsonMessage, Title) VALUES(?, ?)"
+		
 		Dim Args(2) As Object
-		Args(0) = jso.ToString
-		Args(1) = title
+			Args(0) = jso.ToString
+			Args(1) = title
 		Log(query)
+		
 		General.sql.ExecNonQuery2(query, Args)
+		
 		Dim id As Int = General.sql.ExecQuerySingleResult("Select last_insert_rowid()")
 		Log("ID: " & id)
+		
 		clvTitles.AddTextItem(title, id)
+		
 		MessageIndex = clvTitles.Size - 1
-		Log("MessageIndex: " & clvTitles.Size & "/" & MessageIndex)
+		
+		Log("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1))
+		
 	Else
-		LogColor("Update: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
-		LogColor("Value: " & clvTitles.Size & "/" & clvTitles.GetValue(MessageIndex), Colors.Red)
+		
+		LogColor("Update: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
+		
 		Dim query As String = "UPDATE Messages SET JsonMessage=? WHERE ID=?"
+		
 		Dim Args(2) As Object
-		Args(0) = jso.ToString
-		Args(1) = clvTitles.GetValue(MessageIndex)
-		Log(query)
+			Args(0) = jso.ToString
+			Args(1) = clvTitles.GetValue(MessageIndex)
+		
 		General.sql.ExecNonQuery2(query, Args)
 	End If
-
-	
-'	LogColor(MessageIndex, Colors.Red)
 	
 	btnSave.Enabled = True
 	
@@ -1389,7 +1402,7 @@ Private Sub SaveMessage(title As String)
 	
 End Sub
 
-Public Sub Ask(question As String, assistant As String, questionHolder As String)
+Public Sub Ask(question As String, assistant As String, system As String, questionHolder As String)
 	
 	If (question = "") Then
 		txtQuestion.RequestFocus
@@ -1439,7 +1452,7 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 		AIType = wrk_chat.AITYPE_Chat
 	End If
 	
-	Wait For (wrk_chat.Query(questionHolder, _
+	Wait For (wrk_chat.Query(system, _
 							 question, _
 							 assistant, _
 							 Temperature, _
@@ -1461,21 +1474,21 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	If (txtQuestion.Text.Length < 1) Then
 		Select responsetext
 			Case wrk_chat.TimeoutText:
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 			Case wrk_chat.OpenApiHostError  & " (Code 1)":
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 			Case wrk_chat.OpenApiHostError  & " (Code 2)":
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 			Case wrk_chat.InstructureError
 				chkTranslate.Checked = True
-				txtQuestion.Text = question
+				txtQuestion.Text = questionHolder
 				imgSend_Click
 				
 		End Select
 	End If
 	
 '	Log("Ask:" & responsetext)
-	WriteAnswer(responsetext, True)
+	WriteAnswer(responsetext, True, questionHolder)
 	
 	ScrollToLastItem(clvMessages)
 	
@@ -1485,9 +1498,9 @@ Public Sub Ask(question As String, assistant As String, questionHolder As String
 	
 End Sub
 
-Sub WriteAnswer(message As String, save As Boolean) 'Left Side
+Sub WriteAnswer(message As String, save As Boolean, questionHolder As String) 'Left Side
 	
-	General.MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
+	MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
 	
 	Dim m As textMessage
 		m.Initialize
@@ -1580,7 +1593,17 @@ Sub WriteAnswer(message As String, save As Boolean) 'Left Side
 	
 	AdjustSize_Clv(0, True)
 	
-	If save Then SaveMessage(Rnd(0, 999))
+	If save Then
+		If (questionHolder <> "") Then
+			If (questionHolder.Length > 80) Then
+				SaveMessage(clvMessages.Size & ". " & questionHolder.SubString2(0, 80))
+			Else
+				SaveMessage(clvMessages.Size & ". " & questionHolder)
+			End If
+		Else
+			SaveMessage(clvMessages.Size & ". " & Rnd(100, 999))
+		End If
+	End If
 	
 	IsWorking = False
 	
@@ -1859,7 +1882,7 @@ End Sub
 
 Private Sub icConfigTopMenu_Click
 
-	General.MyLog("icConfigTopMenu_Click", ColorLog, True)
+	MyLog("icConfigTopMenu_Click", ColorLog, True)
 	
 	ClickSimulation
 	
@@ -1868,6 +1891,8 @@ Private Sub icConfigTopMenu_Click
 End Sub
 
 Private Sub SimulateMessage
+	
+	MyLog("SimulateMessage", ColorLog, True)
 	
 '	If (General.Pref.IsDevMode) Then
 		
@@ -1891,7 +1916,7 @@ Private Sub SimulateMessage
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
-				WriteAnswer(myStrings.Get(index), True)
+				WriteAnswer(myStrings.Get(index), True, "")
 			Else
 				WriteQuestion(myStrings.Get(index))
 			End If
@@ -2076,14 +2101,14 @@ End Sub
 
 
 Private Sub btnSave_Click
-	SaveList
+	SaveList_OLD
 End Sub
 
 Private Sub btnLoad_Click
-	LoadList
+	LoadList_OLD
 End Sub
 
-Private Sub SaveList
+Private Sub SaveList_OLD
 	
 	btnSave.Enabled = False
 	
@@ -2114,7 +2139,7 @@ Private Sub SaveList
 	
 End Sub
 
-Private Sub LoadList
+Private Sub LoadList_OLD
 	
 	
 	If Not (File.Exists(File.DirInternal, General.SaveFileName)) Then Return
@@ -2130,27 +2155,29 @@ Private Sub LoadList
 	Dim JSON As JSONParser
 		JSON.Initialize(txt)
 	
-	Dim lst As List
-		lst = JSON.NextArray
+	Dim lst As List = JSON.NextArray
 	
 	Dim count As Int = lst.Size - 1
 	
 	For i = 0 To count
 		
 		Dim m As Map = lst.Get(i)
-		
 		Dim msg As textMessage
 			msg.Initialize
 '			msg.assistant = m.Get("assistant")
 			msg.message = m.Get("message")
 			msg.msgtype = m.Get("msgtype")
 		
-		If (msg.msgtype = typeMSG.answer) Then
-			WriteAnswer(msg.message, False)
-		Else if (msg.msgtype = typeMSG.question) Then
-			WriteQuestion(msg.message)
-		End If
-		Sleep(0)
+		Select msg.msgtype
+			
+			Case typeMSG.answer
+				WriteAnswer(msg.message, False, "")
+				
+			Case typeMSG.question
+				WriteQuestion(msg.message)
+			
+		End Select
+		
 	Next
 	
 	imgSend.Enabled = True
@@ -2160,11 +2187,12 @@ End Sub
 
 Private Sub LoadListDB
 	
+	MyLog("LoadListDB", ColorLog, True)
+	
 	imgSend.Enabled = False
 	clvTitles.Clear
 	
-	Dim query  As String	= "SELECT * FROM Messages"
-	Dim recset As ResultSet = General.sql.ExecQuery(query)
+	Dim recset As ResultSet = General.sql.ExecQuery("SELECT * FROM Messages")
 	
 	Do While recset.NextRow
 		
@@ -2186,7 +2214,7 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 	MyLog("clvTitles_ItemClick: " & Index & " - " & Value, ColorLog, True)
 	
 	MessageIndex = Index
-	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
+	LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
 	
 	Dim recset As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
 	
@@ -2216,6 +2244,7 @@ Private Sub LoadMessage(Value As String)
 		lst = JSON.NextArray
 	
 	Dim count As Int = lst.Size - 1
+	Dim question As String
 	
 	For i = 0 To count
 		
@@ -2228,9 +2257,10 @@ Private Sub LoadMessage(Value As String)
 			msg.msgtype = m.Get("msgtype")
 		
 		If (msg.msgtype = typeMSG.answer) Then
-			WriteAnswer(msg.message, False)
+			WriteAnswer(msg.message, False, question)
 		Else if (msg.msgtype = typeMSG.question) Then
 			WriteQuestion(msg.message)
+			question = msg.message
 		End If
 	Next
 	
@@ -2242,7 +2272,7 @@ End Sub
 
 Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 	
-	General.MyLog("clvTitles_ItemLongClick: " & Index & " - " & Value, ColorLog, True)
+	MyLog("clvTitles_ItemLongClick: " & Index & " - " & Value, ColorLog, True)
 	
 	'اگر این خط فعال بشه MessageIndex صفر میشه و به خطا میخوره موقع ذخیره
 '	clvTitles_ItemClick(Index, Value)
