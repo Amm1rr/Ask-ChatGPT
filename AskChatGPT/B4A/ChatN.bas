@@ -1433,7 +1433,7 @@ Private Sub SaveMessage(title As String)
 		Dim id As Int = General.sql.ExecQuerySingleResult("Select last_insert_rowid()")
 		Log("ID: " & id)
 		
-		clvTitles.AddTextItem(title, id)
+		clvTitles.AddTextItem((clvTitles.Size+1) & ". " & title, id)
 		
 		MessageIndex = clvTitles.Size - 1
 		
@@ -1652,12 +1652,12 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String) 'L
 	If save Then
 		If (questionHolder <> "") Then
 			If (questionHolder.Length > 80) Then
-				SaveMessage(clvMessages.Size & ". " & questionHolder.SubString2(0, 80))
+				SaveMessage(questionHolder.SubString2(0, 80))
 			Else
-				SaveMessage(clvMessages.Size & ". " & questionHolder)
+				SaveMessage(questionHolder)
 			End If
 		Else
-			SaveMessage(clvMessages.Size & ". " & Rnd(100, 999))
+			SaveMessage(Rnd(100, 999))
 		End If
 	End If
 	
@@ -2386,7 +2386,7 @@ Private Sub LoadListDB
 		Dim Title 		As String = recset.GetString("Title")
 		Dim ID 			As Int 	  = recset.GetInt("ID")
 		
-		clvTitles.AddTextItem(Title, ID)
+		clvTitles.AddTextItem((clvTitles.Size+1) & ". " & Title, ID)
 		
 	Loop
 	
