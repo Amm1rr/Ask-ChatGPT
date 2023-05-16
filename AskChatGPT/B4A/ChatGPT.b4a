@@ -163,7 +163,6 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
 	
-	
 '	General.LoadSetting
 	General.LoadSettingDB
 	

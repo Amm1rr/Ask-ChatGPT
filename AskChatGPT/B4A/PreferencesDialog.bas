@@ -1010,5 +1010,8 @@ Private Sub HexToColor(Hex As String) As Int()
 End Sub
 
 Private Sub Label1_Click
-	Msgbox("Test", "Worked")
+	
+	Dim p As PhoneIntents
+	StartActivity(p.OpenBrowser("https://platform.openai.com/account/api-keys/"))
+	
 End Sub
