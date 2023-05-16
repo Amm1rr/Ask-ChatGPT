@@ -2464,7 +2464,10 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 	'اگر این خط فعال بشه MessageIndex صفر میشه و به خطا میخوره موقع ذخیره
 '	clvTitles_ItemClick(Index, Value)
 	
-	Msgbox2Async(clvMessages.GetPanel(Index).GetView(0).Text, "Delete ?", "Delete", "Cancel", "", Null, True)
+	Dim pnl As B4XView = clvTitles.GetPanel(Index).Parent
+	Dim lbl As Label = pnl.GetView(0).GetView(0)
+		
+	Msgbox2Async(lbl.Text, "Delete ?", "Delete", "Cancel", "", Null, True)
 	Wait For Msgbox_Result (Result As Int)
 		
 		If (DialogResponse.POSITIVE = Result) Then
