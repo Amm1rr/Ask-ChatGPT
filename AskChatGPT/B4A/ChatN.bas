@@ -102,6 +102,9 @@ Sub Class_Globals
 	Private btnSave As Button
 	Private panRightMainDrawer As Panel
 	Private clvTitles	As CustomListView
+	
+	Public prefdialog As PreferencesDialog
+	Private Options	As Map
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -137,8 +140,8 @@ Public Sub Initialize(parent As B4XView, text As String)
 		csTitle.Initialize
 		csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
 	lblTitleTopMenu.Text = csTitle
-	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
-	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
+	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
+	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
 	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "brain.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
 	
 	MemoryChanged
@@ -194,6 +197,40 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	UpDown1Drawer.Value = General.Pref.Creativity
 	chkAutoSendDrawer.Checked = General.Pref.AutoSend
+	
+	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2 )
+	prefdialog.mBase.Top = 20%y
+'	prefdialog.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
+'	prefdialog.Dialog.TitleBarColor = xui.Color_RGB(65, 105, 225)
+	prefdialog.Dialog.TitleBarHeight = 75dip
+'	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
+	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
+	prefdialog.SetEventsListener(Me, "PrefDialog")
+	
+	Options.Initialize
+	Dim Options As Map = CreateMap()
+		Options.Put("Creativity", General.Pref.Creativity)
+		Options.Put("FirstLang", General.Pref.FirstLang)
+		Options.Put("SecondLang",General.Pref.SecondLang)
+		Options.Put("AutoSend", General.Pref.AutoSend)
+		
+	prefdialog.SeparatorBackgroundColor = xui.Color_White
+	prefdialog.Dialog.BorderColor = xui.Color_Green
+	prefdialog.Dialog.BorderCornersRadius = 10dip
+	prefdialog.Dialog.BlurBackground = True
+	
+	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
+		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
+		chkToFarsi.Text = General.Pref.SecondLang
+		chkToFarsi.Visible = True
+		chkTranslate.Visible = True
+	Else
+		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
+		chkTranslate.Text = General.Pref.FirstLang
+		chkToFarsi.Visible = False
+		chkTranslate.Visible = True
+	End If
+	
 	
 	DevModeCheck
 	
@@ -275,15 +312,14 @@ Private Sub LoadLanguage
 	
 	If Not (LanguageList.IsInitialized) Then LanguageList.Initialize
 	
-	LanguageList.AddAll(Array As String("English", "Russian", "Spanish", "French", "German", _
+	LanguageList.AddAll(Array As String("(None)", "English", "Russian", "Spanish", "French", "German", _
 								"Japanese", "Turkish", "Portuguese", "Persian", "Italian", _
 								"Chinese", "Dutch", "Polish", "Vietnamese", _
 							   	"Arabic", "Korean", "Czech", "Indonesian", "Ukrainian", "Greek", _
 							   	"Hebrew", "Swedish", "Thai", "Romanian", "Hungarian", _
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
-							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi", "(None)"))
-	
+							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi"))
 	
 '	Private supportLanguages As List
 '		supportLanguages.Initialize
@@ -365,7 +401,8 @@ Private Sub LoadLanguage
 	'#
 	
 	cmbLangDrawerFirst.SetItems(LanguageList)
-	cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)	'Remove "(None)" from First Language Combo
+'	cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)	'Remove "(None)" from First Language Combo
+	cmbLangDrawerFirst.cmbBox.RemoveAt(0)	'Remove "(None)" from First Language Combo
 	If Not (indexFirst > -1) Then indexFirst = 0
 	
 	cmbLangDrawerFirst.SelectedIndex = indexFirst
@@ -382,13 +419,12 @@ Private Sub LoadLanguage
 		chkToFarsi.Visible = True
 		chkTranslate.Visible = True
 	Else
-		cmbLangDrawerSec.SelectedIndex = lenght
+		cmbLangDrawerSec.SelectedIndex = 0 'lenght
 		chkToFarsi.Visible = False
 		chkTranslate.Visible = True
 	End If
 	
 End Sub
-
 
 Private Sub Drawer_StateChanged (Open As Boolean)
 	MyLog("Drawer State Open: " & Open, ColorLog, True)
@@ -914,6 +950,12 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	
 	heightKeyboard = NewHeight
 	
+'	If prefdialog.IsInitialized And prefdialog.Dialog.Visible Then
+'		prefdialog.Dialog.Resize(mainparent.Width - 10%x, NewHeight)
+'	End If
+	
+'	prefdialog.KeyboardHeightChanged(NewHeight)
+	
 	If (NewHeight > OldHeight) Then 'Full Screen
 '		LogColor("ChatN.IME_HeightChanged.Full: " & NewHeight, ColorLog)
 		
@@ -938,7 +980,6 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 	End If
 	
 '	clvMessages.sv.Height = NewHeight
-	
 	
 '	Dim tpc As TouchPanelCreator
 '	base = tpc.CreateTouchPanel("tpc")
@@ -1792,6 +1833,12 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 		chkGrammar.Checked = False
 		chkTranslate.Checked = False
 		ControlCheckBox
+	Else
+		If (chkTranslate.Checked = False) Then
+			If (chkTranslate.Text <> "Persian") Or (chkTranslate.Text <> "Arabic") Or (chkTranslate.Text <> "Hebrew") Then
+				chkVoiceLang.Checked = False
+			End If
+		End If
 	End If
 End Sub
 
@@ -1965,8 +2012,128 @@ Private Sub AddSeperator
 	clvMessages.AddTextItem("", "SEPERATOR")
 End Sub
 
+Private Sub PrefDialog_IsValid (TempData As Map) As Boolean
+'	Dim firstlang As String = TempData.Get("FirstLang")
+	Return True
+End Sub
+
+Private Sub SetWidthItemPrefDialog (Pref As PreferencesDialog, Key As String, wwidth As Double)
+	For i = 0 To Pref.PrefItems.Size - 1
+		Dim pi As B4XPrefItem = Pref.PrefItems.Get(i)
+		If pi.key = Key Then
+			If pi.ItemType = Pref.TYPE_SHORTOPTIONS Then
+				Dim Parent As B4XView = Pref.CustomListView1.GetPanel(i).GetView(1)
+				Parent.Left = (Parent.Left + Parent.Width) - wwidth
+				Parent.Width = wwidth
+				Dim view As B4XView = Parent.GetView( 0)
+				view.Width = Parent.Width
+			Else
+				Dim oldx As Double=Pref.CustomListView1.GetPanel(i).GetView(1).Left
+				Dim oldw As Double=Pref.CustomListView1.GetPanel(i).GetView(1).Width
+				Pref.CustomListView1.GetPanel(i).GetView(1).Left=(oldx+oldw)-wwidth
+				Pref.CustomListView1.GetPanel(i).GetView(1).Width= wwidth
+			End If
+		End If
+	Next
+End Sub
+
+Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
+'	Try
+		' Fix Linux UI (Long Text Button)
+		Dim btnCancel As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Cancel)
+			btnCancel.Width = btnCancel.Width + 20dip
+			btnCancel.Left = btnCancel.Left - 20dip
+			btnCancel.TextColor = xui.Color_Red
+			btnCancel.Text = "Cancel"
+		Dim btnOk As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Positive)
+		If btnOk.IsInitialized Then
+			btnOk.Width = btnOk.Width + 20dip
+			btnOk.Left = btnCancel.Left - btnOk.Width
+			btnOk.TextColor = Colors.RGB(40,161,38)
+			btnOk.Text = "Save"
+		End If
+	
+	For i = 0 To prefdialog.PrefItems.Size - 1
+		Dim pi As B4XPrefItem = prefdialog.PrefItems.Get(i)
+		LogColor("Type: " & pi.ItemType, Colors.Black)
+		
+		If pi.ItemType = prefdialog.TYPE_SEPARATOR Then
+			If (pi.Title = "") Then
+				prefdialog.CustomListView1.ResizeItem(i, 80dip)
+				
+'			Else If (pi.Title = "OpenAI API Key") Then
+'				
+'				Dim pnl As B4XView = prefdialog.CustomListView1.GetPanel(i)
+'				pnl.Color =  xui.Color_RGB(65, 105, 225)
+''					pnl.Height = pnl.Parent.Height
+''					pnl.GetView(0).Height = pnl.Height - 20dip
+''					pnl.GetView(0).TextSize = 12
+''					pnl.GetView(1).Top = 20dip
+			End If
+		End If
+		
+'		If pi.ItemType = prefdialog.TYPE_TEXT  Then
+'			Dim txt As B4XFloatTextField = prefdialog.CustomListView1.GetPanel(i).GetView(0).Tag
+'			txt.TextField.Enabled = False
+'		End If
+'		If pi.ItemType=prefdialog.TYPE_BOOLEAN Then
+'			Dim bool As B4XSwitch = prefdialog.CustomListView1.GetPanel(i).GetView(1).Tag
+'			bool.Enabled = False
+'		End If
+	Next
+		
+'		SetWidthItemPrefDialog(prefdialog,"Key", 180dip)
+		
+'		Dim btnAPI As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Negative)
+'		If btnAPI.IsInitialized Then
+'			btnAPI.Width = 20dip
+'			btnAPI.Height = 20dip
+'			btnAPI.Left = 10dip
+'			btnAPI.TextColor = Colors.Blue
+'			btnAPI.Text = "Get OpenAI API Key"
+'		End If
+		
+'	Catch
+'		Log(LastException)
+'	End Try
+End Sub
+
 Private Sub icMenuTopMenu_Click
-	Drawer.LeftOpen = Not (Drawer.LeftOpen)
+	
+	Wait For (prefdialog.ShowDialog(Options, "Save", "Cancel")) Complete (Result As Int)
+	If Result = xui.DialogResponse_Positive Then
+		LogColor(Options, Colors.Blue)
+		
+		General.Pref.Creativity = Options.Get("Creativity")
+		General.Pref.FirstLang = Options.Get("FirstLang")
+		General.Pref.SecondLang = Options.Get("SecondLang")
+		
+		If General.IsNull(Options.Get("AutoSend")) Then
+			General.Pref.AutoSend = False
+		Else
+			General.Pref.AutoSend = Options.Get("AutoSend")
+		End If
+		
+		chkTranslate.Text = General.Pref.FirstLang
+		ControlCheckBox
+		If (General.Pref.SecondLang = "(None)") Or General.IsNull(General.Pref.SecondLang) Then
+			chkToFarsi.SetVisibleAnimated(150, False)
+'			chkTranslate.SetVisibleAnimated(150, False)
+			If (General.Pref.FirstLang <> "Persian" Or General.Pref.FirstLang <> "Arabic" Or General.Pref.FirstLang <> "Hebrew") Then
+				chkVoiceLang.Checked = False
+			End If
+		Else
+			LogColor(General.Pref.SecondLang, Colors.Red)
+			chkToFarsi.Text = General.Pref.SecondLang
+			chkToFarsi.SetVisibleAnimated(300, True)
+			chkTranslate.SetVisibleAnimated(300, True)
+		End If
+		
+		General.SaveSettingDB
+		
+	End If
+	
+'	Drawer.LeftOpen = Not (Drawer.LeftOpen)
 End Sub
 
 
@@ -1978,7 +2145,7 @@ End Sub
 
 Private Sub lblTemperatureDrawer_LongClick
 	UpDown1Drawer.Value = 5
-	ToastMessageShow("Critivity Reset to Default.", False)
+	ToastMessageShow("Creativity Reset to Default.", False)
 End Sub
 
 Private Sub lblCopy_Click

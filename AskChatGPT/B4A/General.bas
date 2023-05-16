@@ -218,8 +218,13 @@ End Sub
 
 Public Sub IsNull(txt As String) As Boolean
 '	MyLog("General.IsNull: " & txt, ColorLog, False)
-	If (txt = Null) Or (txt.ToLowerCase) = "null" Then Return True
-	Return False
+	Try
+		If (txt = Null) Or (txt.ToLowerCase) = "null" Or (txt = "") Then Return True
+		Return False
+	Catch
+		Log(LastException)
+		Return False
+	End Try
 End Sub
 
 'Return correct work with A or AN
