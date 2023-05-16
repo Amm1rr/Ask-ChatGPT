@@ -14,7 +14,7 @@ Sub Class_Globals
 	Public PrefItems As List
 	Public TYPE_BOOLEAN = 1, TYPE_TEXT = 2, TYPE_DATE = 3, TYPE_OPTIONS = 4, TYPE_COLOR = 5, _
 		TYPE_SEPARATOR = 6, TYPE_NUMBER = 7, TYPE_PASSWORD = 8, TYPE_SHORTOPTIONS = 9, TYPE_DECIMALNUMBER = 10, TYPE_MULTILINETEXT = 11, _
-		TYPE_TIME = 12, TYPE_NUMERICRANGE = 13, TYPE_EXPLANATION = 14 As Int
+		TYPE_TIME = 12, TYPE_NUMERICRANGE = 13, TYPE_EXPLANATION = 14, Type_APIKEY = 15 As Int
 	Public DateTemplate As B4XDateTemplate
 	Public LongTextTemplate As B4XLongTextTemplate
 	Public Dialog As B4XDialog
@@ -134,6 +134,13 @@ Public Sub LoadFromJson (Json As String)
 				AddSeparator(title)
 			Case "Boolean"
 				AddBooleanItem(key, title)
+			Case "ApiKey"
+				Dim l As List = item.Get("labletitle")
+				If l.IsInitialized = False Or l.Size = 0 Or IsNumber(l.Get(0)) = False Then
+					AddApiKeyItem(key, title, "")
+				Else
+					AddApiKeyItem(key, title, l.Get(0))
+				End If
 			Case "Text"
 				AddTextItem(key, title)
 			Case "Date"
@@ -192,7 +199,7 @@ Public Sub LoadFromJson (Json As String)
 End Sub
 
 Public Sub AddOptionsItem (Key As String, Title As Object, Options As List)
-		
+	
 	Dim pi As B4XPrefItem = CreatePrefItem(Title, TYPE_OPTIONS, Key)
 	If Options.IsInitialized Then
 		pi.Extra = CreateMap("options": Options)
@@ -210,6 +217,13 @@ End Sub
 
 Public Sub AddBooleanItem (Key As String, Title As Object)
 	PrefItems.Add(CreatePrefItem(Title, TYPE_BOOLEAN, Key))
+End Sub
+
+Public Sub AddApiKeyItem (Key As String, Title As Object, LableTitle As String)
+'	PrefItems.Add(CreatePrefItem(Title, Type_APIKEY, Key))
+	Dim pi As B4XPrefItem = CreatePrefItem(Title, Type_APIKEY, Key)
+		pi.Extra = CreateMap("labletitle": LableTitle)
+	PrefItems.Add(pi)
 End Sub
 
 Public Sub AddTextItem (Key As String, Title As Object)
@@ -394,6 +408,9 @@ Private Sub FillData (Data As Map)
 			Case TYPE_BOOLEAN
 				Dim switch As B4XSwitch = ItemPanel.GetView(1).Tag
 				switch.Value = GetPrefItemValue(PrefItem, False, Data)
+			Case Type_APIKEY
+				Dim ft As B4XFloatTextField = ItemPanel.GetView(1).Tag
+					ft.Text = GetPrefItemValue(PrefItem, "", Data)
 			Case TYPE_TEXT, TYPE_PASSWORD, TYPE_NUMBER, TYPE_DECIMALNUMBER, TYPE_MULTILINETEXT
 				Dim ft As B4XFloatTextField = ItemPanel.GetView(0).Tag
 				ft.Text = GetPrefItemValue(PrefItem, "", Data)
@@ -524,6 +541,29 @@ Private Sub CreateLayouts (PrefItem As B4XPrefItem) As B4XView
 			p.LoadLayout("booleanitem")
 			Dialog.InternalSetTextOrCSBuilderToLabel(p.GetView(0), PrefItem.Title)
 			p.GetView(0).TextColor = TextColor
+		Case Type_APIKEY
+			p.Height = 100dip
+			p.LoadLayout("apikeyitem")
+'			p.GetView(0).Text = "Test"
+			Dim ft As B4XFloatTextField = p.GetView(1).Tag
+				ft.HintText = PrefItem.Title
+				ft.HintFont = DefaultHintFont
+				ft.LargeLabelTextSize = DefaultHintLargeSize
+				ft.Update
+				
+			Dim lbltitle As String = PrefItem.Extra.Get("labletitle")
+			Dim lbl As Label = p.GetView(0)
+				lbl.Text = lbltitle
+			
+			'//## Get width to set label left to assign center width
+			'##
+			Dim bmp As Bitmap
+				bmp.InitializeMutable(1dip, 1dip)
+			Dim cvs As Canvas
+				cvs.Initialize2(bmp)
+			Dim widt As Int = cvs.MeasureStringWidth(lbl.Text, lbl.Typeface , lbl.TextSize)
+			lbl.Left = (p.Width - widt) / 2
+			
 		Case TYPE_MULTILINETEXT
 			p.Height = PrefItem.Extra.Get("height")
 			p.LoadLayout("textitemmulti")
@@ -708,6 +748,9 @@ Private Sub CommitChanges (Data As Map) As Boolean
 			Case TYPE_BOOLEAN
 				Dim switch As B4XSwitch = ItemPanel.GetView(1).Tag
 				Value = switch.Value
+			Case Type_APIKEY
+				Dim ft As B4XFloatTextField = ItemPanel.GetView(1).Tag
+				Value = ft.Text
 			Case TYPE_TEXT, TYPE_PASSWORD, TYPE_MULTILINETEXT
 				Dim ft As B4XFloatTextField = ItemPanel.GetView(0).Tag
 				Value = ft.Text
@@ -911,7 +954,6 @@ Private Sub DialogClosed(Result As Int) 'ignore
 	
 End Sub
 
-
 Private Sub B4XSwitch1_ValueChanged (Value As Boolean)
 	
 End Sub
@@ -965,4 +1007,8 @@ Private Sub HexToColor(Hex As String) As Int()
 	If Regex.IsMatch("[0-9a-f]{8}", Hex) = False Then Return res
 	Dim ints() As Int = bc.IntsFromBytes(bc.HexToBytes(Hex))
 	Return ints
+End Sub
+
+Private Sub Label1_Click
+	Msgbox("Test", "Worked")
 End Sub

@@ -207,6 +207,8 @@ Public Sub Initialize(parent As B4XView, text As String)
 	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
 	prefdialog.SetEventsListener(Me, "PrefDialog")
 	
+	prefdialog.AddApiKeyItem("APIKEY", "API", "Get your free OpenAI API Key")
+	
 	Options.Initialize
 	Dim Options As Map = CreateMap()
 		Options.Put("Creativity", General.Pref.Creativity)

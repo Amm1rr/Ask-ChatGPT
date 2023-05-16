@@ -119,18 +119,6 @@
             "type": "Separator",
             "key": "",
             "required": false
-        },
-        {
-            "title": "OpenAI API Key",
-            "type": "Separator",
-            "key": "",
-            "required": false
-        },
-        {
-            "title": "API",
-            "type": "Text",
-            "key": "OpenAIKey",
-            "required": false
         }
     ]
 }
