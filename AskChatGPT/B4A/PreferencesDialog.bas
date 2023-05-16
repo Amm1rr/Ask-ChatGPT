@@ -1014,9 +1014,15 @@ Private Sub Label1_Click
 
 	'If clicked view is APIKey Label
 	Dim lbl As Label = Sender
-	If (lbl.Text = General.APIKeyLabel) Then
-		Dim p As PhoneIntents
-		StartActivity(p.OpenBrowser("https://platform.openai.com/account/api-keys/"))
-	End If
+	Select lbl.Text
+		
+		Case General.APIKeyLabel
+			
+			Dim p As PhoneIntents
+			StartActivity(p.OpenBrowser("https://platform.openai.com/account/api-keys/"))
+			
+	End Select
+	
+'	Log("Label : " & lbl.Text)
 	
 End Sub

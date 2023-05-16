@@ -39,14 +39,18 @@ Public Sub Initialize
 	
 '	Dim enc As String = secure.EncryptToFinalTransferText(General.Pref.APIKEY) 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
 '	Dim enc As String = secure.EncryptToFinalTransferText("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAAA") 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
-
-'	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
-'						"6yzr6luiTA=="  & CRLF & _
-'						"Y3mDBhBbd0I="  & CRLF & _
-'						"PIoruDtshkcBM0Vj4KQQMA=="
-'	Dim dec As String = secure.decrypt(enc)
 	
-	API_KEY = $"Bearer ${General.Pref.APIKEY}"$
+	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
+						"6yzr6luiTA=="  & CRLF & _
+						"Y3mDBhBbd0I="  & CRLF & _
+						"PIoruDtshkcBM0Vj4KQQMA=="
+	Dim dec As String = secure.decrypt(enc)
+	
+	If (General.IsNull(General.Pref.APIKEY)) Then
+		API_KEY = $"Bearer ${dec}"$	
+	Else
+		API_KEY = $"Bearer ${General.Pref.APIKEY}"$	
+	End If
 	
 	ChatHistoryList.Initialize
 	

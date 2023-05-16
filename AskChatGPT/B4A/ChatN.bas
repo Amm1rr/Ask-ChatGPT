@@ -250,12 +250,12 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	
 	'// اگه این متن رو عوض کردیم باید تویه
 	'// و توی رویداد کلیک برای لیبل ها هم تغییر بدهیم PreferencesDialog
-	'// Label1_Click
+	'// Label1_Click - بصورت متغیر قرارش دادم و این متن صرفا برای یادآوری است
 	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
 	'//
 	
 	prefdialog.SeparatorBackgroundColor = xui.Color_White
-	prefdialog.Dialog.BorderColor = xui.Color_Green
+	prefdialog.Dialog.BorderColor = Colors.RGB(2,76,109)
 	prefdialog.Dialog.BorderCornersRadius = 5dip
 	prefdialog.Dialog.BlurBackground = True
 	
@@ -2074,6 +2074,8 @@ Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
 		Dim pi As B4XPrefItem = prefdialog.PrefItems.Get(i)
 		LogColor("Type: " & pi.ItemType, Colors.Black)
 		
+		'## Resize Seprator befor APIKey
+		'##
 		If pi.ItemType = prefdialog.TYPE_SEPARATOR Then
 			If (pi.Title = "") Then
 				prefdialog.CustomListView1.ResizeItem(i, 80dip)
