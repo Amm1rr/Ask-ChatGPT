@@ -2038,19 +2038,21 @@ Private Sub SetWidthItemPrefDialog (Pref As PreferencesDialog, Key As String, ww
 End Sub
 
 Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
-'	Try
+	Try
 		' Fix Linux UI (Long Text Button)
 		Dim btnCancel As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Cancel)
-			btnCancel.Width = btnCancel.Width + 20dip
-			btnCancel.Left = btnCancel.Left - 20dip
-			btnCancel.TextColor = xui.Color_Red
-			btnCancel.Text = "Cancel"
+		If btnCancel.IsInitialized Then
+				btnCancel.Text = "Cancel"
+				btnCancel.Width = btnCancel.Width + 20dip
+				btnCancel.Left = btnCancel.Left - 20dip
+				btnCancel.TextColor = xui.Color_Red
+		End If
 		Dim btnOk As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Positive)
 		If btnOk.IsInitialized Then
+			btnOk.Text = "Save"
 			btnOk.Width = btnOk.Width + 20dip
 			btnOk.Left = btnCancel.Left - btnOk.Width
 			btnOk.TextColor = Colors.RGB(40,161,38)
-			btnOk.Text = "Save"
 		End If
 	
 	For i = 0 To prefdialog.PrefItems.Size - 1
@@ -2093,9 +2095,9 @@ Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
 '			btnAPI.Text = "Get OpenAI API Key"
 '		End If
 		
-'	Catch
-'		Log(LastException)
-'	End Try
+	Catch
+		Log(LastException)
+	End Try
 End Sub
 
 Private Sub icMenuTopMenu_Click

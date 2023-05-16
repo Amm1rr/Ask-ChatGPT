@@ -12,7 +12,7 @@ Version=12.2
 'original research
 Sub Class_Globals
 	Private API_KEY 			As String
-	Public TimeoutText 			As String = $"Timeout ${CRLF} Server is busy. Just try again. ${CRLF} سرور شلوغ است، مجددا امتحان کنید."$
+	Public TimeoutText 			As String = $"Tim`eout ${CRLF} Server is busy. Just try again. ${CRLF} سرور شلوغ است، مجددا امتحان کنید."$
 	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
