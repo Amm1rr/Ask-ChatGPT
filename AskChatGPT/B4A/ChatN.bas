@@ -195,31 +195,11 @@ Public Sub Initialize(parent As B4XView, text As String)
 	LoadLanguage
 	LoadListDB
 	
+	SetupSettingDialog(parent)
+	
 	UpDown1Drawer.Value = General.Pref.Creativity
 	chkAutoSendDrawer.Checked = General.Pref.AutoSend
 	
-	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2 )
-	prefdialog.mBase.Top = 20%y
-'	prefdialog.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
-'	prefdialog.Dialog.TitleBarColor = xui.Color_RGB(65, 105, 225)
-	prefdialog.Dialog.TitleBarHeight = 75dip
-'	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
-	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
-	prefdialog.SetEventsListener(Me, "PrefDialog")
-	
-	prefdialog.AddApiKeyItem("APIKEY", "API", "Get your free OpenAI API Key")
-	
-	Options.Initialize
-	Dim Options As Map = CreateMap()
-		Options.Put("Creativity", General.Pref.Creativity)
-		Options.Put("FirstLang", General.Pref.FirstLang)
-		Options.Put("SecondLang",General.Pref.SecondLang)
-		Options.Put("AutoSend", General.Pref.AutoSend)
-		
-	prefdialog.SeparatorBackgroundColor = xui.Color_White
-	prefdialog.Dialog.BorderColor = xui.Color_Green
-	prefdialog.Dialog.BorderCornersRadius = 10dip
-	prefdialog.Dialog.BlurBackground = True
 	
 	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
 		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
@@ -253,6 +233,39 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	General.sql.TransactionSuccessful
 	General.sql.EndTransaction
+	
+End Sub
+
+Private Sub SetupSettingDialog(parent As B4XView)
+	
+	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2 )
+	prefdialog.mBase.Top = 20%y
+'	prefdialog.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
+'	prefdialog.Dialog.TitleBarColor = xui.Color_RGB(65, 105, 225)
+	prefdialog.Dialog.TitleBarHeight = 75dip
+'	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
+	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
+	prefdialog.SetEventsListener(Me, "PrefDialog")
+	
+	
+	'// اگه این متن رو عوض کردیم باید تویه
+	'// و توی رویداد کلیک برای لیبل ها هم تغییر بدهیم PreferencesDialog
+	'// Label1_Click
+	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
+	'//
+	
+	prefdialog.SeparatorBackgroundColor = xui.Color_White
+	prefdialog.Dialog.BorderColor = xui.Color_Green
+	prefdialog.Dialog.BorderCornersRadius = 5dip
+	prefdialog.Dialog.BlurBackground = True
+	
+	Options.Initialize
+	Dim Options As Map = CreateMap()
+		Options.Put("Creativity", General.Pref.Creativity)
+		Options.Put("FirstLang", General.Pref.FirstLang)
+		Options.Put("SecondLang",General.Pref.SecondLang)
+		Options.Put("AutoSend", General.Pref.AutoSend)
+		Options.Put("APIKEY", General.Pref.APIKEY)
 	
 End Sub
 
@@ -2111,6 +2124,7 @@ Private Sub icMenuTopMenu_Click
 		General.Pref.Creativity = Options.Get("Creativity")
 		General.Pref.FirstLang = Options.Get("FirstLang")
 		General.Pref.SecondLang = Options.Get("SecondLang")
+		General.Pref.APIKEY = Options.Get("APIKEY")
 		
 		If General.IsNull(Options.Get("AutoSend")) Then
 			General.Pref.AutoSend = False
@@ -2448,7 +2462,7 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 	'اگر این خط فعال بشه MessageIndex صفر میشه و به خطا میخوره موقع ذخیره
 '	clvTitles_ItemClick(Index, Value)
 	
-	Msgbox2Async("", "Delete ?", "Delete", "Cancel", "", Null, True)
+	Msgbox2Async(clvMessages.GetPanel(Index).GetView(0).Text, "Delete ?", "Delete", "Cancel", "", Null, True)
 	Wait For Msgbox_Result (Result As Int)
 		
 		If (DialogResponse.POSITIVE = Result) Then

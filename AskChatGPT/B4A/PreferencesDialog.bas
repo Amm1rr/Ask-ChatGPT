@@ -134,7 +134,7 @@ Public Sub LoadFromJson (Json As String)
 				AddSeparator(title)
 			Case "Boolean"
 				AddBooleanItem(key, title)
-			Case "ApiKey"
+			Case "APIKEY"
 				Dim l As List = item.Get("labletitle")
 				If l.IsInitialized = False Or l.Size = 0 Or IsNumber(l.Get(0)) = False Then
 					AddApiKeyItem(key, title, "")
@@ -1009,9 +1009,14 @@ Private Sub HexToColor(Hex As String) As Int()
 	Return ints
 End Sub
 
+'Get Clicked labels
 Private Sub Label1_Click
-	
-	Dim p As PhoneIntents
-	StartActivity(p.OpenBrowser("https://platform.openai.com/account/api-keys/"))
+
+	'If clicked view is APIKey Label
+	Dim lbl As Label = Sender
+	If (lbl.Text = General.APIKeyLabel) Then
+		Dim p As PhoneIntents
+		StartActivity(p.OpenBrowser("https://platform.openai.com/account/api-keys/"))
+	End If
 	
 End Sub

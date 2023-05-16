@@ -11,10 +11,12 @@ Sub Process_Globals
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
 	Public  IsDebug					As Boolean 	= False
+	Public 	APIKEY					As String
 	Public 	SaveFileName			As String 	= "AskChatGPT.save"
 	Public 	ConfigFileName			As String 	= "AskChatGPT.conf"
 	Public 	SQLFileName				As String 	= "AskChatGPT.db"
 	Public 	sql						As SQL
+	Public 	APIKeyLabel				As String	= "Get your free OpenAI API Key (keep secret)"
 End Sub
 
 #Region Save and Load Settings
@@ -53,6 +55,7 @@ Public Sub SaveSetting
 	Sett.Put("AutoSend", Pref.AutoSend)
 	Sett.Put("Memory", Pref.Memory)
 	Sett.Put("IsDevMode", Pref.IsDevMode)
+	Sett.Put("APIKEY", Pref.APIKEY)
 	
 '	LogColor($"SaveSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
 '			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
@@ -73,6 +76,7 @@ Public Sub LoadSetting
 	Pref.AutoSend = GetBoolean(Sett.Get("AutoSend"))
 	Pref.Memory = GetDefaultMemory(Sett.Get("Memory"))	'Default True
 	Pref.IsDevMode = GetBoolean(Sett.Get("IsDevMode"))
+	Pref.APIKEY = GetStr(Sett.Get("APIKEY"))
 	
 '	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
 '			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
@@ -82,6 +86,9 @@ End Sub
 Private Sub CreateDB
 	
 	MyLog("General.CreateDB", ColorLog, True)
+	
+	'// Reset Install
+'	File.Delete(File.DirInternal, SQLFileName)
 	
 	If File.Exists(File.DirInternal, SQLFileName) Then
 		sql.Initialize(File.DirInternal, SQLFileName, False)
@@ -95,6 +102,7 @@ Private Sub CreateDB
 	"Creativity"	INTEGER DEFAULT 4,
 	"AutoSend"	INTEGER DEFAULT 0,
 	"Memory"	INTEGER DEFAULT 1,
+	"APIKEY"	TEXT,
 	"IsDevMode"	INTEGER DEFAULT 0
 	);"$
 	
@@ -129,6 +137,7 @@ Public Sub LoadSettingDB
 		Pref.AutoSend = False
 		Pref.Memory = True
 		Pref.IsDevMode = IsDebug
+		Pref.APIKEY = APIKEY
 		
 		SaveSettingDB
 	Else
@@ -139,6 +148,7 @@ Public Sub LoadSettingDB
 		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
 		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
+		Pref.APIKEY = GetStr(CurSettingSql.GetString("APIKEY"))
 	End If
 	
 	CurSettingSql.Close
@@ -153,14 +163,15 @@ Public Sub SaveSettingDB
 	
 	sql.ExecNonQuery("DELETE FROM Config")
 	
-	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, IsDevMode) VALUES(?, ?, ?, ?, ?, ?)"
-	Dim Args(6) As Object
+	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode) VALUES(?, ?, ?, ?, ?, ?, ?)"
+	Dim Args(7) As Object
 		Args(0) = Pref.FirstLang
 		Args(1) = Pref.SecondLang
 		Args(2) = Pref.Creativity
 		Args(3) = Pref.AutoSend
 		Args(4) = Pref.Memory
-		Args(5) = Pref.IsDevMode
+		Args(5) = Pref.APIKEY
+		Args(6) = Pref.IsDevMode
 	
 	Log(query)
 	
@@ -254,6 +265,13 @@ End Sub
 Private Sub GetLangSecStr(txt As Object) As String
 	MyLog("General.GetLangSecStr: " & txt, ColorLog, False)
 	If IsNull(txt) Then Return "(None)"
+	Return txt.As(String)
+	
+End Sub
+
+Private Sub GetStr(txt As Object) As String
+	MyLog("General.GetStr: " & txt, ColorLog, False)
+	If IsNull(txt) Then Return ""
 	Return txt.As(String)
 	
 End Sub

@@ -12,7 +12,7 @@ Version=12.2
 'original research
 Sub Class_Globals
 	Private API_KEY 			As String
-	Public TimeoutText 			As String = $"Tim`eout ${CRLF} Server is busy. Just try again. ${CRLF} سرور شلوغ است، مجددا امتحان کنید."$
+	Public TimeoutText 			As String = $"Timeout ${CRLF} Server is busy. Just try again. ${CRLF} سرور شلوغ است، مجددا امتحان کنید."$
 	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
@@ -34,19 +34,24 @@ End Sub
 'Initializes the object. You can add parameters to this method if needed.
 Public Sub Initialize
 	
-	
 	Dim secure As SecureMyText
 		secure.Initialize("", "datacode")
+	
+'	Dim enc As String = secure.EncryptToFinalTransferText(General.Pref.APIKEY) 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
 '	Dim enc As String = secure.EncryptToFinalTransferText("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAAA") 't.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
-	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
-						"6yzr6luiTA=="  & CRLF & _
-						"Y3mDBhBbd0I="  & CRLF & _
-						"PIoruDtshkcBM0Vj4KQQMA=="
-	Dim dec As String = secure.decrypt(enc)
-'	LogColor("Initialize:" & dec, Colors.Red)
-	API_KEY = dec
+
+'	Dim enc As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
+'						"6yzr6luiTA=="  & CRLF & _
+'						"Y3mDBhBbd0I="  & CRLF & _
+'						"PIoruDtshkcBM0Vj4KQQMA=="
+'	Dim dec As String = secure.decrypt(enc)
+	
+	API_KEY = $"Bearer ${General.Pref.APIKEY}"$
 	
 	ChatHistoryList.Initialize
+	
+'	LogColor("Initialize:" & dec, Colors.Red)
+	
 End Sub
 
 'System String 	   : The System Message helps set the behavior of the assistant.
@@ -233,6 +238,7 @@ Public Sub Query(system_string As String, _
         'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
         'under heading [Getting a GPT-3 API Key]
 		req.GetRequest.SetHeader("Authorization", API_KEY)
+		LogColor("API Key: " & API_KEY, Colors.Magenta)
  
         'If you generate your own account API key then Abdull's organisation
         'key will be of no use to you

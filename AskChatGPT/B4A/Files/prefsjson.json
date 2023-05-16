@@ -55,7 +55,7 @@
                 "Latvian",
                 "Hindi"
             ],
-            "title": "You want Learn (optional)",
+            "title": "You want Learn",
             "type": "Options",
             "key": "FirstLang",
             "required": true
@@ -109,7 +109,7 @@
             "required": false
         },
         {
-            "title": "Auto Send by Voice",
+            "title": "AutoSend when use voice assistant",
             "type": "Boolean",
             "key": "AutoSend",
             "required": false

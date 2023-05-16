@@ -43,22 +43,22 @@ FileGroup1=Default Group\Fonts
 FileGroup10=Default Group\Images
 FileGroup11=Default Group\Images
 FileGroup12=Default Group\Images
-FileGroup13=Default Group\PreferenceDialog
+FileGroup13=Default Group\Designers\PreferenceDialog
 FileGroup14=Default Group\Images
 FileGroup15=Default Group
 FileGroup16=Default Group\Designers
 FileGroup17=Default Group\Designers
 FileGroup18=Default Group\Designers
 FileGroup19=Default Group\Designers
-FileGroup2=Default Group
-FileGroup20=Default Group\PreferenceDialog
+FileGroup2=Default Group\Designers\PreferenceDialog
+FileGroup20=Default Group\Designers\PreferenceDialog
 FileGroup21=Default Group\Images
 FileGroup22=Default Group\Designers
 FileGroup23=Default Group\Images
 FileGroup24=Default Group\Images
 FileGroup25=Default Group\Fonts
-FileGroup26=Default Group\PreferenceDialog
-FileGroup27=Default Group\PreferenceDialog
+FileGroup26=Default Group\Designers\PreferenceDialog
+FileGroup27=Default Group\Designers\PreferenceDialog
 FileGroup28=Default Group
 FileGroup29=Default Group
 FileGroup3=Default Group\Images
@@ -67,11 +67,11 @@ FileGroup31=Default Group\Designers
 FileGroup32=Default Group\Fonts
 FileGroup33=Default Group\Images
 FileGroup34=Default Group\Designers
-FileGroup35=Default Group\PreferenceDialog
-FileGroup36=Default Group\PreferenceDialog
-FileGroup37=Default Group\PreferenceDialog
-FileGroup38=Default Group\PreferenceDialog
-FileGroup39=Default Group\PreferenceDialog
+FileGroup35=Default Group\Designers\PreferenceDialog
+FileGroup36=Default Group\Designers\PreferenceDialog
+FileGroup37=Default Group\Designers\PreferenceDialog
+FileGroup38=Default Group\Designers\PreferenceDialog
+FileGroup39=Default Group\Designers\PreferenceDialog
 FileGroup4=Default Group\Images
 FileGroup40=Default Group\Images
 FileGroup5=Default Group\Images
@@ -147,6 +147,7 @@ Sub Process_Globals
 				 Creativity As Int, _
 				 AutoSend 	As Boolean, _
 				 Memory 	As Boolean, _
+				 APIKEY		As String, _
 				 IsDevMode 	As Boolean)		'If its in Debug Mode, just for MySelf
 End Sub
 
