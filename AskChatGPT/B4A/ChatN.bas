@@ -64,7 +64,6 @@ Sub Class_Globals
 	Private chkGrammar 	As B4XView
 	Private chkTranslate 		As CheckBox
 	Private chkToFarsi 			As CheckBox
-	Private chkVoiceLang 		As CheckBox
 	Private lblPaste As Label
 	Private UpDown1Drawer As UpDown
 	Private lblVersionTextDrawer As Label
@@ -752,19 +751,6 @@ Private Sub clvMessages_ItemClick(Index As Int, Value As Object)
 		Dim tf As View = TextField.TextField
 		tf.ResignFocus
 	#End If
-	
-	If (chkVoiceLang.Checked) Then
-		If (Index < 1) Then
-			SetChatBackground($"Bg-Chat03.jpg"$)
-		else If (Index < 10) Then
-			SetChatBackground($"Bg-Chat0${Index}.jpg"$)
-		else If (Index > 10) Then
-			Index = 10
-			SetChatBackground($"Bg-Chat${Index}.jpg"$)
-		Else
-			SetChatBackground($"Bg-Chat${Index}.jpg"$)
-		End If
-	End If
 	
 '	resetTextboxToolbar
 '	AdjustSize_Clv(0)
@@ -1794,7 +1780,7 @@ Private Sub lblClearText_LongClick
 	MessageIndex = -1
 	clvMessages.Clear
 	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
-	ToastMessageShow("Session Reset.", False)
+	ToastMessageShow("New Session", False)
 End Sub
 
 Public Sub ResetAI
@@ -1848,12 +1834,6 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 		chkGrammar.Checked = False
 		chkTranslate.Checked = False
 		ControlCheckBox
-	Else
-		If (chkTranslate.Checked = False) Then
-			If (chkTranslate.Text <> "Persian") Or (chkTranslate.Text <> "Arabic") Or (chkTranslate.Text <> "Hebrew") Then
-				chkVoiceLang.Checked = False
-			End If
-		End If
 	End If
 End Sub
 
@@ -1863,21 +1843,6 @@ Private Sub ControlCheckBox
 	
 	Dim Firstlang 	As String = cmbLangDrawerFirst.GetItem(cmbLangDrawerFirst.SelectedIndex)
 	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
-	
-	If chkTranslate.Checked Then
-'		chkChat.Checked = False
-		If (IsLangRTL(Firstlang) = True) Then
-			chkVoiceLang.Checked = True
-		Else
-			chkVoiceLang.Checked = False
-		End If
-	Else If chkToFarsi.Checked Then
-		If (IsLangRTL(Seclang) = True) Then
-			chkVoiceLang.Checked = True
-		Else
-			chkVoiceLang.Checked = False
-		End If
-	End If
 	
 End Sub
 
@@ -1921,12 +1886,6 @@ Public Sub SetShadow (View As B4XView, Offset As Double, Color As Int)
     #Else If B4i
     View.As(View).SetShadow(Color, Offset, Offset, 0.5, False)
     #End If
-End Sub
-
-
-Private Sub chkVoiceLang_CheckedChange(Checked As Boolean)
-	ClickSimulation
-	AnswerRtl = Checked
 End Sub
 
 Private Sub lblPaste_Click
@@ -2029,6 +1988,9 @@ End Sub
 
 Private Sub PrefDialog_IsValid (TempData As Map) As Boolean
 '	Dim firstlang As String = TempData.Get("FirstLang")
+	Dim txt As String = TempData.Get("APIKEY")
+	
+	If txt = "" Then Return False
 	Return True
 End Sub
 
@@ -2120,8 +2082,10 @@ End Sub
 Private Sub icMenuTopMenu_Click
 	
 	Wait For (prefdialog.ShowDialog(Options, "Save", "Cancel")) Complete (Result As Int)
+	
 	If Result = xui.DialogResponse_Positive Then
 		LogColor(Options, Colors.Blue)
+		
 		
 		General.Pref.Creativity = Options.Get("Creativity")
 		General.Pref.FirstLang = Options.Get("FirstLang")
@@ -2139,9 +2103,6 @@ Private Sub icMenuTopMenu_Click
 		If (General.Pref.SecondLang = "(None)") Or General.IsNull(General.Pref.SecondLang) Then
 			chkToFarsi.SetVisibleAnimated(150, False)
 '			chkTranslate.SetVisibleAnimated(150, False)
-			If (General.Pref.FirstLang <> "Persian" Or General.Pref.FirstLang <> "Arabic" Or General.Pref.FirstLang <> "Hebrew") Then
-				chkVoiceLang.Checked = False
-			End If
 		Else
 			LogColor(General.Pref.SecondLang, Colors.Red)
 			chkToFarsi.Text = General.Pref.SecondLang
@@ -2194,7 +2155,6 @@ Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
 	If (General.Pref.SecondLang = "(None)") Then
 		chkToFarsi.SetVisibleAnimated(150, False)
 '		chkTranslate.SetVisibleAnimated(150, False)
-		chkVoiceLang.Checked = False
 	Else
 		LogColor(General.Pref.SecondLang, Colors.Red)
 		chkToFarsi.Text = General.Pref.SecondLang
@@ -2483,4 +2443,12 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 			ToastMessageShow("Deleted", False)
 		End If
 		
+End Sub
+
+
+Private Sub lblNew_Click
+	MyLog("lblNew_Click", ColorLog, True)
+	
+	ClickSimulation
+	lblClearText_LongClick
 End Sub

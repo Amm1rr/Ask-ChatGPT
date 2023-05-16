@@ -11,7 +11,6 @@ Sub Process_Globals
 	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
 	Public  IsDebug					As Boolean 	= False
-	Public 	APIKEY					As String
 	Public 	SaveFileName			As String 	= "AskChatGPT.save"
 	Public 	ConfigFileName			As String 	= "AskChatGPT.conf"
 	Public 	SQLFileName				As String 	= "AskChatGPT.db"
@@ -76,7 +75,7 @@ Public Sub LoadSetting
 	Pref.AutoSend = GetBoolean(Sett.Get("AutoSend"))
 	Pref.Memory = GetDefaultMemory(Sett.Get("Memory"))	'Default True
 	Pref.IsDevMode = GetBoolean(Sett.Get("IsDevMode"))
-	Pref.APIKEY = GetStr(Sett.Get("APIKEY"))
+	Pref.APIKEY = DecKey(GetStr(Sett.Get("APIKEY")))
 	
 '	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
 '			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
@@ -137,7 +136,7 @@ Public Sub LoadSettingDB
 		Pref.AutoSend = False
 		Pref.Memory = True
 		Pref.IsDevMode = IsDebug
-		Pref.APIKEY = APIKEY
+		Pref.APIKEY = ""
 		
 		SaveSettingDB
 	Else
@@ -148,7 +147,7 @@ Public Sub LoadSettingDB
 		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
 		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
-		Pref.APIKEY = GetStr(CurSettingSql.GetString("APIKEY"))
+		Pref.APIKEY = DecKey(GetStr(CurSettingSql.GetString("APIKEY")))
 	End If
 	
 	CurSettingSql.Close
@@ -170,7 +169,7 @@ Public Sub SaveSettingDB
 		Args(2) = Pref.Creativity
 		Args(3) = Pref.AutoSend
 		Args(4) = Pref.Memory
-		Args(5) = Pref.APIKEY
+		Args(5) = EncKey(Pref.APIKEY)
 		Args(6) = Pref.IsDevMode
 	
 	Log(query)
@@ -356,4 +355,29 @@ Sub setPadding(v As View, Left As Int, Top As Int, Right As Int, Bottom As Int)
 	MyLog("General.setPadding", ColorLog, False)
 	Dim jo = v As JavaObject
 	jo.RunMethod("setPadding", Array As Object(Left, Top, Right, Bottom))
+End Sub
+
+Public Sub EncKey(txt As String) As String
+	
+	Dim secure As SecureMyText
+		secure.Initialize("", "datacode")
+	
+	Dim enc As String = secure.EncryptToFinalTransferText(txt) 
+	'secure.encrypt("Bearer sk-AAAAAAAAAAAAAAAAAAAAAAAA")
+	
+	Return enc
+	
+End Sub
+
+Public Sub DecKey(txt As String) As String
+
+	If (IsNull(txt)) Then Return ""
+	
+	Dim secure As SecureMyText
+		secure.Initialize("", "datacode")
+	
+	Dim dec As String = secure.decrypt(txt)
+	
+	Return dec
+	
 End Sub
