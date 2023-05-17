@@ -328,9 +328,10 @@ Public Sub Query(system_string As String, _
 		
 	Next
 	
-	
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
+	
+	StartActivity(Main)
 	
 	Return resobj
 	

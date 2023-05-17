@@ -221,7 +221,8 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	Check_First_Sec_Lang_Visibility
 	
-	SetChatBackground("Bg-Chat03.jpg")
+'	SetChatBackground("Bg-Chat03.jpg")
+	SetChatBackground("Bg-Chat01.jpg")
 	
 	
 '	LogColor("ChatN.Init text: " & text, Colors.Red)
@@ -1654,7 +1655,7 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	RemoveSeperator
 	LogColor("Question ID: " & QuestionIndex, Colors.Red)
 	If (clvMessages.Size > 0) Then
-		clvMessages.ReplaceAt(QuestionIndex + 1, p, 100dip,m)
+		clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
 	Else
 		clvMessages.Add(p, m)
 	End If
