@@ -333,8 +333,23 @@ Public Sub Query(system_string As String, _
 	
 	StartActivity(Main)
 	
+	Dim rm As RingtoneManager
+	PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
+	
 	Return resobj
 	
+End Sub
+
+
+'PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
+Public Sub PlayRingtone(url As String)
+	Dim jo As JavaObject
+		jo.InitializeStatic("android.media.RingtoneManager")
+	Dim jo2 As JavaObject
+		jo2.InitializeContext
+	Dim u As Uri
+		u.Parse(url)
+	jo.RunMethodJO("getRingtone", Array(jo2, u)).RunMethod("play", Null)
 End Sub
 
 Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolean) As String
