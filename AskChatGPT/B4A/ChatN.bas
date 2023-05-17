@@ -2449,7 +2449,7 @@ Private Sub LoadMessage(Value As String)
 			msg.msgtype = m.Get("msgtype")
 		
 		If (msg.msgtype = typeMSG.answer) Then
-			WriteAnswer(msg.message, False, question, LastMsgIndex)
+			WriteAnswer(msg.message, False, question, (LastMsgIndex - 1))
 		Else if (msg.msgtype = typeMSG.question) Then
 			WriteQuestion(msg.message)
 			question = msg.message

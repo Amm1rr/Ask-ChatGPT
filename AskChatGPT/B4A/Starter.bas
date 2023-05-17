@@ -309,11 +309,9 @@ Public Sub Query(system_string As String, _
 		Dim stack As Map = MessageList.Get(i)
 		Dim indx As Int = stack.Get("QuestionIndex")
 		
-		Log("idx : " & indx)
-		Log("stack : " & stack)
 		Log("MessageList: " & MessageList)
+		Log(QuestionIndex & " : "  & stack & " : " & indx)
 		Log("-----")
-		Log(QuestionIndex & " : " & indx)
 		If (indx = QuestionIndex) Then
 			Log("indx = QuestionIndex")
 			MessageList.RemoveAt(i)
