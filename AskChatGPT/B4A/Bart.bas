@@ -4,6 +4,10 @@ ModulesStructureVersion=1
 Type=Class
 Version=12.2
 @EndOfDesignText@
+#Region Attributes 
+	#IgnoreWarnings: 9
+#End Region
+
 Sub Class_Globals
 	
 End Sub

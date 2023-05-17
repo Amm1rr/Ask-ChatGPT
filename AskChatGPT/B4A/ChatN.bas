@@ -4,6 +4,9 @@ ModulesStructureVersion=1
 Type=Class
 Version=12.2
 @EndOfDesignText@
+#Region Attributes 
+	#IgnoreWarnings: 9,12
+#End Region
 
 Sub Class_Globals
 	
@@ -39,7 +42,6 @@ Sub Class_Globals
 	Private WaitingText As String = "Proccessing..."
 	Private History 	As String
 	Public IsWorking As Boolean
-	Private ChatConversation As Boolean = False
 	
 	Private mEventName As String 'ignore
 	Private mCallBack As Object 'ignore
@@ -446,7 +448,7 @@ Private Sub Drawer_StateChanged (Open As Boolean)
 		UpDown1Drawer.Value = General.Pref.Creativity 'Temperature * 10
 		chkAutoSendDrawer.Checked = General.Pref.AutoSend
 	Else
-		General.SaveSetting
+		General.SaveSettingDB
 	End If
 	
 End Sub
@@ -481,15 +483,16 @@ Sub LocationOnScreen(View As View) As List
 		
 		Return lst
 	End If
+	Return Null
 End Sub
 
 Private Sub tpc_OnTouchEvent (Action As Int, X As Float, Y As Float, MotionEvent As Object) As Boolean
 	
 	' pass touch event to parent view
-	Dim parent As List = panMain.Parent.As(Panel).GetAllViewsRecursive
+'	Dim parent As List = panMain.Parent.As(Panel).GetAllViewsRecursive
 	
 	' find view at touch position
-	Dim views As View = parent
+'	Dim views As View = parent
 	Dim touchedView As View
 	For Each view As View In panMain.Parent.As(Panel).GetAllViewsRecursive
 		If view.Visible = True And view.Enabled = True Then
@@ -511,43 +514,43 @@ Private Sub tpc_OnTouchEvent (Action As Int, X As Float, Y As Float, MotionEvent
 	End If
     
 	Return True
-	
-	
-'		LogColor("OnTouchEvent: " & Action & " - " & MotionEvent, Colors.Blue)
-	Select Action
-		Case base.TOUCH_ACTION_MOVE
-			Dim deltaOffset As Float = (Y - StartOffset) * 1.5
-			If Scrolled = False Then
-				If Abs(deltaOffset) > 10dip Then Scrolled = True
-			End If
-			
-			LogColor("tpc_OnTouchEvent_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
-			
-			If (Y > lastY) Then			'Movign Down
-				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
-			Else If (Y < lastY) Then	'Moving Up
-				webAnswerExtra.FlingScroll(0, ScrollPosition - Y * 1.5)
-			End If
-			
-			lastY = Y
-			
-		Case base.TOUCH_ACTION_UP
-			LogColor("tpc_OnTouchEvent_ACTION_UP", Colors.Blue)
-			Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
-			Dim item As CLVItem = clvMessages.GetRawListItem(index)
-'			Dim innerIndex As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY - item.Offset + clvMessages.sv.ScrollViewOffsetY)
-'			LogColor("tpc_OnTouchEvent_ACTION_UP: " & index & CRLF & ":" & CRLF & item & CRLF & ":" & CRLF & innerIndex, Colors.Blue)
-'				
-			If Scrolled = False Then
-				LogColor("tpc_OnTouchEvent_Click", Colors.Blue)
-'				CallSub(Me, "btnMore_Click") 'ignore
-				Return False
-'				btnMore_Click
-			End If
-'			ScrollingCLV = Null
-	End Select
-	
-	Return True 'ScrollingCLV <> Null
+'	
+'	
+''		LogColor("OnTouchEvent: " & Action & " - " & MotionEvent, Colors.Blue)
+'	Select Action
+'		Case base.TOUCH_ACTION_MOVE
+'			Dim deltaOffset As Float = (Y - StartOffset) * 1.5
+'			If Scrolled = False Then
+'				If Abs(deltaOffset) > 10dip Then Scrolled = True
+'			End If
+'			
+'			LogColor("tpc_OnTouchEvent_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
+'			
+'			If (Y > lastY) Then			'Movign Down
+'				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
+'			Else If (Y < lastY) Then	'Moving Up
+'				webAnswerExtra.FlingScroll(0, ScrollPosition - Y * 1.5)
+'			End If
+'			
+'			lastY = Y
+'			
+'		Case base.TOUCH_ACTION_UP
+'			LogColor("tpc_OnTouchEvent_ACTION_UP", Colors.Blue)
+''			Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
+''			Dim item As CLVItem = clvMessages.GetRawListItem(index)
+''			Dim innerIndex As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY - item.Offset + clvMessages.sv.ScrollViewOffsetY)
+''			LogColor("tpc_OnTouchEvent_ACTION_UP: " & index & CRLF & ":" & CRLF & item & CRLF & ":" & CRLF & innerIndex, Colors.Blue)
+''				
+'			If Scrolled = False Then
+'				LogColor("tpc_OnTouchEvent_Click", Colors.Blue)
+''				CallSub(Me, "btnMore_Click") 'ignore
+'				Return False
+''				btnMore_Click
+'			End If
+''			ScrollingCLV = Null
+'	End Select
+'	
+'	Return True 'ScrollingCLV <> Null
 End Sub
 
 Private Sub panMain_Touch_OLD (Action As Int, X As Float, Y As Float) As Boolean
@@ -564,8 +567,8 @@ Private Sub panMain_Touch_OLD (Action As Int, X As Float, Y As Float) As Boolean
 			LogColor("panMain_Touch_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
 		Case base.TOUCH_ACTION_UP
 				LogColor("panMain_Touch_ACTION_UP", Colors.Blue)
-				Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
-				Dim item As CLVItem = clvMessages.GetRawListItem(index)
+'				Dim index As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY)
+'				Dim item As CLVItem = clvMessages.GetRawListItem(index)
 '				Dim innerIndex As Int = clvMessages.FindIndexFromOffset(StartOffset + clvMessages.sv.ScrollViewOffsetY - item.Offset + clvMessages.sv.ScrollViewOffsetY)
 '				LogColor("panMain_Touch_ACTION_UP: " & index & CRLF & ":" & CRLF & item & CRLF & ":" & CRLF & innerIndex, Colors.Blue)
 '				
@@ -638,45 +641,45 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 					imgAnswer.Top = 0
 					imgAnswer.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Puton.png", imgAnswer.Width, imgAnswer.Height, False)).Gravity = Gravity.CENTER
 					
-					'ADJUST VERTICAL
-					Private TopMargin, BottomMargin As Int = 2%y
-'					Dim text As String = lblAnswer.TextValue
-'					If (text.Length > 45) Then text = text & CRLF
-					Dim t As Int
-'					t = General.Size_textVertical(lblAnswer, text)
-'					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
-'					LogColor("Length: " & text.Length, Colors.Blue)
-					LogColor("H: " & t, Colors.Blue)
-'					If (t > 150) Then
-					webAnswer.Top = TopMargin + 1%y
-					If (t > 80%y) Then
-						webAnswer.Height = 70%y
-					Else
-						webAnswer.Height = t + 2%y
-					End If
-'					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.TextIs) + BottomMargin
-'					lblAnswer.Top = TopMargin + 1%y
+'					'ADJUST VERTICAL
+'					Private TopMargin, BottomMargin As Int = 2%y
+''					Dim text As String = lblAnswer.TextValue
+''					If (text.Length > 45) Then text = text & CRLF
+'					Dim t As Int
+''					t = General.Size_textVertical(lblAnswer, text)
+''					t = General.Size_textVertical(lblAnswer, text) + BottomMargin
+''					LogColor("Length: " & text.Length, Colors.Blue)
+'					LogColor("H: " & t, Colors.Blue)
+''					If (t > 150) Then
+'					webAnswer.Top = TopMargin + 1%y
+'					If (t > 80%y) Then
+'						webAnswer.Height = 70%y
+'					Else
+'						webAnswer.Height = t + 2%y
+'					End If
+''					lblAnswer.Height = General.Size_textVertical(lblAnswer,lblAnswer.TextIs) + BottomMargin
+''					lblAnswer.Top = TopMargin + 1%y
 					
-					'ADJUST HORIZONTAL
-'					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.TextValue)
-					LogColor("H: " & t, Colors.Magenta)
-					If (t < 130) Then
-						webAnswer.Width = 50%x
-						pnlAnswer.Width = webAnswer.Width + 4%x
-						LogColor("W is smaller of 120", Colors.Cyan)
-					Else If (t < 82%x) Then
-'						lblAnswerOLD.Width = General.Size_textHorizontal(lblAnswerOLD,lblAnswerOLD.Text)
-'						lblAnswerOLD.SingleLine = True
-						webAnswer.Width = t
-						pnlAnswer.Width = (webAnswer.Width + 4%x)
-						LogColor("W is more than of 82%x", Colors.Yellow)
-					Else
-						webAnswer.Width = 90%x
-						pnlAnswer.Width = webAnswer.Width + 4%x
-						LogColor("Else Horizontal", Colors.Green)
-					End If
+'					'ADJUST HORIZONTAL
+''					Dim t As Int = General.Size_textHorizontal(lblAnswer,lblAnswer.TextValue)
+'					LogColor("H: " & t, Colors.Magenta)
+'					If (t < 130) Then
+'						webAnswer.Width = 50%x
+'						pnlAnswer.Width = webAnswer.Width + 4%x
+'						LogColor("W is smaller of 120", Colors.Cyan)
+'					Else If (t < 82%x) Then
+''						lblAnswerOLD.Width = General.Size_textHorizontal(lblAnswerOLD,lblAnswerOLD.Text)
+''						lblAnswerOLD.SingleLine = True
+'						webAnswer.Width = t
+'						pnlAnswer.Width = (webAnswer.Width + 4%x)
+'						LogColor("W is more than of 82%x", Colors.Yellow)
+'					Else
+'						webAnswer.Width = 90%x
+'						pnlAnswer.Width = webAnswer.Width + 4%x
+'						LogColor("Else Horizontal", Colors.Green)
+'					End If
 					
-					pnlAnswer.Height = webAnswer.Height + TopMargin + BottomMargin
+'					pnlAnswer.Height = webAnswer.Height + TopMargin + BottomMargin
 					clvMessages.ResizeItem(i,pnlAnswer.Height)
 					
 					webAnswerExtra.Initialize(webAnswer)
@@ -695,7 +698,7 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 					imgQuestion.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "Gray-Tipped.png", imgQuestion.Width, imgQuestion.Height, False)).Gravity = Gravity.CENTER
 					
 					'ADJUST VERTICAL
-					Private TopMargin As Int = 1%y : Private BottomMargin As Int = 1%y
+'					Private TopMargin As Int = 1%y : Private BottomMargin As Int = 1%y
 '					lblQuestion.Height = General.Size_textVertical(lblQuestion,m.message)
 '					lblQuestion.Top = 0%y + TopMargin
 					
@@ -1100,12 +1103,15 @@ Public Sub imgSend_Click
 			ResetAI
 			
 			If (General.IsAWord(question)) Then
-				sSystem = $"Fix word into English or Translate word into English:"$
+'				sSystem = $"Fix word into ${General.Pref.FirstLang} or Translate word into ${General.Pref.FirstLang}:"$
+				sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}:"$
 			Else
-				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
+'				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
+				sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
 			End If
 			
-			sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+'			sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} translator, proofreader, and corrector of spelling and grammar for punctuation."$
 			
 			question = sSystem & questionHolder
 			
@@ -1114,46 +1120,59 @@ Public Sub imgSend_Click
 			ResetAI
 			
 			If (General.IsAWord(question)) Then
-				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
+				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary; show definitions and synonyms using ${General.Pref.FirstLang} with a minimum and limited number of tokens."$
 			Else
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
-				sSystem = $"Only translate into standard ${General.Pref.FirstLang}, don't interpret it or only show meaning, definitions and synonyms."$
+''				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
+'				sSystem = $"Only translate into standard ${General.Pref.FirstLang}, don't interpret it or only show meaning, definitions and synonyms."$
+				sSystem = $"Only translate into standard ${General.Pref.FirstLang}; do not interpret it or provide only meaning, definitions, and synonyms."$
 			End If
-			
-			sSystem = sSystem.Replace("\t", Null)
 			
 			question = sSystem & " The Text Is: " & CRLF & questionHolder
 			
 '			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
-			sAssistant = $"Translate into ${General.Pref.FirstLang}."$
+			sAssistant = $"Translate this into ${General.Pref.FirstLang}."$
 			
 		Else If (chkToFarsi.Checked) Then
 			ResetAI
 			
 			If (General.IsAWord(question)) Then
-				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
+'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
+				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} dictionary; show definitions and synonyms using ${General.Pref.SecondLang} with a minimum of tokens."$
 			Else
-				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
+'				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
+				sSystem = $"Only translate into ${General.Pref.SecondLang}; do not interpret or provide meaning, definitions, or synonyms."$
 			End If
 			
 			sSystem = sSystem.Replace("\t", Null)
 			
 			question = sSystem & " The Text Is: " & CRLF & questionHolder
 			
-			sAssistant = $"Translate into ${General.Pref.SecondLang}."$
+			sAssistant = $"Translate this into ${General.Pref.SecondLang}."$
 			
 		Else if (chkChat.Checked) Then
 			
-			sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
-Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfully."$
+'			sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
+'Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfully."$
 			
-			sSystem = sSystem.Replace("\t", Null)
+'			sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
 			
-			sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
+			'# Funny Angry
+'			sSystem = $"Act as a spoken teacher and improver and strictly correct my grammar, typos, and factual errors.
+'Correct my mistakes And answer like a funny angry And disrespectful character."$
+			
+			'# Teacher
+'			sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
+			
+			'# Funny Angry Teacher
+			sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
+			
+			sAssistant = ""
+			
 			
 			question = questionHolder
 		Else
-			sSystem = "You are a smart helpful assistant."
+			sSystem = "You are a smart and helpful assistant."
 			sAssistant = ""
 			
 			question = questionHolder
@@ -1898,7 +1917,6 @@ End Sub
 
 Private Sub chkChat_CheckedChange(Checked As Boolean)
 	ClickSimulation
-	ChatConversation = Checked
 End Sub
 
 Private Sub icConfigTopMenu_Click
@@ -2115,7 +2133,7 @@ End Sub
 Private Sub UpDown1Drawer_ChangeValue
 	Temperature = (UpDown1Drawer.Value / 10)
 	General.Pref.Creativity = UpDown1Drawer.Value
-	General.SaveSetting
+	General.SaveSettingDB
 End Sub
 
 Private Sub lblTemperatureDrawer_LongClick
@@ -2135,7 +2153,7 @@ Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
 	
 	General.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
 	chkTranslate.Text = General.Pref.FirstLang
-	General.SaveSetting
+	General.SaveSettingDB
 	ControlCheckBox
 	
 End Sub
@@ -2155,20 +2173,20 @@ Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
 		chkToFarsi.SetVisibleAnimated(300, True)
 		chkTranslate.SetVisibleAnimated(300, True)
 	End If
-	General.SaveSetting
+	General.SaveSettingDB
 	ControlCheckBox
 End Sub
 
 Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
 	General.Pref.AutoSend = Checked
-	General.SaveSetting
+	General.SaveSettingDB
 End Sub
 
 
 Private Sub lblVersionNameDrawer_LongClick
 	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
 	DevModeCheck
-	General.SaveSetting
+	General.SaveSettingDB
 	ToastMessageShow("IsDevMode: " & General.Pref.IsDevMode, False)
 End Sub
 
@@ -2216,7 +2234,7 @@ Private Sub lblTitleTopMenu_Click
 '		ToastMessageShow("Memory Activated", True)
 	End If
 	MemoryChanged
-	General.SaveSetting
+	General.SaveSettingDB
 End Sub
 
 Private Sub lblTitleTopMenu_LongClick

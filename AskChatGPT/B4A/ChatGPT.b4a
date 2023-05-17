@@ -124,6 +124,7 @@ Version=12.2
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
+	#IgnoreWarnings: 9, 12
 #End Region
 
 #Region Activity Attributes
@@ -204,7 +205,7 @@ Sub Activity_Pause (UserClosed As Boolean)
 	TextHolder = ChatN1.txtQuestion.Text
 	MyLog("Activity_Pause: " & TextHolder, ColorLog, True)
 	ChatN1.IME_HeightChanged(100%y, 0)
-	General.SaveSetting
+	General.SaveSettingDB
 	
 	If (UserClosed) Then General.sql.Close
 	

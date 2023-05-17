@@ -4,6 +4,10 @@ ModulesStructureVersion=1
 Type=Class
 Version=12.2
 @EndOfDesignText@
+#Region Attributes 
+	#IgnoreWarnings: 12
+#End Region
+
 'This class is based on:
 'https://www.b4x.com/android/forum/threads/gpt-3.145654/#content
 'by Abdull Cadre
@@ -364,20 +368,20 @@ Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolea
 		root = parser.NextObject
 	Dim id As String
 		id = root.Get("id")
-	Dim object_string As String
-		object_string = root.Get("object")
-	Dim created As Long
-		created = root.Get("created")
-	Dim model As String
-		model = root.Get("model")
-	Dim usage As Map
-		usage = root.Get("usage")
-	Dim promptTokens As Int
-		promptTokens = usage.Get("prompt_tokens")
-	Dim completionTokens As Int
-		completionTokens = usage.Get("completion_tokens")
-	Dim totalTokens As Int
-		totalTokens = usage.Get("total_tokens")
+'	Dim object_string As String
+'		object_string = root.Get("object")
+'	Dim created As Long
+'		created = root.Get("created")
+'	Dim model As String
+'		model = root.Get("model")
+'	Dim usage As Map
+'		usage = root.Get("usage")
+'	Dim promptTokens As Int
+'		promptTokens = usage.Get("prompt_tokens")
+'	Dim completionTokens As Int
+'		completionTokens = usage.Get("completion_tokens")
+'	Dim totalTokens As Int
+'		totalTokens = usage.Get("total_tokens")
 	Dim choices As List
 	choices = root.Get("choices")
 	Dim choiceIndex As Int

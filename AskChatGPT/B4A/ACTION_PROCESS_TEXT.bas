@@ -4,9 +4,8 @@ ModulesStructureVersion=1
 Type=Activity
 Version=8.8
 @EndOfDesignText@
-#Region  Activity Attributes 
-	#FullScreen: False
-	#IncludeTitle: False
+#Region Attributes 
+	#IgnoreWarnings: 9,12
 #End Region
 
 Sub Process_Globals
@@ -129,7 +128,7 @@ Sub Activity_Create(FirstTime As Boolean)
 		lblShareResult.Text = SharedText
 		
 	Else
-		Msgbox("Here", "Heeeyyyyyyyy")
+		MsgboxAsync("Here", "Heeeyyyyyyyy")
 	End If
 	
 End Sub

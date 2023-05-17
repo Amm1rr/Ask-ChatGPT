@@ -4,6 +4,9 @@ ModulesStructureVersion=1
 Type=StaticCode
 Version=12.2
 @EndOfDesignText@
+#Region Attributes 
+	#IgnoreWarnings: 0
+#End Region
 
 Sub Process_Globals
 	Private xui 					As XUI
@@ -37,10 +40,6 @@ Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 End Sub
 
 Public Sub SaveSetting
-	
-	SaveSettingDB
-	
-	Return
 	
 	MyLog("General.SaveSetting", ColorLog, False)
 	
