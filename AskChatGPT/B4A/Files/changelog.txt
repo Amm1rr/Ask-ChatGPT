@@ -1,6 +1,7 @@
 Build 16 Dev
 ----- 00/00/2023
-+ Service added
++ Added background service
++ Added sound notification on result
 
 Build 15 Dev
 ----- 05/17/2023

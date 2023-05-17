@@ -2496,4 +2496,5 @@ Private Sub lblNew_Click
 	
 	lblClearText_LongClick
 	ClickSimulation
+	
 End Sub

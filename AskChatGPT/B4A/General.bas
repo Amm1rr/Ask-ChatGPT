@@ -384,3 +384,15 @@ Public Sub DecKey(txt As String) As String
 	Return dec
 	
 End Sub
+
+Public Sub PlaySound
+	Try
+		Dim media As MediaPlayer
+			media.Initialize
+			media.SetVolume(0.03, 0.03)
+			media.Load(File.DirAssets, "3.mp3")
+			media.Play
+	Catch
+		Log("General.PlaySound: " & LastException)
+	End Try
+End Sub

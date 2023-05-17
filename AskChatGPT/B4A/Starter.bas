@@ -333,8 +333,10 @@ Public Sub Query(system_string As String, _
 	
 	StartActivity(Main)
 	
-	Dim rm As RingtoneManager
-	PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
+'	Dim rm As RingtoneManager
+'	PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
+	
+	General.PlaySound
 	
 	Return resobj
 	
