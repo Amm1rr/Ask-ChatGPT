@@ -273,7 +273,33 @@ Sub Activity_Resume
 	Else
 		'Do Somthing
 		LogColor("Main.Resume.Else: " & TextShared & " - " & TextHolder, Colors.Red)
-		ChatN1.ResetAI
+'		ChatN1.ResetAI
+		
+'		If (Starter.MessageList.Size > 0) Then
+			
+'			Dim count As Int = Starter.MessageList.Size - 1
+			
+			For i = 0 To Starter.MessageList.Size - 1
+				Log("Here " & i & "/" & (Starter.MessageList.Size - 1))
+				Dim stack As Map = Starter.MessageList.Get(i)
+'				Log(stack)
+				Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
+'				Log(indx)
+				Dim resp As String = stack.GetDefault("Response", "")
+'				Log(resp)
+				
+				If (resp <> "") Then
+					
+					Starter.MessageList.RemoveAt(i)
+					
+					Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
+'					Log(ques.Message)
+					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
+					
+				End If
+		
+			Next
+'		End If
 	End If
 	
 	

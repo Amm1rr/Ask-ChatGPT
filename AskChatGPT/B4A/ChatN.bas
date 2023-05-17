@@ -618,7 +618,7 @@ Private Sub LoadCLVSetup
 	Dim index As Int
 		index = Rnd(0, myStrings.Size - 1)
 	
-	WriteAnswer(myStrings.Get(index), False, "")
+	WriteAnswer(myStrings.Get(index), False, "", -1)
 	
 End Sub
 
@@ -1465,11 +1465,15 @@ End Sub
 
 Public Sub Ask(question As String, assistant As String, system As String, questionHolder As String)
 	
+	MyLog("Ask: " & questionHolder, ColorLog, True)
+	
 	If (question = "") Then
 		txtQuestion.RequestFocus
 		ShowKeyboard
 		Return
 	End If
+	
+	Dim msgindx As Int = LastMsgIndex
 	
 	Dim m As textMessage
 		m.Initialize
@@ -1513,13 +1517,15 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 		AIType = wrk_chat.AITYPE_Chat
 	End If
 	
-	Wait For (wrk_chat.Query(system, _
+	Wait For (Starter.Query(system, _
 							 question, _
 							 assistant, _
 							 Temperature, _
-							 AIType)) Complete (response As Map)
+							 AIType, _
+							 msgindx)) Complete (response As Map)
 	
 	Dim responsetext As String 	= response.Get("response")
+	Dim QuestionIndex As Int = msgindx 'response.GetDefault("QuestionIndex", 0)
 '	Dim Contine 	 As Boolean = response.Get("continue")
 	
 '	History = Null
@@ -1529,7 +1535,7 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 '	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
 '	History = "You are a helpful assistant."
 	
-	clvMessages.RemoveAt(clvMessages.Size - 1)
+'	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv(0, True)
 	
 	If (txtQuestion.Text.Length < 1) Then
@@ -1549,7 +1555,7 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	End If
 	
 '	Log("Ask:" & responsetext)
-	WriteAnswer(responsetext, True, questionHolder)
+	WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
 	
 	ScrollToLastItem(clvMessages)
 	
@@ -1559,7 +1565,7 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	
 End Sub
 
-Sub WriteAnswer(message As String, save As Boolean, questionHolder As String) 'Left Side
+Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, QuestionIndex As Int) 'Left Side
 	
 	MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
 	
@@ -1646,9 +1652,16 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String) 'L
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	RemoveSeperator
-	clvMessages.Add(p, m)
+	LogColor("Question ID: " & QuestionIndex, Colors.Red)
+	If (clvMessages.Size > 0) Then
+		clvMessages.ReplaceAt(QuestionIndex + 1, p, 100dip,m)
+	Else
+		clvMessages.Add(p, m)
+	End If
+'	clvMessages.InsertAt(QuestionIndex + 1, p, m)
+'	clvMessages.RemoveAt(QuestionIndex + 1)
+	
 '	clvMessages.AddTextItem(message, m)
-
 '	clvMessages.ResizeItem(clvMessages.Size - 1, p.Height + panToolbar.Height + panBottom.Height + 10dip)
 '	clvMessages.ResizeItem(clvMessages.Size - 1, lblAnswer.GetHeight)
 	
@@ -1752,8 +1765,20 @@ Sub WriteQuestion(message As String) 'Right Side
 '	webQuestion.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	RemoveSeperator
+	
+	
 	clvMessages.Add(p, m)
 	AdjustSize_Clv(0, True)
+	
+	Dim stack As Map
+		stack.Initialize
+		stack.Put("QuestionIndex", LastMsgIndex)
+		stack.Put("Response", "")
+	Starter.MessageList.Add(stack)
+	
+	LogColor("Write Question: " & Starter.MessageList, Colors.Red)
+	LogColor("Write Stack: " & stack, Colors.Red)
+	
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
@@ -1929,6 +1954,12 @@ Private Sub icConfigTopMenu_Click
 	
 End Sub
 
+Public Sub LastMsgIndex As Int
+	If Not (clvMessages.IsInitialized) Then Return 0
+	If (clvMessages.Size < 1) Then Return 0
+	Return clvMessages.Size - 1
+End Sub
+
 Private Sub SimulateMessage
 	
 	MyLog("SimulateMessage", ColorLog, True)
@@ -1955,7 +1986,7 @@ Private Sub SimulateMessage
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
-				WriteAnswer(myStrings.Get(index), True, "")
+			WriteAnswer(myStrings.Get(index), True, "", LastMsgIndex)
 			Else
 				WriteQuestion(myStrings.Get(index))
 			End If
@@ -1993,6 +2024,7 @@ Private Sub SimulateMessage
 End Sub
 
 Private Sub RemoveSeperator
+	Log("RemoveSeperator: " & clvMessages.Size)
 	If (clvMessages.Size < 1) Then Return
 	If (clvMessages.GetValue(clvMessages.Size-1) = "SEPERATOR") Then
 		clvMessages.RemoveAt(clvMessages.Size-1)
@@ -2330,7 +2362,7 @@ Private Sub LoadList_OLD
 		Select msg.msgtype
 			
 			Case typeMSG.answer
-				WriteAnswer(msg.message, False, "")
+				WriteAnswer(msg.message, False, "", LastMsgIndex)
 				
 			Case typeMSG.question
 				WriteQuestion(msg.message)
@@ -2416,7 +2448,7 @@ Private Sub LoadMessage(Value As String)
 			msg.msgtype = m.Get("msgtype")
 		
 		If (msg.msgtype = typeMSG.answer) Then
-			WriteAnswer(msg.message, False, question)
+			WriteAnswer(msg.message, False, question, LastMsgIndex)
 		Else if (msg.msgtype = typeMSG.question) Then
 			WriteQuestion(msg.message)
 			question = msg.message

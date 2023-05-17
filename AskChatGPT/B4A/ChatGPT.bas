@@ -354,9 +354,7 @@ Public Sub Query(system_string As String, _
 	
 End Sub
 
-'I did as JohnC suggested in:
-'https://www.b4x.com/android/forum/threads/lost-in-chatgpt-json.146738/post-930211
-'and asked ChatGPT:
+'I asked ChatGPT:
 'using b4a how do I parse this json string: "{""id"":""chatcmpl-6t2JQdgU1ypn0ayhONAkE6bAEoGkz"",""object"":""chat.completion"",""created"":1678574948,""model"":""gpt-3.5-turbo-0301"",""usage"":{""prompt_tokens"":25,""completion_tokens"":110,""total_tokens"":135},""choices"":[{""message"":{""role"":""assistant"",""content"":""Ahoy matey, ye be askin' a great question. The worst investment be ones that promise quick riches without flappin' yer sails too much, like the \""get rich quick\"" schemes, ponzi schemes Or pyramid schemes. These scams be all about misuse of trust And deceivin' the inexperienced. They be luring investors with high promised returns, but in the end, they just take yer doubloons and disappear into the horizon. Stay away from such crooks and keep yer treasure safe, me hearty!""},""finish_reason"":""stop"",""index"":0}]}" for content
 'and it responded with this - except it used a variable named "object" which
 'B4A objected to that I had to change to "object_string"
