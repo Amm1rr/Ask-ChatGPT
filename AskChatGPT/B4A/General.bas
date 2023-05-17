@@ -15,7 +15,7 @@ Sub Process_Globals
 	Public 	ConfigFileName			As String 	= "AskChatGPT.conf"
 	Public 	SQLFileName				As String 	= "AskChatGPT.db"
 	Public 	sql						As SQL
-	Public 	APIKeyLabel				As String	= "Get your free OpenAI API Key (keep secret)"
+	Public 	APIKeyLabel				As String	= "Get your free OpenAI Key (Click Here)"
 End Sub
 
 #Region Save and Load Settings
@@ -169,7 +169,11 @@ Public Sub SaveSettingDB
 		Args(2) = Pref.Creativity
 		Args(3) = Pref.AutoSend
 		Args(4) = Pref.Memory
-		Args(5) = EncKey(Pref.APIKEY)
+		If IsNull(Pref.APIKEY) Then
+			Args(5) = ""
+		Else
+			Args(5) = EncKey(Pref.APIKEY)
+		End If
 		Args(6) = Pref.IsDevMode
 	
 	Log(query)
@@ -186,11 +190,10 @@ Private Sub ValToBool(value As Object) As Boolean
 	
 	MyLog("ValToBool", ColorLog, False)
 	
-	If (value = Null) Then Return False
-	If (value.As(String).Length <= 0) Then Return False
+	If IsNull(value) Then Return False
 	If (value.As(String).ToLowerCase = "false") Then Return False
-	If (value.As(String).ToLowerCase = "true") Then Return True
 	If (value.As(String).ToLowerCase = "null") Then Return False
+	If (value.As(String).ToLowerCase = "true") Then Return True
 	
 	Dim tmp As Int
 	Try
@@ -226,10 +229,11 @@ Private Sub GetDefaultMemory(val As Object) As Boolean
 	Return val.As(Boolean)
 End Sub
 
-Public Sub IsNull(txt As String) As Boolean
+Public Sub IsNull(txt As Object) As Boolean
 '	MyLog("General.IsNull: " & txt, ColorLog, False)
 	Try
-		If (txt = Null) Or (txt.ToLowerCase) = "null" Or (txt = "") Then Return True
+		If (txt = Null) Or (txt.As(String).ToLowerCase = "null") Or _
+		   (txt.As(String) = "") 	Or (txt.As(String).Length < 1) Then Return True
 		Return False
 	Catch
 		Log(LastException)

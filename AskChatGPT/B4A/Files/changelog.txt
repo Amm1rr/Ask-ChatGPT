@@ -1,5 +1,14 @@
-Build 11 Dev
------
+Build 15 Dev
+----- 05/17/2023
++ Added Setting Page
++ Added Message list, now all messages save.
++ Added OpenAI API user key
++ Added New Conversation button
++ Automatic width and heigh for conversations
+* Improve Translate/Grammar/Chat
+* Improve UI
+* Improve UX
+- Removed Right2Left checkbox
 
 Build 10 Dev
 -----

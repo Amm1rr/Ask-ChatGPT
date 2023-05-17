@@ -1986,13 +1986,18 @@ Private Sub AddSeperator
 	clvMessages.AddTextItem("", "SEPERATOR")
 End Sub
 
-Private Sub PrefDialog_IsValid (TempData As Map) As Boolean
-'	Dim firstlang As String = TempData.Get("FirstLang")
-	Dim txt As String = TempData.Get("APIKEY")
-	
-	If txt = "" Then Return False
-	Return True
-End Sub
+'Private Sub PrefDialog_IsValid (TempData As Map) As Boolean
+'	Try
+'		Dim txt As String = TempData.GetDefault("APIKEY", "")
+'		Options.Remove("APIKEY")
+'		Options.Put("APIKEY", txt)
+'		
+'		Return True
+'	Catch
+'		Log(LastException)
+'		Return False
+'	End Try
+'End Sub
 
 Private Sub SetWidthItemPrefDialog (Pref As PreferencesDialog, Key As String, wwidth As Double)
 	For i = 0 To Pref.PrefItems.Size - 1
@@ -2062,17 +2067,6 @@ Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
 '			bool.Enabled = False
 '		End If
 	Next
-		
-'		SetWidthItemPrefDialog(prefdialog,"Key", 180dip)
-		
-'		Dim btnAPI As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Negative)
-'		If btnAPI.IsInitialized Then
-'			btnAPI.Width = 20dip
-'			btnAPI.Height = 20dip
-'			btnAPI.Left = 10dip
-'			btnAPI.TextColor = Colors.Blue
-'			btnAPI.Text = "Get OpenAI API Key"
-'		End If
 		
 	Catch
 		Log(LastException)
@@ -2449,6 +2443,6 @@ End Sub
 Private Sub lblNew_Click
 	MyLog("lblNew_Click", ColorLog, True)
 	
-	ClickSimulation
 	lblClearText_LongClick
+	ClickSimulation
 End Sub

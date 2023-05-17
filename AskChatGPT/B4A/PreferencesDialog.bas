@@ -116,7 +116,7 @@ Public Sub LoadFromJson (Json As String)
 	Dim p As JSONParser
 	p.Initialize(Json)
 	Dim m As Map = p.NextObject
-	Dim theme As String = m.GetDefault("Theme", "Dark Theme")
+	Dim theme As String = m.GetDefault("Theme", "Light Theme")
 	Select theme
 		Case "Dark Theme"
 			setTheme(THEME_DARK)
@@ -135,7 +135,7 @@ Public Sub LoadFromJson (Json As String)
 			Case "Boolean"
 				AddBooleanItem(key, title)
 			Case "APIKEY"
-				Dim l As List = item.Get("labletitle")
+				Dim l As List = item.Get("labeltitle")
 				If l.IsInitialized = False Or l.Size = 0 Or IsNumber(l.Get(0)) = False Then
 					AddApiKeyItem(key, title, "")
 				Else
@@ -219,10 +219,10 @@ Public Sub AddBooleanItem (Key As String, Title As Object)
 	PrefItems.Add(CreatePrefItem(Title, TYPE_BOOLEAN, Key))
 End Sub
 
-Public Sub AddApiKeyItem (Key As String, Title As Object, LableTitle As String)
+Public Sub AddApiKeyItem (Key As String, Title As Object, LabelTitle As String)
 '	PrefItems.Add(CreatePrefItem(Title, Type_APIKEY, Key))
 	Dim pi As B4XPrefItem = CreatePrefItem(Title, Type_APIKEY, Key)
-		pi.Extra = CreateMap("labletitle": LableTitle)
+		pi.Extra = CreateMap("labeltitle": LabelTitle)
 	PrefItems.Add(pi)
 End Sub
 
@@ -551,7 +551,7 @@ Private Sub CreateLayouts (PrefItem As B4XPrefItem) As B4XView
 				ft.LargeLabelTextSize = DefaultHintLargeSize
 				ft.Update
 				
-			Dim lbltitle As String = PrefItem.Extra.Get("labletitle")
+			Dim lbltitle As String = PrefItem.Extra.Get("labeltitle")
 			Dim lbl As Label = p.GetView(0)
 				lbl.Text = lbltitle
 			
@@ -750,10 +750,21 @@ Private Sub CommitChanges (Data As Map) As Boolean
 				Value = switch.Value
 			Case Type_APIKEY
 				Dim ft As B4XFloatTextField = ItemPanel.GetView(1).Tag
-				Value = ft.Text
+				
+				If ft.Text <> "" Then  'added by me
+					Value = ft.Text 'This was before
+				Else 'added by me
+					Value = "" 'added by me
+				End If 'added by me
+				
 			Case TYPE_TEXT, TYPE_PASSWORD, TYPE_MULTILINETEXT
 				Dim ft As B4XFloatTextField = ItemPanel.GetView(0).Tag
-				Value = ft.Text
+				
+				If ft.Text <> "" Then  'added by me
+					Value = ft.Text 'This was before
+				Else 'added by me
+					Value = "" 'added by me
+				End If 'added by me
 				
 			Case TYPE_NUMBER, TYPE_DECIMALNUMBER
 				Dim ft As B4XFloatTextField = ItemPanel.GetView(0).Tag
@@ -816,8 +827,10 @@ Private Sub CommitChanges (Data As Map) As Boolean
 		Dim Valid As Boolean = CallSub2(mCallback, mEventName & "_IsValid", Temp)
 		If Valid = False Then Return False
 	End If
+	Data.clear 'added by me
 	For Each key As String In Temp.Keys
 		Data.Put(key, Temp.Get(key))
+		'log(Temp.Get(key)) 'fixed by me
 	Next
 	Return True
 End Sub
@@ -1010,7 +1023,7 @@ Private Sub HexToColor(Hex As String) As Int()
 End Sub
 
 'Get Clicked labels
-Private Sub Label1_Click
+Private Sub lblAPILabelTitle_Click
 
 	'If clicked view is APIKey Label
 	Dim lbl As Label = Sender
@@ -1023,6 +1036,6 @@ Private Sub Label1_Click
 			
 	End Select
 	
-'	Log("Label : " & lbl.Text)
+'	Log("lblAPILabelTitle : " & lbl.Text)
 	
 End Sub
