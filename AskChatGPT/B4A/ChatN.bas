@@ -1010,10 +1010,9 @@ Private Sub imgSend_LongClick
 
 	MyLog("imgSend_LongClick", ColorLog, True)
 	
-	Dim SecLang As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
-	If (SecLang = "(None)") Then Return
+	If (General.Pref.SecondLang = "(None)") Or (General.Pref.SecondLang = "") Then Return
 	
-	VoiceLang(SecLang)
+	VoiceLang(General.Pref.SecondLang)
 	Wait For (RecognizeVoice) Complete (Result As String)
 	If (Result <> "") Then
 '		LogColor("Voice:" & Result, Colors.Blue)
