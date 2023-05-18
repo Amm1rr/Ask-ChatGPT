@@ -145,6 +145,8 @@ Sub Process_Globals
 	Public 	ActionBarHomeClicked 	As Boolean
 	Public 	TextShared				As String
 	Public  intpub					As Intent
+	Public 	CheckMessageTimer		As Timer
+	Private CheckMessageTimeOut		As Long	= -1
 	
 	Type Setting(FirstLang 	As String, _
 				 SecondLang As String, _
@@ -164,12 +166,65 @@ Private Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 	General.MyLog("Main." & text, color, AlwaysShow)
 End Sub
 
+Private Sub CheckMessageTimer_Tick
+	
+	Log("CheckMessageTimer_Tick")
+	
+	If (Starter.MessageList.Size < 1) Then
+		CheckMessageTimeOut = -1
+		CheckMessageTimer.Enabled = False
+		Return
+	End If
+	
+	If (CheckMessageTimeOut = -1) Then
+'		DateTime.DateFormat = "HH:mm:ss"
+'		CheckMessageTimeOut = DateTime.Date(DateTime.Now)
+		DateTime.SetTimeZone(0)
+		CheckMessageTimeOut = DateTime.Now
+		Dim timeout As Int = (Starter.TIMEOUT/1000) / 60 '	=> 1.5 Minutes
+	End If
+	
+'	If (ConvertTicks(CheckMessageTimeOut) > 1) Then	'	=> 1 Minutes
+	
+	Dim res As Period = DateUtils.PeriodBetween(CheckMessageTimeOut, DateTime.Now)
+	Log(res)
+	If (res.Minutes > 1) Then	'	=> 1 Minutes
+		CheckMessageTimeOut = -1
+		CheckMessageTimer.Enabled = False
+	End If
+	
+	CheckMessageList
+	
+End Sub
+
+Public Sub ConvertTicks(t As Long) As Int
+	Dim days, hours, minutes, seconds As Int
+	days = t / DateTime.TicksPerDay
+	hours = (t Mod DateTime.TicksPerDay) / DateTime.TicksPerHour
+	minutes = (t Mod DateTime.TicksPerHour) / DateTime.TicksPerMinute
+	seconds = (t Mod DateTime.TicksPerMinute) / DateTime.TicksPerSecond
+	
+	Dim day As Int = days
+	Dim hour As Int = NumberFormat(hours, 2, 0)
+    Dim minu As Int = NumberFormat(minutes, 2, 0)
+	Dim seconds As Int = NumberFormat(seconds, 2, 0)
+	
+	Log (days & " days, " & NumberFormat(hours, 2, 0) & " hours, " _
+        & NumberFormat(minutes, 2, 0) & " minutes and " & NumberFormat(seconds, 2, 0) & " seconds")
+	
+	Return minu
+	
+End Sub
+
 Sub Activity_Create(FirstTime As Boolean)
 	
 	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
 	
 '	General.LoadSetting
 	General.LoadSettingDB
+	
+	CheckMessageTimer.Initialize("CheckMessageTimer", 1000)
+	CheckMessageTimer.Enabled = False
 	
 	intpub = Activity.GetStartingIntent
 	If Not (ChatN1.IsInitialized) Then ChatN1.Initialize(Activity, "")
@@ -278,33 +333,49 @@ Sub Activity_Resume
 		LogColor("Main.Resume.Else: " & TextShared & " - " & TextHolder, Colors.Red)
 '		ChatN1.ResetAI
 		
-'		If (Starter.MessageList.Size > 0) Then
-			
-'			Dim count As Int = Starter.MessageList.Size - 1
-			
-			For i = 0 To Starter.MessageList.Size - 1
-				Log("Here " & i & "/" & (Starter.MessageList.Size - 1))
-				Dim stack As Map = Starter.MessageList.Get(i)
-'				Log(stack)
-				Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
-'				Log(indx)
-				Dim resp As String = stack.GetDefault("Response", "")
-'				Log(resp)
-				
-				If (resp <> "") Then
-					
-					Starter.MessageList.RemoveAt(i)
-					
-					Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
-'					Log(ques.Message)
-					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
-					
-				End If
-		
-			Next
-'		End If
+		CheckMessageList
 	End If
 	
+	
+End Sub
+
+Public Sub CheckMessageList
+	
+	Dim count As Int = Starter.MessageList.Size - 1
+				
+	Log("CheckMessageList: " & Starter.MessageList)
+	
+	Try
+		For i = 0 To count
+			Log("Here " & i & "/" & count)
+			Dim stack As Map = Starter.MessageList.Get(i)
+			Log(stack)
+			Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
+			Log(indx)
+			Dim resp As String = stack.GetDefault("Response", "")
+			Log(resp)
+								
+			If (resp <> "") Then
+				
+				Log("Inside IF")
+				Starter.MessageList.RemoveAt(i)
+				
+				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
+				Log(ques.Message)
+				ChatN1.WriteAnswer(resp, True, ques.Message, indx)
+				
+				ChatN1.AddtoHistory(ques.Message, resp)
+				
+			End If
+			
+		Next
+		
+	Catch
+		Log(Starter.MessageList)
+		Log(Starter.MessageList.Size)
+		Log(LastException)
+		CheckMessageTimer.Enabled = True
+	End Try
 	
 End Sub
 

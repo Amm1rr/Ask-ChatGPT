@@ -20,7 +20,7 @@ Sub Process_Globals
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	
 	Private Const MAXTOKEN 		As Int	= 2000
-	Private Const TIMEOUT		As Int 	= 90000
+	Public	Const TIMEOUT		As Int 	= 90000
 	
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
@@ -329,27 +329,12 @@ Public Sub Query(system_string As String, _
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
 	
-	StartActivity(Main)
 	
-'	Dim rm As RingtoneManager
-'	PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
-	
+'	StartActivity(Main)
 	General.PlaySound
 	
 	Return resobj
 	
-End Sub
-
-
-'PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
-Public Sub PlayRingtone(url As String)
-	Dim jo As JavaObject
-		jo.InitializeStatic("android.media.RingtoneManager")
-	Dim jo2 As JavaObject
-		jo2.InitializeContext
-	Dim u As Uri
-		u.Parse(url)
-	jo.RunMethodJO("getRingtone", Array(jo2, u)).RunMethod("play", Null)
 End Sub
 
 Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolean) As String

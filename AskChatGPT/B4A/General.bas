@@ -389,10 +389,23 @@ Public Sub PlaySound
 	Try
 		Dim media As MediaPlayer
 			media.Initialize
-			media.SetVolume(0.03, 0.03)
+			media.SetVolume(0.5, 0.5)
 			media.Load(File.DirAssets, "3.mp3")
 			media.Play
 	Catch
 		Log("General.PlaySound: " & LastException)
 	End Try
+End Sub
+
+'Dim rm As RingtoneManager
+'PlayRingtone(rm.GetDefault(rm.TYPE_NOTIFICATION))
+Public Sub PlayRingtone(url As String)
+	Dim jo As JavaObject
+		jo.InitializeStatic("android.media.RingtoneManager")
+	Dim jo2 As JavaObject
+		jo2.InitializeContext
+	Dim u As Uri
+		u.Parse(url)
+	jo.RunMethodJO("getRingtone", Array(jo2, u)).RunMethod("play", Null)
+	
 End Sub

@@ -1432,18 +1432,21 @@ Private Sub SaveMessage(title As String)
 		Dim Args(2) As Object
 			Args(0) = jso.ToString
 			Args(1) = title
-		Log(query)
 		
 		General.sql.ExecNonQuery2(query, Args)
 		
 		Dim id As Int = General.sql.ExecQuerySingleResult("Select last_insert_rowid()")
-		Log("ID: " & id)
+		LogColor("ID: " & id, Colors.Red)
+		Log("Title: " & title)
 		
-		clvTitles.AddTextItem((clvTitles.Size+1) & ". " & title, id)
+		Dim count As Int = clvTitles.Size + 1
+		clvTitles.AddTextItem(count & ". " & title, id)
+		
+		Log(count)
 		
 		MessageIndex = clvTitles.Size - 1
 		
-		Log("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1))
+		LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Blue)
 		
 	Else
 		
@@ -1454,6 +1457,7 @@ Private Sub SaveMessage(title As String)
 		Dim Args(2) As Object
 			Args(0) = jso.ToString
 			Args(1) = clvTitles.GetValue(MessageIndex)
+		Log(Args)
 		
 		General.sql.ExecNonQuery2(query, Args)
 	End If
@@ -1462,6 +1466,17 @@ Private Sub SaveMessage(title As String)
 	
 '	ToastMessageShow("Saved !", False)
 	
+End Sub
+
+Public Sub AddtoHistory(question As String, answer As String)
+	
+'	History = Null
+	If (History = Null) Or (History = "") Then History = "Our Conversetion History:"
+	History = History & CRLF & "Me: " & question 	'Me:
+	History = History & CRLF & "You: " & answer		'You:
+'	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
+'	History = "You are a helpful assistant."
+
 End Sub
 
 Public Sub Ask(question As String, assistant As String, system As String, questionHolder As String)
@@ -1529,12 +1544,7 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	Dim QuestionIndex As Int = msgindx 'response.GetDefault("QuestionIndex", 0)
 '	Dim Contine 	 As Boolean = response.Get("continue")
 	
-'	History = Null
-	If (History = Null) Or (History = "") Then History = "Our Conversetion History:"
-	History = History & CRLF & "Me: " & question 	'Me:
-	History = History & CRLF & "You: " & responsetext		'You:
-'	History = History & CRLF & question & CRLF & responsetext	'Me: CRLF You:
-'	History = "You are a helpful assistant."
+	AddtoHistory(questionHolder, responsetext)
 	
 '	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv(0, True)
@@ -1555,7 +1565,8 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 		End Select
 	End If
 	
-'	Log("Ask:" & responsetext)
+'	Log("Answer:" & responsetext)
+'	Log("Question Holder:" & questionHolder)
 	WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
 	
 	ScrollToLastItem(clvMessages)
@@ -1653,12 +1664,20 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	RemoveSeperator
-	LogColor("Question ID: " & QuestionIndex, Colors.Red)
-	If (clvMessages.Size > 0) Then
-		clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
-	Else
+	LogColor("Question Index: " & QuestionIndex, Colors.Red)
+	
+	' The meaning of -1 is that it comes from LoadMessage
+	If (QuestionIndex = -1) Then
 		clvMessages.Add(p, m)
+	Else
+		If (clvMessages.Size > 0) Then
+			clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
+		Else
+			'It's the first message in clvMessage
+			clvMessages.Add(p, m)
+		End If
 	End If
+	
 '	clvMessages.InsertAt(QuestionIndex + 1, p, m)
 '	clvMessages.RemoveAt(QuestionIndex + 1)
 	
@@ -1668,15 +1687,19 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	
 	AdjustSize_Clv(0, True)
 	
+	Log(questionHolder)
 	If save Then
 		If (questionHolder <> "") Then
 			If (questionHolder.Length > 80) Then
+				Log("Here: " & questionHolder.SubString2(0, 80))
 				SaveMessage(questionHolder.SubString2(0, 80))
 			Else
+				Log("Second: " & questionHolder)
 				SaveMessage(questionHolder)
 			End If
 		Else
-			SaveMessage(Rnd(100, 999))
+			Log("Untitle: " & questionHolder)
+			SaveMessage("Untitle " & Rnd(100, 999))
 		End If
 	End If
 	
@@ -1767,6 +1790,7 @@ Sub WriteQuestion(message As String) 'Right Side
 	
 	RemoveSeperator
 	
+	Log("Quesion: " & m)
 	
 	clvMessages.Add(p, m)
 	AdjustSize_Clv(0, True)
@@ -1987,7 +2011,7 @@ Private Sub SimulateMessage
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
-			WriteAnswer(myStrings.Get(index), True, "", LastMsgIndex)
+				WriteAnswer(myStrings.Get(index), True, "", LastMsgIndex)
 			Else
 				WriteQuestion(myStrings.Get(index))
 			End If
@@ -2025,6 +2049,7 @@ Private Sub SimulateMessage
 End Sub
 
 Private Sub RemoveSeperator
+	Return
 	Log("RemoveSeperator: " & clvMessages.Size)
 	If (clvMessages.Size < 1) Then Return
 	If (clvMessages.GetValue(clvMessages.Size-1) = "SEPERATOR") Then
@@ -2033,6 +2058,7 @@ Private Sub RemoveSeperator
 End Sub
 
 Private Sub AddSeperator
+	Return
 	If (clvMessages.GetValue(clvMessages.Size-1) <> "SEPERATOR") Then Return
 	clvMessages.AddTextItem("", "SEPERATOR")
 End Sub
@@ -2408,13 +2434,13 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 	MessageIndex = Index
 	LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
 	
-	Dim recset As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
+	Dim recsetJson As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
 	
-	Do While recset.NextRow
-		LoadMessage(recset.GetString("JsonMessage"))
+	Do While recsetJson.NextRow
+		LoadMessage(recsetJson.GetString("JsonMessage"))
 	Loop
 	
-	recset.Close
+	recsetJson.Close
 	
 End Sub
 
@@ -2442,17 +2468,26 @@ Private Sub LoadMessage(Value As String)
 		
 		Dim m As Map = lst.Get(i)
 		
+		Log("m: " & m)
+		
 		Dim msg As textMessage
 			msg.Initialize
 '			msg.assistant = m.Get("assistant")
 			msg.message = m.Get("message")
 			msg.msgtype = m.Get("msgtype")
 		
+		Log(msg)
+		
 		If (msg.msgtype = typeMSG.answer) Then
-			WriteAnswer(msg.message, False, question, (LastMsgIndex - 1))
+			Log("answer: " & msg.message)
+'			WriteAnswer(msg.message, False, question, (LastMsgIndex-1))
+			WriteAnswer(msg.message, False, question, -1)
 		Else if (msg.msgtype = typeMSG.question) Then
-			WriteQuestion(msg.message)
+			Log("question: " & msg.message)
 			question = msg.message
+			WriteQuestion(question)
+		Else
+			LogColor("LoadMessage Else Type: " & msg, Colors.Red)
 		End If
 	Next
 	
@@ -2471,7 +2506,7 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 	
 	Dim pnl As B4XView = clvTitles.GetPanel(Index).Parent
 	Dim lbl As Label = pnl.GetView(0).GetView(0)
-		
+	
 	Msgbox2Async(lbl.Text, "Delete ?", "Delete", "Cancel", "", Null, True)
 	Wait For Msgbox_Result (Result As Int)
 		
@@ -2497,4 +2532,24 @@ Private Sub lblNew_Click
 	lblClearText_LongClick
 	ClickSimulation
 	
+End Sub
+
+
+Private Sub btnClearTitles_Click
+	
+	Msgbox2Async("Clear All Messages ?", "Delete All", "Delete", "CANCEL", "", Null, True)
+	
+	Wait For Msgbox_Result (Result As Int)
+	
+	If (DialogResponse.POSITIVE = Result) Then
+		
+		Dim query As String = $"DELETE FROM Messages"$
+		General.sql.ExecNonQuery(query)
+		
+		clvTitles.Clear
+		
+		MessageIndex = -1
+		Starter.MessageList.Clear
+		
+	End If
 End Sub
