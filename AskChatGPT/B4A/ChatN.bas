@@ -1884,6 +1884,7 @@ Private Sub chkGrammar_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkTranslate.Checked = False
 		chkToFarsi.Checked = False
+		chkChat.Checked = False
 		ControlCheckBox
 	End If
 End Sub
@@ -1893,6 +1894,7 @@ Private Sub chkTranslate_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkToFarsi.Checked = False
+		chkChat.Checked = False
 		ControlCheckBox
 	End If
 End Sub
@@ -1902,8 +1904,21 @@ Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
 	If (Checked = True) Then
 		chkGrammar.Checked = False
 		chkTranslate.Checked = False
+		chkChat.Checked = False
 		ControlCheckBox
 	End If
+End Sub
+
+Private Sub chkChat_CheckedChange(Checked As Boolean)
+	
+	ClickSimulation
+	If (Checked = True) Then
+		chkGrammar.Checked = False
+		chkTranslate.Checked = False
+		chkToFarsi.Checked = False
+		ControlCheckBox
+	End If
+	
 End Sub
 
 Private Sub ControlCheckBox
@@ -1963,10 +1978,6 @@ Private Sub lblPaste_Click
 	If (txtQuestion.Text.Trim.Length < 1) And (cp.hasText) Then
 		txtQuestion.Text = cp.getText
 	End If
-End Sub
-
-Private Sub chkChat_CheckedChange(Checked As Boolean)
-	ClickSimulation
 End Sub
 
 Private Sub icConfigTopMenu_Click
@@ -2049,7 +2060,6 @@ Private Sub SimulateMessage
 End Sub
 
 Private Sub RemoveSeperator
-	Return
 	Log("RemoveSeperator: " & clvMessages.Size)
 	If (clvMessages.Size < 1) Then Return
 	If (clvMessages.GetValue(clvMessages.Size-1) = "SEPERATOR") Then
@@ -2058,7 +2068,6 @@ Private Sub RemoveSeperator
 End Sub
 
 Private Sub AddSeperator
-	Return
 	If (clvMessages.GetValue(clvMessages.Size-1) <> "SEPERATOR") Then Return
 	clvMessages.AddTextItem("", "SEPERATOR")
 End Sub
