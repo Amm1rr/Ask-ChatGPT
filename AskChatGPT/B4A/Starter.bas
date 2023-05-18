@@ -36,27 +36,28 @@ Sub Service_Create
 	'This is the program entry point.
 	'This is a good place to load resources that are not specific to a single activity.
 	
-'	Try
-	
-	Dim txt As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
-						"6yzr6luiTA=="  & CRLF & _
-						"Y3mDBhBbd0I="  & CRLF & _
-						"PIoruDtshkcBM0Vj4KQQMA=="
-	
-	Dim dec As String = General.DecKey(txt)
-	
-	If (General.IsNull(General.Pref.APIKEY)) Then
-		API_KEY = dec
-	Else
-		API_KEY = $"Bearer ${General.Pref.APIKEY}"$
-	End If
-	
 	MessageList.Initialize
-	
 	ChatHistoryList.Initialize
 	
 '	LogColor("Initialize:" & dec, Colors.Red)
 
+End Sub
+
+Public Sub APIValidate
+	
+	If (General.IsNull(General.Pref.APIKEY)) Then
+		
+		Dim txt As String = "znBwhu5Qbc1ilhM1t00vWHMkw1Or8GnLVa1HcEdo5nOMTXWD0gfnptHyfx+mclYeB1U5kVYNXnKo" & CRLF & _
+						"6yzr6luiTA=="  & CRLF & _
+						"Y3mDBhBbd0I="  & CRLF & _
+						"PIoruDtshkcBM0Vj4KQQMA=="
+	
+		API_KEY = General.DecKey(txt)
+		
+	Else
+		API_KEY = $"Bearer ${General.Pref.APIKEY}"$
+	End If
+	
 End Sub
 
 Sub Service_Start (StartingIntent As Intent)
