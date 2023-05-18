@@ -120,8 +120,8 @@ Sub Activity_Create(FirstTime As Boolean)
 	Else If (Main.TextShared <> "") Then
 		
 		Dim cs As CSBuilder
-		cs.Initialize
-		cs.Color(Colors.Gray).Append(Application.LabelName & " " & Application.VersionCode).Color(Colors.Blue).Append(Application.VersionName).PopAll
+			cs.Initialize
+			cs.Color(Colors.Gray).Append(Application.LabelName & " " & Application.VersionCode).Color(Colors.Blue).Append(Application.VersionName).PopAll
 		lblShareTitleTopMenu.Text = cs
 		
 		lblShareText.Text = SharedText

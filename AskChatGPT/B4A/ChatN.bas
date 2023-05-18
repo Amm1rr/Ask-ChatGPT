@@ -1666,6 +1666,8 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	LogColor("Question Index: " & QuestionIndex, Colors.Red)
 	
 	' The meaning of -1 is that it comes from LoadMessage
+	' OR from: Main->Resume=>TextShared = "[NEW]"
+	'
 	If (QuestionIndex = -1) Then
 		clvMessages.Add(p, m)
 	Else

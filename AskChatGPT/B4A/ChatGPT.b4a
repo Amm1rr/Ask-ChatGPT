@@ -276,17 +276,19 @@ Sub Activity_Resume
 	
 	ChatN1.IME_HeightChanged(100%y, 0)
 	
+	intpub = Activity.GetStartingIntent
+	
 	If (TextShared = "[NEW]") Then
 		LogColor("Main.Resume [New]", Colors.Red)
 		
 		ChatN1.ResetAI
+		ChatN1.MessageIndex = -1
+		ChatN1.clvMessages.Clear
 		ChatN1.txtQuestion.Text = ""
-		
-'		Sleep(0)
-'		Dim chat As ChatN
-'			chat.Initialize(Activity, "")
-'			ChatN1.ResetAI
+		ChatN1.WriteQuestion(TextShared)
+		ChatN1.WriteAnswer(ACTION_PROCESS_TEXT.SharedText, True, ACTION_PROCESS_TEXT.SharedText, -1)
 		TextShared = ""
+		Sleep(0)
 		
 '	Else If IsRelevantIntent(Activity.GetStartingIntent) Then
 	Else If IsRelevantIntent(intpub) Then
@@ -325,6 +327,7 @@ Sub Activity_Resume
 		LogColor("Main.Resume.OpenIn: " & TextShared, Colors.Red)
 		ChatN1.ResetAI
 		ChatN1.txtQuestion.Text = TextShared
+		TextShared = ""
 	Else If (TextHolder <> "") Then
 		LogColor("Main.Resume: " & TextHolder, Colors.Red)
 		ChatN1.ResetAI
@@ -332,7 +335,6 @@ Sub Activity_Resume
 	Else
 		'Do Somthing
 		LogColor("Main.Resume.Else: " & TextShared & " - " & TextHolder, Colors.Red)
-'		ChatN1.ResetAI
 		
 		CheckMessageList
 	End If
