@@ -235,8 +235,7 @@ Public Sub IsNull(txt As Object) As Boolean
 '	MyLog("General.IsNull: " & txt, ColorLog, False)
 	Try
 		If (txt = Null) Or (txt.As(String).ToLowerCase = "null") Or _
-		   (txt.As(String) = "") Or (txt.As(String).Length < 1) Or _
-		   (txt.As(Int) = -1) Then Return True
+		   (txt.As(String) = "") Or (txt.As(String).Length < 1) Then Return True
 		Return False
 	Catch
 		Log(LastException)
