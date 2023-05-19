@@ -285,7 +285,7 @@ Sub Activity_Resume
 		ChatN1.MessageIndex = -1
 		ChatN1.clvMessages.Clear
 		ChatN1.txtQuestion.Text = ""
-		ChatN1.WriteQuestion(TextShared)
+		ChatN1.WriteQuestion(ACTION_PROCESS_TEXT.SharedQuestion)
 		ChatN1.WriteAnswer(ACTION_PROCESS_TEXT.SharedText, True, ACTION_PROCESS_TEXT.SharedText, -1)
 		TextShared = ""
 		Sleep(0)

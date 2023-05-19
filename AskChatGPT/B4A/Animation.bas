@@ -64,26 +64,27 @@ End Sub
 
 Private Sub DrawValueProgressive(view As View, cvs As Canvas, value As Float,clr As Int)
 
+	If clr = -1 Or clr = 0 Or clr = Null Then clr = Colors.White
  
 	Select Floor(value/25)
 		Case 0
 			Dim width As Float = view.Width / 25 * Min(25, value)
-			cvs.DrawLine(0,0,width,0,Colors.White,4dip)
+			cvs.DrawLine(0,0,width,0,clr,4dip)
 		Case 1
 			Dim height As Float = view.Height / 25 * (value-25)
-			cvs.DrawLine(view.width,0,view.width,height,Colors.White,4dip)
-			cvs.DrawLine(0,0,view.Width,0,Colors.White,4dip)
+			cvs.DrawLine(view.width,0,view.width,height,clr,4dip)
+			cvs.DrawLine(0,0,view.Width,0,clr,4dip)
 		Case 2
 			Dim width As Float = view.Width / 25 * (value-50)
-			cvs.DrawLine(view.Width,view.Height,view.Width-width,view.Height,Colors.White,4dip)
-			cvs.DrawLine(0,0,view.Width,0,Colors.White,4dip)
-			cvs.DrawLine(view.Width,0,view.Width,view.Height,Colors.White,4dip)
+			cvs.DrawLine(view.Width,view.Height,view.Width-width,view.Height,clr,4dip)
+			cvs.DrawLine(0,0,view.Width,0,clr,4dip)
+			cvs.DrawLine(view.Width,0,view.Width,view.Height,clr,4dip)
 		Case 3
 			Dim height As Float = view.Height / 25 * (value-75)
-			cvs.DrawLine(0,view.Height,0,view.Height-height,Colors.White,4dip)
-			cvs.DrawLine(0,0,view.Width,0,Colors.White,4dip)
-			cvs.DrawLine(view.Width,0,view.Width,view.Height,Colors.White,4dip)
-			cvs.DrawLine(view.Width,view.Height,0,view.Height,Colors.White,4dip)
+			cvs.DrawLine(0,view.Height,0,view.Height-height,clr,4dip)
+			cvs.DrawLine(0,0,view.Width,0,clr,4dip)
+			cvs.DrawLine(view.Width,0,view.Width,view.Height,clr,4dip)
+			cvs.DrawLine(view.Width,view.Height,0,view.Height,clr,4dip)
 	End Select
 	view.Invalidate
 End Sub

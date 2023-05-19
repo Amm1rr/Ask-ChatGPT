@@ -11,7 +11,8 @@ Version=8.8
 Sub Process_Globals
 	'These global variables will be declared once when the application starts.
 	'These variables can be accessed from all modules.
-	Public 	SharedText As String
+	Public 	SharedText 				As String
+	Public 	SharedQuestion			As String
 	Private OldIntent 				As Intent
 	Private intpub					As Intent
 End Sub
@@ -99,6 +100,7 @@ Sub Activity_Create(FirstTime As Boolean)
 		
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
+		SharedQuestion = lblShareText.Text
 	
 	Else If intpub.Action="android.intent.extra.TEXT" Then
 		Dim intent As JavaObject = Activity.GetStartingIntent
@@ -110,12 +112,14 @@ Sub Activity_Create(FirstTime As Boolean)
 		
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
+		SharedQuestion = lblShareText.Text
 	
 	Else If IsRelevantIntent(intpub) Then
 		
 		SharedText = intpub.GetExtra("android.intent.extra.TEXT")
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
+		SharedQuestion = lblShareText.Text
 		
 	Else If (Main.TextShared <> "") Then
 		
@@ -126,6 +130,7 @@ Sub Activity_Create(FirstTime As Boolean)
 		
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
+		SharedQuestion = lblShareText.Text
 		
 	Else
 		MsgboxAsync("Here", "Heeeyyyyyyyy")
