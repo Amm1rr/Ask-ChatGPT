@@ -96,6 +96,7 @@ Library19=webviewextras2
 Library2=b4xdraweradvanced
 Library20=xcustomlistview
 Library21=xui views
+Library22=asflowtabmenu
 Library3=byteconverter
 Library4=clipboard
 Library5=contentresolver
@@ -116,7 +117,7 @@ Module7=General
 Module8=PreferencesDialog
 Module9=ResizingTextComponent
 NumberOfFiles=41
-NumberOfLibraries=21
+NumberOfLibraries=22
 NumberOfModules=11
 Version=12.2
 @EndOfDesignText@

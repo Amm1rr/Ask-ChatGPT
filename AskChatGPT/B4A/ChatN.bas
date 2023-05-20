@@ -19,6 +19,8 @@ Sub Class_Globals
 	Private xui As XUI
 	Public 	MessageIndex As Int = -1
 	
+	Private flowTabToolbar As ASFlowTabMenu
+	
 	'KEYBOARD
 	Private ime As IME
 	Private heightKeyboard As Int
@@ -214,7 +216,6 @@ Public Sub Initialize(parent As B4XView, text As String)
 		chkTranslate.Visible = True
 	End If
 	
-	
 	DevModeCheck
 	
 	MemoryChanged
@@ -224,6 +225,14 @@ Public Sub Initialize(parent As B4XView, text As String)
 '	SetChatBackground("Bg-Chat03.jpg")
 	SetChatBackground("Bg-Chat01.jpg")
 	
+	Dim clr As Int = Colors.RGB(13, 85, 25)
+	
+	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
+	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr),"En")
+	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr),"Fa")
+	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xF1D7),False,20,clr),"Nerv")
+	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+	ControlCheckBox
 	
 '	LogColor("ChatN.Init text: " & text, Colors.Red)
 	txtQuestion.Text = text
@@ -1929,6 +1938,11 @@ Private Sub ControlCheckBox
 	Dim Firstlang 	As String = cmbLangDrawerFirst.GetItem(cmbLangDrawerFirst.SelectedIndex)
 	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
 	
+	chkGrammar.Visible = False
+	chkTranslate.Visible = False
+	chkToFarsi.Visible = False
+	chkChat.Visible = False
+	
 End Sub
 
 Private Sub IsLangRTL(langname As String) As Boolean
@@ -2562,4 +2576,24 @@ Private Sub btnClearTitles_Click
 		Starter.MessageList.Clear
 		
 	End If
+End Sub
+
+Private Sub flowTabToolbar_TabClick(index As Int)
+	
+	Select index
+		Case 0
+			chkGrammar.Checked = True
+		Case 1
+			chkTranslate.Checked = True
+		Case 2
+			chkToFarsi.Checked = True
+		Case 3
+			chkChat.Checked = True
+		Case 4
+			chkGrammar.Checked = False
+			chkTranslate.Checked = False
+			chkToFarsi.Checked = False
+			chkChat.Checked = False
+	End Select
+	
 End Sub
