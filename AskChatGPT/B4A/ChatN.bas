@@ -92,6 +92,7 @@ Sub Class_Globals
 	Private panTextToolbar As Panel
 	Private lblCopy As Label
 	Private LanguageList As List
+	Private flags As Map
 	Private chkAutoSendDrawer As CheckBox
 	
 	Private mainparent As B4XView
@@ -313,14 +314,55 @@ Private Sub LoadLangTabs
 	
 	If Not (LanguageList.IsInitialized) Then LanguageList.Initialize
 	
-	LanguageList.AddAll(Array As String("(None)", "English", "Russian", "Spanish", "French", "German", _
+	LanguageList.AddAll(Array As String("(None)", "English", "Russian", "Spanish", "French", "Germany", _
 								"Japanese", "Turkish", "Portuguese", "Persian", "Italian", _
 								"Chinese", "Dutch", "Polish", "Vietnamese", _
-							   	"Arabic", "Korean", "Czech", "Indonesian", "Ukrainian", "Greek", _
+							   	"Arabic", "Korean", "Czech", "Indonesian", "Ukrainian", "Greec", _
 							   	"Hebrew", "Swedish", "Thai", "Romanian", "Hungarian", _
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
-							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi"))
+							   	"Estonian", "Latvian", "Hindi"))
+	
+	flags.Initialize
+	flags.Put("(None)", "🌐")
+	flags.Put("English", "🇬🇧")
+	flags.Put("Russian", "🇷🇺")
+	flags.Put("Spanish", "🇪🇸")
+	flags.Put("French", "🇫🇷")
+	flags.Put("Germany", "🇩🇪")
+	flags.Put("Japanese", "🇯🇵")
+	flags.Put("Turkish", "🇹🇷")
+	flags.Put("Portuguese", "🇵🇹")
+	flags.Put("Persian", "🇮🇷")
+	flags.Put("Italian", "🇮🇹")
+	flags.Put("Chinese", "🇨🇳")
+	flags.Put("Dutch", "🇳🇱")
+	flags.Put("Polish", "🇵🇱")
+	flags.Put("Vietnamese", "🇻🇳")
+	flags.Put("Arabic", "🇦🇪")
+	flags.Put("Korean", "🇰🇷")
+	flags.Put("Czech", "🇨🇿")
+	flags.Put("Indonesian", "🇮🇩")
+	flags.Put("Ukrainian", "🇺🇦")
+	flags.Put("Greec", "🇬🇷")
+	flags.Put("Hebrew", "🇮🇱")
+	flags.Put("Swedish", "🇸🇪")
+	flags.Put("Thai", "🇹🇭")
+	flags.Put("Romanian", "🇷🇴")
+	flags.Put("Hungarian", "🇭🇺")
+	flags.Put("Danish", "🇩🇰")
+	flags.Put("Finnish", "🇫🇮")
+	flags.Put("Slovak", "🇸🇰")
+	flags.Put("Bulgarian", "🇧🇬")
+	flags.Put("Serbian", "🇷🇸")
+	flags.Put("Norwegian", "🇳🇴")
+	flags.Put("Croatian", "🇭🇷")
+	flags.Put("Lithuanian", "🇱🇹")
+	flags.Put("Slovenian", "🇸🇮")
+	flags.Put("Estonian", "🇪🇪")
+	flags.Put("Latvian", "🇱🇻")
+	flags.Put("Hindi", "🇮🇳")
+	
 	#Region Todo
 '	Private supportLanguages As List
 '		supportLanguages.Initialize
@@ -411,15 +453,19 @@ Private Sub LoadLangTabs
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
 		
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
+'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
+'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
 		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
 		
 	Else
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
+'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
+'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap("🌐",True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
 		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
 		
@@ -1296,7 +1342,7 @@ Private Sub VoiceLang(lng As String)
 			Case "Ukrainian"
 				langslug = "UK"
 				prompt   = "Говори зараз"
-			Case "Greek"
+			Case "Greec"
 				langslug = "EL"
 				prompt   = "Μίλα Τώρα" 		'Míla Tóra
 			Case "Hebrew"
@@ -2199,7 +2245,7 @@ Private Sub icMenuTopMenu_Click
 			newsectab.Initialize
 '			newsectab.Index = 1
 			newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
-			newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr)
+			newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr)
 		flowTabToolbar.SetTabProperties(1, newsectab)
 		
 		'// Second Language
@@ -2216,7 +2262,7 @@ Private Sub icMenuTopMenu_Click
 					newsectab.Initialize
 '					newsectab.Index = 2
 					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
-					newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr)
+					newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
 				flowTabToolbar.SetTabProperties(2, newsectab)
 				
 			Else
@@ -2228,7 +2274,7 @@ Private Sub icMenuTopMenu_Click
 					newsectab.Initialize
 '					newsectab.Index = 2
 					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
-					newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr)
+					newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
 				flowTabToolbar.SetTabProperties(2, newsectab)
 				
 				Dim newsectab As ASFlowTabMenu_Tab
