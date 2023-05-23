@@ -25,10 +25,11 @@ Sub Process_Globals
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
 	
-	Public Const AITYPE_Chat 			As Int	= 0
-	Public Const AITYPE_Grammar 		As Int	= 1
-	Public Const AITYPE_Translate 		As Int 	= 2
-	Public Const AITYPE_Practice 		As Int	= 3
+	Public Const AITYPE_Grammar 		As Int	= 0
+	Public Const AITYPE_Translate 		As Int 	= 1
+	Public Const AITYPE_SecondLang 		As Int	= 2
+	Public Const AITYPE_Pook 			As Int	= 3
+	Public Const AITYPE_Chat 			As Int	= 4
 	
 End Sub
 
@@ -87,7 +88,7 @@ Public Sub Query(system_string As String, _
 		' Create a JSON object
 		Dim json As Map
 		
-		If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
+		If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Or (AI_Type = AITYPE_Grammar) Then
 			json.Initialize
 			json.Put("model", "text-davinci-003")
 			json.Put("prompt", query_string)
@@ -100,7 +101,7 @@ Public Sub Query(system_string As String, _
 			json.Put("frequency_penalty", 0)
 			json.Put("presence_penalty", 0)
 			
-		Else ' AI - Chat
+		Else ' Chat - Pook
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 '			json.Put("model", "gpt-4")
@@ -152,28 +153,28 @@ Public Sub Query(system_string As String, _
 		End If
 		
 		Dim js As JSONGenerator
-		js.Initialize(json)
+			js.Initialize(json)
 		
 		'Raw JSON String Generated
 '		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
 		Dim response 	As String
 		Dim resobj 		As Map
-		resobj.Initialize
+			resobj.Initialize
  		
 		Dim req 		As HttpJob
-		req.Initialize("", Me)
+			req.Initialize("", Me)
 		
 		'https://chat.openai.com/backend-api/conversation
 		Select AI_Type
 			
-			Case AITYPE_Chat, AITYPE_Practice
+			Case AITYPE_Chat, AITYPE_Pook
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 				
 '			Case AITYPE_Grammar
 '				req.PostString("https://api.openai.com/v1/edits", js.ToString)
 				
-			Case AITYPE_Translate, AITYPE_Grammar
+			Case AITYPE_Translate, AITYPE_SecondLang, AITYPE_Grammar
 				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 			
 				
@@ -219,14 +220,14 @@ Public Sub Query(system_string As String, _
 '				resobj.Put("response", response)
 '				resobj.Put("continue", False)
 '			Else 
-			If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
+			If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Or (AI_Type = AITYPE_Grammar) Then
 				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
 				resobj.Put("response", response)
 				resobj.Put("continue", False)
 				resobj.Put("QuestionIndex", QuestionIndex)
-			Else ' Chat and AI
+			Else ' Chat and Pook
 				Dim text 		As String  	= ParseJson(req.GetString, False, False)
 				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
 				If (response <> "") Then response = response & CRLF

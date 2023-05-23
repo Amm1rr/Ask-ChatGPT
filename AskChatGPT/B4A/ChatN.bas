@@ -65,15 +65,11 @@ Sub Class_Globals
 	Private jsi As DefaultJavascriptInterface
 	
 	Private panToolbar 			As B4XView
-	Private chkGrammar 	As B4XView
-	Private chkTranslate 		As CheckBox
-	Private chkToFarsi 			As CheckBox
 	Private lblPaste As Label
 	Private UpDown1Drawer As UpDown
 	Private lblVersionTextDrawer As Label
 	Private lblVersionNameDrawer As Label
 	Public panMain As Panel
-	Private chkChat As CheckBox
 	Private webQuestion As WebView
 	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
@@ -92,8 +88,6 @@ Sub Class_Globals
 	Private panTextToolbar As Panel
 	Private lblCopy As Label
 	Private LanguageList As List
-	Private cmbLangDrawerFirst As B4XComboBox
-	Private cmbLangDrawerSec As B4XComboBox
 	Private chkAutoSendDrawer As CheckBox
 	
 	Private mainparent As B4XView
@@ -195,7 +189,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	resetTextboxToolbar
 	
-	LoadLanguage
+	LoadLangTabs
 	LoadListDB
 	
 	SetupSettingDialog(parent)
@@ -204,36 +198,26 @@ Public Sub Initialize(parent As B4XView, text As String)
 	chkAutoSendDrawer.Checked = General.Pref.AutoSend
 	
 	
-	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
-		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
-		chkToFarsi.Text = General.Pref.SecondLang
-		chkToFarsi.Visible = True
-		chkTranslate.Visible = True
-	Else
-		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
-		chkTranslate.Text = General.Pref.FirstLang
-		chkToFarsi.Visible = False
-		chkTranslate.Visible = True
-	End If
+'	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
+'		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
+'		chkToFarsi.Text = General.Pref.SecondLang
+'		chkToFarsi.Visible = True
+'		chkTranslate.Visible = True
+'	Else
+'		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
+'		chkTranslate.Text = General.Pref.FirstLang
+'		chkToFarsi.Visible = False
+'		chkTranslate.Visible = True
+'	End If
 	
 	DevModeCheck
 	
 	MemoryChanged
 	
-	Check_First_Sec_Lang_Visibility
-	
 '	SetChatBackground("Bg-Chat03.jpg")
 	SetChatBackground("Bg-Chat01.jpg")
 	
-	Dim clr As Int = Colors.RGB(13, 85, 25)
-	
-	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
-	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr),"En")
-	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr),"Fa")
-	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xF1D7),False,20,clr),"Nerv")
-	flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
 	ControlCheckBox
-	
 '	LogColor("ChatN.Init text: " & text, Colors.Red)
 	txtQuestion.Text = text
 '	If Not (text = "") Then
@@ -319,20 +303,7 @@ Public Sub DevModeCheck
 	lblTitleTopMenu.Text = csTitle
 End Sub
 
-Public Sub Check_First_Sec_Lang_Visibility
-	
-	MyLog("Check_First_Sec_Lang_Visibility: " & General.Pref.SecondLang, ColorLog, True)
-	
-	If (General.Pref.SecondLang = "(None)") Or (General.Pref.SecondLang = "") Then
-		chkToFarsi.Visible = False
-'		chkTranslate.Visible = False
-	Else
-		chkToFarsi.Visible = True
-		chkTranslate.Visible = True
-	End If
-End Sub
-
-Private Sub LoadLanguage
+Private Sub LoadLangTabs
 	
 	MyLog("LoadLanguage", ColorLog, True)
 	
@@ -346,7 +317,7 @@ Private Sub LoadLanguage
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
 							   	"Catalan", "Norwegian", "Estonian", "Latvian", "Hindi"))
-	
+	#Region Todo
 '	Private supportLanguages As List
 '		supportLanguages.Initialize
 '		supportLanguages.Add(Array As String("en", "English"))
@@ -411,43 +382,43 @@ Private Sub LoadLanguage
 '		supportLanguages.Add(Array As String("uk", "Українська"))
 '		supportLanguages.Add(Array As String("ur", "اردو"))
 '		supportLanguages.Add(Array As String("vi", "Tiếng Việt"))
-
-	Dim indexFirst 	As Int = -1
-	Dim indexSec 	As Int = -1
-	Dim lenght 	As Int = LanguageList.Size - 1
-	For i = 0 To lenght
-		If LanguageList.Get(i) = General.Pref.FirstLang Then
-			indexFirst = LanguageList.IndexOf(LanguageList.Get(i))
-		Else If LanguageList.Get(i) = General.Pref.SecondLang Then
-			indexSec = LanguageList.IndexOf(LanguageList.Get(i))
-		End If
-	Next
+	#End Region
 	
-	'######### First Language
+'	Dim indexFirst 	As Int = -1
+'	Dim indexSec 	As Int = -1
+'	Dim lenght 	As Int = LanguageList.Size - 1
+'	For i = 0 To lenght
+'		If LanguageList.Get(i) = General.Pref.FirstLang Then
+'			indexFirst = LanguageList.IndexOf(LanguageList.Get(i))
+'		Else If LanguageList.Get(i) = General.Pref.SecondLang Then
+'			indexSec = LanguageList.IndexOf(LanguageList.Get(i))
+'		End If
+'	Next
+'	
+'	If Not (indexFirst > -1) Then indexFirst = 0
+	
+	'######### First and Second Language
 	'#
 	
-	cmbLangDrawerFirst.SetItems(LanguageList)
-'	cmbLangDrawerFirst.cmbBox.RemoveAt(cmbLangDrawerFirst.Size - 1)	'Remove "(None)" from First Language Combo
-	cmbLangDrawerFirst.cmbBox.RemoveAt(0)	'Remove "(None)" from First Language Combo
-	If Not (indexFirst > -1) Then indexFirst = 0
+	Dim clr As Int = Colors.RGB(13, 85, 25)
 	
-	cmbLangDrawerFirst.SelectedIndex = indexFirst
-	chkTranslate.Text = General.Pref.FirstLang
+	Log("Lang: " & General.Pref.FirstLang & " - Sec: " & General.Pref.SecondLang)
 	
-	'######### Second Language
-	'#
-	
-	cmbLangDrawerSec.SetItems(LanguageList)
-	If (indexSec > -1) Then
+	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
-		cmbLangDrawerSec.SelectedIndex = indexSec
-		chkToFarsi.Text = General.Pref.SecondLang
-		chkToFarsi.Visible = True
-		chkTranslate.Visible = True
+		
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+		
 	Else
-		cmbLangDrawerSec.SelectedIndex = 0 'lenght
-		chkToFarsi.Visible = False
-		chkTranslate.Visible = True
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+		
 	End If
 	
 End Sub
@@ -1107,85 +1078,87 @@ Public Sub imgSend_Click
 		Dim sAssistant As String
 		Dim sSystem As String
 		
-		If (chkGrammar.Checked) Then
+		Select flowTabToolbar.CurrentIndex
 			
-			ResetAI
+			Case wrk_chat.TYPE_Grammar
+				
+				ResetAI
 			
-			If (General.IsAWord(question)) Then
+				If (General.IsAWord(question)) Then
 '				sSystem = $"Fix word into ${General.Pref.FirstLang} or Translate word into ${General.Pref.FirstLang}:"$
-				sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}:"$
-			Else
+					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}:"$
+				Else
 '				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
-				sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
-			End If
+					sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
+				End If
 			
-'			sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
-			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} translator, proofreader, and corrector of spelling and grammar for punctuation."$
+'				sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
+				sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} translator, proofreader, and corrector of spelling and grammar for punctuation."$
 			
-			question = sSystem & questionHolder
+				question = sSystem & questionHolder
+				
+			Case wrk_chat.TYPE_Translate
 			
-		Else If (chkTranslate.Checked) Then
-			
-			ResetAI
-			
-			If (General.IsAWord(question)) Then
+				ResetAI
+				
+				If (General.IsAWord(question)) Then
 '				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
-				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary; show definitions and synonyms using ${General.Pref.FirstLang} with a minimum and limited number of tokens."$
-			Else
+					sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary; show definitions and synonyms using ${General.Pref.FirstLang} with a minimum and limited number of tokens."$
+				Else
 ''				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
 '				sSystem = $"Only translate into standard ${General.Pref.FirstLang}, don't interpret it or only show meaning, definitions and synonyms."$
-				sSystem = $"Only translate into standard ${General.Pref.FirstLang}; do not interpret it or provide only meaning, definitions, and synonyms."$
-			End If
+					sSystem = $"Only translate into standard ${General.Pref.FirstLang}; do not interpret it or provide only meaning, definitions, and synonyms."$
+				End If
 			
-			question = sSystem & " The Text Is: " & CRLF & questionHolder
-			
-'			sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
-			sAssistant = $"Translate this into ${General.Pref.FirstLang}."$
-			
-		Else If (chkToFarsi.Checked) Then
-			ResetAI
-			
-			If (General.IsAWord(question)) Then
+				question = sSystem & " The Text Is: " & CRLF & questionHolder
+				
+'				sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
+				sAssistant = $"Translate this into ${General.Pref.FirstLang}."$
+				
+			Case wrk_chat.TYPE_Second
+				ResetAI
+				
+				If (General.IsAWord(question)) Then
 '				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
-				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} dictionary; show definitions and synonyms using ${General.Pref.SecondLang} with a minimum of tokens."$
-			Else
+					sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} dictionary; show definitions and synonyms using ${General.Pref.SecondLang} with a minimum of tokens."$
+				Else
 '				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
-				sSystem = $"Only translate into ${General.Pref.SecondLang}; do not interpret or provide meaning, definitions, or synonyms."$
-			End If
-			
-			sSystem = sSystem.Replace("\t", Null)
-			
-			question = sSystem & " The Text Is: " & CRLF & questionHolder
-			
-			sAssistant = $"Translate this into ${General.Pref.SecondLang}."$
-			
-		Else if (chkChat.Checked) Then
-			
-'			sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
+					sSystem = $"Only translate into ${General.Pref.SecondLang}; do not interpret or provide meaning, definitions, or synonyms."$
+				End If
+				
+				sSystem = sSystem.Replace("\t", Null)
+				
+				question = sSystem & " The Text Is: " & CRLF & questionHolder
+				
+				sAssistant = $"Translate this into ${General.Pref.SecondLang}."$
+			Case wrk_chat.TYPE_Pook
+				
+'				sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
 'Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfully."$
-			
-'			sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
-			
-			'# Funny Angry
-'			sSystem = $"Act as a spoken teacher and improver and strictly correct my grammar, typos, and factual errors.
-'Correct my mistakes And answer like a funny angry And disrespectful character."$
-			
-			'# Teacher
-'			sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
-			
-			'# Funny Angry Teacher
-			sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
-			
-			sAssistant = ""
-			
-			
-			question = questionHolder
-		Else
-			sSystem = "You are a smart and helpful assistant."
-			sAssistant = ""
-			
-			question = questionHolder
-		End If
+				
+'				sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
+				
+				'# Funny Angry
+'				sSystem = $"Act as a spoken teacher and improver and strictly correct my grammar, typos, and factual errors.
+				'Correct my mistakes And answer like a funny angry And disrespectful character."$
+				
+				'# Teacher
+'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
+				
+				'# Funny Angry Teacher
+				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
+				
+				sAssistant = ""
+				
+				question = questionHolder
+				
+			Case wrk_chat.TYPE_Chat
+				sSystem = "You are a smart and helpful assistant."
+				sAssistant = ""
+				
+				question = questionHolder
+				
+		End Select
 		
 		WriteQuestion(questionHolder)
 		Ask(question, sAssistant, sSystem, questionHolder)
@@ -1465,7 +1438,6 @@ Private Sub SaveMessage(title As String)
 		Dim Args(2) As Object
 			Args(0) = jso.ToString
 			Args(1) = clvTitles.GetValue(MessageIndex)
-		Log(Args)
 		
 		General.sql.ExecNonQuery2(query, Args)
 	End If
@@ -1531,14 +1503,16 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 '	End If
 	
 	Dim AIType As Int
-	If (chkGrammar.Checked) Then
-		AIType = wrk_chat.AITYPE_Grammar
-	Else If (chkTranslate.Checked) Or (chkToFarsi.Checked) Then
-		AIType = wrk_chat.AITYPE_Translate
-	Else If (chkChat.Checked) Then
-		AIType = wrk_chat.AITYPE_Practice
+	If (General.Pref.LastTypeModel = wrk_chat.TYPE_Grammar) Then
+		AIType = wrk_chat.TYPE_Grammar
+	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Translate) Then
+		AIType = wrk_chat.TYPE_Translate
+	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Second) Then
+		AIType = wrk_chat.TYPE_Second
+	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Pook) Then
+		AIType = wrk_chat.TYPE_Pook
 	Else
-		AIType = wrk_chat.AITYPE_Chat
+		AIType = wrk_chat.TYPE_Chat
 	End If
 	
 	Wait For (Starter.Query(system, _
@@ -1566,7 +1540,8 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 			Case wrk_chat.OpenApiHostError  & " (Code 2)":
 				txtQuestion.Text = questionHolder
 			Case wrk_chat.InstructureError
-				chkTranslate.Checked = True
+				flowTabToolbar.CurrentIndexAnimated = wrk_chat.TYPE_Translate
+				flowTabToolbar.RefreshTabProperties
 				txtQuestion.Text = questionHolder
 				imgSend_Click
 				
@@ -1888,60 +1863,12 @@ Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
 	If Not (HasFocus) Then HideKeyboard
 End Sub
 
-
-Private Sub chkGrammar_CheckedChange(Checked As Boolean)
-	ClickSimulation
-	If (Checked = True) Then
-		chkTranslate.Checked = False
-		chkToFarsi.Checked = False
-		chkChat.Checked = False
-		ControlCheckBox
-	End If
-End Sub
-
-Private Sub chkTranslate_CheckedChange(Checked As Boolean)
-	ClickSimulation
-	If (Checked = True) Then
-		chkGrammar.Checked = False
-		chkToFarsi.Checked = False
-		chkChat.Checked = False
-		ControlCheckBox
-	End If
-End Sub
-
-Private Sub chkToFarsi_CheckedChange(Checked As Boolean)
-	ClickSimulation
-	If (Checked = True) Then
-		chkGrammar.Checked = False
-		chkTranslate.Checked = False
-		chkChat.Checked = False
-		ControlCheckBox
-	End If
-End Sub
-
-Private Sub chkChat_CheckedChange(Checked As Boolean)
-	
-	ClickSimulation
-	If (Checked = True) Then
-		chkGrammar.Checked = False
-		chkTranslate.Checked = False
-		chkToFarsi.Checked = False
-		ControlCheckBox
-	End If
-	
-End Sub
-
 Private Sub ControlCheckBox
 	
 	MyLog("ControlCheckBox", ColorLog, False)
 	
-	Dim Firstlang 	As String = cmbLangDrawerFirst.GetItem(cmbLangDrawerFirst.SelectedIndex)
-	Dim Seclang 	As String = cmbLangDrawerSec.GetItem(cmbLangDrawerSec.SelectedIndex)
-	
-	chkGrammar.Visible = False
-	chkTranslate.Visible = False
-	chkToFarsi.Visible = False
-	chkChat.Visible = False
+	flowTabToolbar.CurrentIndex = General.Pref.LastTypeModel
+	flowTabToolbar.RefreshTabProperties
 	
 End Sub
 
@@ -2181,7 +2108,6 @@ Private Sub icMenuTopMenu_Click
 	If Result = xui.DialogResponse_Positive Then
 		LogColor(Options, Colors.Blue)
 		
-		
 		General.Pref.Creativity = Options.Get("Creativity")
 		General.Pref.FirstLang = Options.Get("FirstLang")
 		General.Pref.SecondLang = Options.Get("SecondLang")
@@ -2193,17 +2119,47 @@ Private Sub icMenuTopMenu_Click
 			General.Pref.AutoSend = Options.Get("AutoSend")
 		End If
 		
-		chkTranslate.Text = General.Pref.FirstLang
-		ControlCheckBox
+		Dim clr As Int = Colors.RGB(13, 85, 25)
 		If (General.Pref.SecondLang = "(None)") Or General.IsNull(General.Pref.SecondLang) Then
-			chkToFarsi.SetVisibleAnimated(150, False)
-'			chkTranslate.SetVisibleAnimated(150, False)
+			If (flowTabToolbar.Size = 5) Then
+				flowTabToolbar.RemoveTab(2)
+			End If
+			
 		Else
-			LogColor(General.Pref.SecondLang, Colors.Red)
-			chkToFarsi.Text = General.Pref.SecondLang
-			chkToFarsi.SetVisibleAnimated(300, True)
-			chkTranslate.SetVisibleAnimated(300, True)
+			If (flowTabToolbar.Size = 5) Then
+				Log("sec")
+				Dim newsectab As ASFlowTabMenu_Tab
+					newsectab.Initialize
+'					newsectab.Index = 2
+					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
+					newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr)
+				flowTabToolbar.SetTabProperties(2, newsectab)
+				
+			Else
+				Log("final")
+				
+				flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+				
+				Dim newsectab As ASFlowTabMenu_Tab
+					newsectab.Initialize
+'					newsectab.Index = 2
+					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
+					newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE927),True,20,clr)
+				flowTabToolbar.SetTabProperties(2, newsectab)
+				
+				Dim newsectab As ASFlowTabMenu_Tab
+					newsectab.Initialize
+'					newsectab.Index = 3
+					newsectab.Text = "Pook"
+					newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
+				flowTabToolbar.SetTabProperties(3, newsectab)
+				
+				
+			End If
 		End If
+		
+		
+		flowTabToolbar.RefreshTabProperties
 		
 		General.SaveSettingDB
 		
@@ -2230,34 +2186,6 @@ Private Sub lblCopy_Click
 		Dim cp As BClipboard
 			cp.setText(txtQuestion.Text)
 	End If
-End Sub
-
-Private Sub cmbLangDrawerFirst_SelectedIndexChanged (Index As Int)
-	
-	General.Pref.FirstLang = cmbLangDrawerFirst.GetItem(Index)
-	chkTranslate.Text = General.Pref.FirstLang
-	General.SaveSettingDB
-	ControlCheckBox
-	
-End Sub
-
-Private Sub cmbLangDrawerSec_SelectedIndexChanged (Index As Int)
-	
-	MyLog("cmbLangDrawerSec_SelectedIndexChanged", ColorLog, True)
-	
-	General.Pref.SecondLang = cmbLangDrawerSec.GetItem(Index)
-	
-	If (General.Pref.SecondLang = "(None)") Then
-		chkToFarsi.SetVisibleAnimated(150, False)
-'		chkTranslate.SetVisibleAnimated(150, False)
-	Else
-		LogColor(General.Pref.SecondLang, Colors.Red)
-		chkToFarsi.Text = General.Pref.SecondLang
-		chkToFarsi.SetVisibleAnimated(300, True)
-		chkTranslate.SetVisibleAnimated(300, True)
-	End If
-	General.SaveSettingDB
-	ControlCheckBox
 End Sub
 
 Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
@@ -2580,20 +2508,22 @@ End Sub
 
 Private Sub flowTabToolbar_TabClick(index As Int)
 	
-	Select index
-		Case 0
-			chkGrammar.Checked = True
-		Case 1
-			chkTranslate.Checked = True
-		Case 2
-			chkToFarsi.Checked = True
-		Case 3
-			chkChat.Checked = True
-		Case 4
-			chkGrammar.Checked = False
-			chkTranslate.Checked = False
-			chkToFarsi.Checked = False
-			chkChat.Checked = False
-	End Select
+	General.Pref.LastTypeModel = index
+	
+'	Select index
+'		Case 0
+'			General.Pref.LastTypeModel = 0
+'		Case 1
+'			chkTranslate.Checked = True
+'		Case 2
+'			chkToFarsi.Checked = True
+'		Case 3
+'			chkChat.Checked = True
+'		Case 4
+'			chkGrammar.Checked = False
+'			chkTranslate.Checked = False
+'			chkToFarsi.Checked = False
+'			chkChat.Checked = False
+'	End Select
 	
 End Sub

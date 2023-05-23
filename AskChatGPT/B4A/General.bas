@@ -101,7 +101,8 @@ Private Sub CreateDB
 	"AutoSend"	INTEGER DEFAULT 0,
 	"Memory"	INTEGER DEFAULT 1,
 	"APIKEY"	TEXT,
-	"IsDevMode"	INTEGER DEFAULT 0
+	"IsDevMode"	INTEGER DEFAULT 0,
+	"LastTypeModel"	INTEGER DEFAULT 0
 	);"$
 	
 	Dim tblMessages As String = $"CREATE TABLE "Messages" (
@@ -136,6 +137,7 @@ Public Sub LoadSettingDB
 		Pref.Memory = True
 		Pref.IsDevMode = IsDebug
 		Pref.APIKEY = ""
+		Pref.LastTypeModel = 4
 		
 		SaveSettingDB
 	Else
@@ -147,6 +149,7 @@ Public Sub LoadSettingDB
 		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
 		Pref.APIKEY = DecKey(GetStr(CurSettingSql.GetString("APIKEY")))
+		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
 	End If
 	
 	CurSettingSql.Close
@@ -161,8 +164,8 @@ Public Sub SaveSettingDB
 	
 	sql.ExecNonQuery("DELETE FROM Config")
 	
-	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode) VALUES(?, ?, ?, ?, ?, ?, ?)"
-	Dim Args(7) As Object
+	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode, LastTypeModel) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+	Dim Args(8) As Object
 		Args(0) = Pref.FirstLang
 		Args(1) = Pref.SecondLang
 		Args(2) = Pref.Creativity
@@ -174,6 +177,7 @@ Public Sub SaveSettingDB
 			Args(5) = EncKey(Pref.APIKEY)
 		End If
 		Args(6) = Pref.IsDevMode
+		Args(7) = Pref.LastTypeModel
 	
 	
 	Log(query)

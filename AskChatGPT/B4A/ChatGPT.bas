@@ -29,10 +29,12 @@ Sub Class_Globals
 '	Private messageId As Int
 	Public ChatHistoryList As List
 	
-	Public Const AITYPE_Chat 			As Int	= 0
-	Public Const AITYPE_Grammar 		As Int	= 1
-	Public Const AITYPE_Translate 		As Int 	= 2
-	Public Const AITYPE_Practice 		As Int	= 3
+	Public Const TYPE_Grammar 		As Int = 0
+	Public Const TYPE_Translate 	As Int = 1
+	Public Const TYPE_Second		As Int = 2
+	Public Const TYPE_Pook	  		As Int = 3
+	Public Const TYPE_Chat 			As Int = 4
+	
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -132,7 +134,7 @@ Public Sub Query(system_string As String, _
 		' Create a JSON object
 		Dim json As Map
 		
-'		If (AI_Type = AITYPE_Grammar) Then
+'		If (AI_Type = TYPE_Grammar) Then
 '			json.Initialize
 '			json.Put("model", "text-davinci-edit-001")
 '			json.Put("input", query_string)
@@ -141,7 +143,7 @@ Public Sub Query(system_string As String, _
 '			json.Put("top_p", 1)
 '		
 '		Else 
-		If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
+		If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Grammar) Then
 			json.Initialize
 			json.Put("model", "text-davinci-003")
 			json.Put("prompt", query_string)
@@ -161,7 +163,7 @@ Public Sub Query(system_string As String, _
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
-			If (AI_Type = AITYPE_Chat) Then json.Put("temperature", 0.10)
+			If (AI_Type = TYPE_Chat) Then json.Put("temperature", 0.10)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
 			
@@ -221,13 +223,13 @@ Public Sub Query(system_string As String, _
 		'https://chat.openai.com/backend-api/conversation
 		Select AI_Type
 			
-			Case AITYPE_Chat, AITYPE_Practice
+			Case TYPE_Chat, TYPE_Pook
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 				
-'			Case AITYPE_Grammar
+'			Case TYPE_Grammar
 '				req.PostString("https://api.openai.com/v1/edits", js.ToString)
 				
-			Case AITYPE_Translate, AITYPE_Grammar
+			Case TYPE_Translate, TYPE_Grammar
 				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 			
 				
@@ -266,14 +268,14 @@ Public Sub Query(system_string As String, _
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
 			
-'			If (AI_Type = AITYPE_Grammar) Then
+'			If (AI_Type = TYPE_Grammar) Then
 '				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
 '				If (response <> "") Then response = response & CRLF
 '				response = response & text.Trim
 '				resobj.Put("response", response)
 '				resobj.Put("continue", False)
 '			Else 
-			If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_Grammar) Then
+			If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Grammar) Then
 				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim

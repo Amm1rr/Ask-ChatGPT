@@ -1,124 +1,127 @@
 ﻿Build1=Default,com.ask.chatgpt,Premium
 File1=3.mp3
-File10=Bg-Chat07.jpg
-File11=Bg-Chat08.jpg
-File12=Bg-Chat09.jpg
-File13=Bg-Chat10.jpg
-File14=booleanitem.bal
-File15=brain.png
-File16=Changelog.txt
-File17=Chat.bal
-File18=clvAnswerRow.bal
-File19=clvQuestionRow.bal
+File10=Bg-Chat06.jpg
+File11=Bg-Chat07.jpg
+File12=Bg-Chat08.jpg
+File13=Bg-Chat09.jpg
+File14=Bg-Chat10.jpg
+File15=booleanitem.bal
+File16=brain.png
+File17=Changelog.txt
+File18=Chat.bal
+File19=clvAnswerRow.bal
 File2=Acme-Regular.ttf
-File20=clvWaitingText.bal
-File21=coloritem.bal
-File22=gray-tipped.png
-File23=LeftDrawer.bal
-File24=menu.png
-File25=message.png
-File26=montserrat-medium.ttf
-File27=numericrange.bal
-File28=passworditem.bal
-File29=PrefsJson.json
-File3=apikeyitem.bal
-File30=PROMPTS.md
-File31=puton.png
-File32=RightDrawer.bal
-File33=roboto-regular.ttf
-File34=settings.png
-File35=Share.bal
-File36=shortoptions.bal
-File37=textitem.bal
-File38=textitemmulti.bal
-File39=timeitem.bal
-File4=Bg-Chat01.jpg
-File40=timeitem24.bal
-File41=voice.png
-File5=Bg-Chat02.jpg
-File6=Bg-Chat03.jpg
-File7=Bg-Chat04.jpg
-File8=Bg-Chat05.jpg
-File9=Bg-Chat06.jpg
+File20=clvQuestionRow.bal
+File21=clvWaitingText.bal
+File22=coloritem.bal
+File23=gray-tipped.png
+File24=LeftDrawer.bal
+File25=man.png
+File26=menu.png
+File27=message.png
+File28=montserrat-medium.ttf
+File29=numericrange.bal
+File3=angry2.png
+File30=passworditem.bal
+File31=PrefsJson.json
+File32=PROMPTS.md
+File33=puton.png
+File34=RightDrawer.bal
+File35=roboto-regular.ttf
+File36=settings.png
+File37=Share.bal
+File38=shortoptions.bal
+File39=textitem.bal
+File4=apikeyitem.bal
+File40=textitemmulti.bal
+File41=timeitem.bal
+File42=timeitem24.bal
+File43=voice.png
+File5=Bg-Chat01.jpg
+File6=Bg-Chat02.jpg
+File7=Bg-Chat03.jpg
+File8=Bg-Chat04.jpg
+File9=Bg-Chat05.jpg
 FileGroup1=Default Group
 FileGroup10=Default Group\Images
 FileGroup11=Default Group\Images
 FileGroup12=Default Group\Images
 FileGroup13=Default Group\Images
-FileGroup14=Default Group\Designers\PreferenceDialog
-FileGroup15=Default Group\Images
-FileGroup16=Default Group
-FileGroup17=Default Group\Designers
+FileGroup14=Default Group\Images
+FileGroup15=Default Group\Designers\PreferenceDialog
+FileGroup16=Default Group\Images
+FileGroup17=Default Group
 FileGroup18=Default Group\Designers
 FileGroup19=Default Group\Designers
 FileGroup2=Default Group\Fonts
 FileGroup20=Default Group\Designers
-FileGroup21=Default Group\Designers\PreferenceDialog
-FileGroup22=Default Group\Images
-FileGroup23=Default Group\Designers
-FileGroup24=Default Group\Images
+FileGroup21=Default Group\Designers
+FileGroup22=Default Group\Designers\PreferenceDialog
+FileGroup23=Default Group\Images
+FileGroup24=Default Group\Designers
 FileGroup25=Default Group\Images
-FileGroup26=Default Group\Fonts
-FileGroup27=Default Group\Designers\PreferenceDialog
-FileGroup28=Default Group\Designers\PreferenceDialog
-FileGroup29=Default Group
-FileGroup3=Default Group\Designers\PreferenceDialog
-FileGroup30=Default Group
-FileGroup31=Default Group\Images
-FileGroup32=Default Group\Designers
-FileGroup33=Default Group\Fonts
-FileGroup34=Default Group\Images
-FileGroup35=Default Group\Designers
-FileGroup36=Default Group\Designers\PreferenceDialog
-FileGroup37=Default Group\Designers\PreferenceDialog
+FileGroup26=Default Group\Images
+FileGroup27=Default Group\Images
+FileGroup28=Default Group\Fonts
+FileGroup29=Default Group\Designers\PreferenceDialog
+FileGroup3=Default Group\Images
+FileGroup30=Default Group\Designers\PreferenceDialog
+FileGroup31=Default Group
+FileGroup32=Default Group
+FileGroup33=Default Group\Images
+FileGroup34=Default Group\Designers
+FileGroup35=Default Group\Fonts
+FileGroup36=Default Group\Images
+FileGroup37=Default Group\Designers
 FileGroup38=Default Group\Designers\PreferenceDialog
 FileGroup39=Default Group\Designers\PreferenceDialog
-FileGroup4=Default Group\Images
+FileGroup4=Default Group\Designers\PreferenceDialog
 FileGroup40=Default Group\Designers\PreferenceDialog
-FileGroup41=Default Group\Images
+FileGroup41=Default Group\Designers\PreferenceDialog
+FileGroup42=Default Group\Designers\PreferenceDialog
+FileGroup43=Default Group\Images
 FileGroup5=Default Group\Images
 FileGroup6=Default Group\Images
 FileGroup7=Default Group\Images
 FileGroup8=Default Group\Images
 FileGroup9=Default Group\Images
 Group=Default Group
-Library1=as_textfieldadvanced
-Library10=keyvaluestore2
-Library11=md2html4a.11
-Library12=okhttputils2
-Library13=phone
-Library14=randomaccessfile
-Library15=reflection
-Library16=securemytext
-Library17=sql
-Library18=viewsex
-Library19=webviewextras2
-Library2=b4xdraweradvanced
-Library20=xcustomlistview
-Library21=xui views
-Library22=asflowtabmenu
-Library3=byteconverter
-Library4=clipboard
-Library5=contentresolver
-Library6=core
-Library7=designerutils
-Library8=ime2
-Library9=json
+Library1=b4xdraweradvanced
+Library10=md2html4a.11
+Library11=okhttputils2
+Library12=phone
+Library13=randomaccessfile
+Library14=reflection
+Library15=securemytext
+Library16=sql
+Library17=viewsex
+Library18=webviewextras2
+Library19=xcustomlistview
+Library2=byteconverter
+Library20=xui views
+Library3=clipboard
+Library4=contentresolver
+Library5=core
+Library6=designerutils
+Library7=ime2
+Library8=json
+Library9=keyvaluestore2
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~'  <data android:mimeType="image/*" />~\n~~\n~SetApplicationAttribute(android:launchMode,  "singleTask")~\n~'SetActivityAttribute(main, android:launchMode, "standard")~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:launchMode, "singleTop")~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~~\n~'########## Transparent 		# First Method: Without Transparent Statusbar~\n~' این روش نور وضعیت رو سیاه رنگ میکنه ولی از طریق کد~\n~' نوار وضعیت رو شفاف کردم~\n~~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@android:style/Theme.Translucent")~\n~'SetActivityAttribute (Reciver, android:theme, "@android:style/Theme.Translucent")~\n~~\n~'########## Transparent 		# Seconde Method: With Transparent Statusbar~\n~' این متد نوار وظیفه رو همرنگ پس زمینه میکنه ولی در هنگار اجرای اولیه ی اکتیویتی~\n~' یه لِگ کوچیک داره که زیاد جالب نیست، با جستجوی بیشتر احتمالا میشه مشکلش رو حل کرد.~\n~~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@style/Theme_Main")~\n~~\n~CreateResource (values, theme_main.xml,~\n~<resources>~\n~	<style name="Theme_Main" parent="android:Theme">~\n~		<item name="android:windowIsTranslucent">true</item>~\n~		<item name="android:windowBackground">@android:color/transparent</item>~\n~		<item name="android:windowContentOverlay">@null</item>~\n~		<item name="android:windowNoTitle">true</item>~\n~		<item name="android:windowIsFloating">true</item>~\n~		<item name="android:backgroundDimEnabled">false</item>~\n~	</style>~\n~</resources>~\n~)~\n~~\n~'########## PreferencesDialog~\n~SetActivityAttribute(main, android:windowSoftInputMode, adjustResize|stateHidden)~\n~
 Module1=ACTION_PROCESS_TEXT
-Module10=Starter
-Module11=UpDown
+Module10=ResizingTextComponent
+Module11=Starter
+Module12=UpDown
 Module2=Animation
-Module3=Bart
-Module4=ChatGPT
-Module5=ChatN
-Module6=CLVNested
-Module7=General
-Module8=PreferencesDialog
-Module9=ResizingTextComponent
-NumberOfFiles=41
-NumberOfLibraries=22
-NumberOfModules=11
+Module3=ASFlowTabMenu
+Module4=Bart
+Module5=ChatGPT
+Module6=ChatN
+Module7=CLVNested
+Module8=General
+Module9=PreferencesDialog
+NumberOfFiles=43
+NumberOfLibraries=20
+NumberOfModules=12
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -149,13 +152,14 @@ Sub Process_Globals
 	Public 	CheckMessageTimer		As Timer
 	Private CheckMessageTimeOut		As Long	= -1
 	
-	Type Setting(FirstLang 	As String, _
-				 SecondLang As String, _
-				 Creativity As Int, _
-				 AutoSend 	As Boolean, _
-				 Memory 	As Boolean, _
-				 APIKEY		As String, _
-				 IsDevMode 	As Boolean)		'If its in Debug Mode, just for MySelf
+	Type Setting(FirstLang 		As String, _
+				 SecondLang 	As String, _
+				 Creativity 	As Int, _
+				 AutoSend 		As Boolean, _
+				 Memory 		As Boolean, _
+				 APIKEY			As String, _
+				 IsDevMode 		As Boolean, _ 'If its in Debug Mode, just for MySelf
+				 LastTypeModel	As Int)
 End Sub
 
 Sub Globals
