@@ -149,6 +149,7 @@ Sub Process_Globals
 	Public 	ActionBarHomeClicked 	As Boolean
 	Public 	TextShared				As String
 	Public  intpub					As Intent
+	Public 	GetIsWorking 			As Boolean
 	Public 	CheckMessageTimer		As Timer
 	Private CheckMessageTimeOut		As Long	= -1
 	

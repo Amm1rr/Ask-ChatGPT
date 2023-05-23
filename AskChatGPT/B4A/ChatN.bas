@@ -1050,6 +1050,8 @@ Public Sub imgSend_Click
 	If (IsWorking) Then Return
 	
 	IsWorking = True
+	Main.GetIsWorking = IsWorking
+	Log("IsWorking: " & IsWorking)
 	
 '	Dim bartAI As Bart
 '	bartAI.Initialize
@@ -1068,6 +1070,8 @@ Public Sub imgSend_Click
 	End If
 	
 	If Not (General.Pref.Memory) Then ResetAI
+	IsWorking = True
+	Main.GetIsWorking = IsWorking
 	
 	Dim questionHolder As String = txtQuestion.Text.Trim
 	If (imgSend.Tag = "text") Then
@@ -1092,6 +1096,8 @@ Public Sub imgSend_Click
 			Case wrk_chat.TYPE_Grammar
 				
 				ResetAI
+				IsWorking = True
+				Main.GetIsWorking = IsWorking
 			
 				If (General.IsAWord(question)) Then
 '				sSystem = $"Fix word into ${General.Pref.FirstLang} or Translate word into ${General.Pref.FirstLang}:"$
@@ -1109,6 +1115,8 @@ Public Sub imgSend_Click
 			Case wrk_chat.TYPE_Translate
 			
 				ResetAI
+				IsWorking = True
+				Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
 '				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
@@ -1125,7 +1133,10 @@ Public Sub imgSend_Click
 				sAssistant = $"Translate this into ${General.Pref.FirstLang}."$
 				
 			Case wrk_chat.TYPE_Second
+				
 				ResetAI
+				IsWorking = True
+				Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
 '				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
@@ -1193,10 +1204,14 @@ Public Sub imgSend_Click
 		End If
 		IME_HeightChanged(100%y, 0)
 		IsWorking = False
+		Main.GetIsWorking = IsWorking
+		Log("IsWorking: " & IsWorking)
 	
 	Else
 		LogColor("imgSend_Click: ELSE condition=> Voice:" & Result, Colors.Cyan)
 		IsWorking = False
+		Main.GetIsWorking = IsWorking
+		Log("IsWorking: " & IsWorking)
 		imgSend.Tag = "text"
 '		imgSend_Click
 	End If
@@ -1535,6 +1550,8 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 							 AIType, _
 							 msgindx)) Complete (response As Map)
 	
+	If Not (IsWorking) Then Return
+	
 	Dim responsetext As String 	= response.Get("response")
 	Dim QuestionIndex As Int = msgindx 'response.GetDefault("QuestionIndex", 0)
 '	Dim Contine 	 As Boolean = response.Get("continue")
@@ -1547,39 +1564,58 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	'// This line convert response to error type, Only for Debug and Test
 '	responsetext = wrk_chat.ServerError
 	
-	If (txtQuestion.Text.Length < 1) Then
+'	If (txtQuestion.Text.Length < 1) Then
+	
+	Dim txtnew As String = txtQuestion.Text
+	
 		Select responsetext
 			Case wrk_chat.TimeoutText:
 				txtQuestion.Text = questionHolder
 				IsWorking = False
+				Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
 				imgSend_Click
+				txtQuestion.Text = txtnew
 			Case wrk_chat.OpenApiHostError  & " (Code 1)":
 				txtQuestion.Text = questionHolder
 				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
 				IsWorking = False
+				Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 				imgSend_Click
+				txtQuestion.Text = txtnew
 			Case wrk_chat.OpenApiHostError  & " (Code 2)":
 				txtQuestion.Text = questionHolder
 				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
 				IsWorking = False
+				Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 				imgSend_Click
+				txtQuestion.Text = txtnew
 			Case wrk_chat.ServerError
 				txtQuestion.Text = questionHolder
 				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
 				IsWorking = False
+				Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 				imgSend_Click
+				txtQuestion.Text = txtnew
 			Case wrk_chat.InstructureError
 				flowTabToolbar.CurrentIndexAnimated = wrk_chat.TYPE_Translate
 				flowTabToolbar.RefreshTabProperties
 				ToastMessageShow($"Retry again...${(RetryCout + 1)} / ${RETRYMAXTIME}"$, False)
 				txtQuestion.Text = questionHolder
 				IsWorking = False
+				Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 				imgSend_Click
+				txtQuestion.Text = txtnew
 				
 		End Select
-	End If
+'	End If
 	
+	If Not (IsWorking) Then Return
 '	Log("Answer:" & responsetext)
 '	Log("Question Holder:" & questionHolder)
 	WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
@@ -1705,6 +1741,7 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	AdjustSize_Clv(0, True)
 	
 	Log(questionHolder)
+	
 	If save Then
 		If (questionHolder <> "") Then
 			If (questionHolder.Length > 80) Then
@@ -1721,6 +1758,8 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	End If
 	
 	IsWorking = False
+	Main.GetIsWorking = IsWorking
+	Log("IsWorking: " & IsWorking)
 	
 '	setScrollBarEnabled(webAnswer.As(View), True, True)
 	
@@ -1875,6 +1914,8 @@ Public Sub ResetAI
 	
 	wrk_chat.Initialize
 	IsWorking = False
+	Main.GetIsWorking = IsWorking
+	Log("IsWorking: " & IsWorking)
 	History = Null
 	wrk_chat.ChatHistoryList.Initialize
 	
@@ -2425,6 +2466,24 @@ End Sub
 Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 	
 	MyLog("clvTitles_ItemClick: " & Index & " - " & Value, ColorLog, True)
+	
+	Log("IsWorking: " & IsWorking)
+	If (IsWorking) Then
+		
+		Msgbox2Async("Cancel Response ?", "Change Topic", "Yes", "Cancel", "", Null, True)
+		
+		Wait For Msgbox_Result (Result As Int)
+		
+		If (DialogResponse.POSITIVE = Result) Then
+		
+			Starter.MessageList.Clear
+			MessageIndex = -1
+			ResetAI
+		Else
+			Return
+		End If
+		
+	End If
 	
 	MessageIndex = Index
 	LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)

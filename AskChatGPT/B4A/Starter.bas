@@ -204,6 +204,8 @@ Public Sub Query(system_string As String, _
 		
 		Wait For (req) JobDone(req As HttpJob)
 		
+		If Not (Main.GetIsWorking) Then Return ""
+		
 		If req.Success Then
 			
 			'Raw JSON Response
@@ -345,9 +347,11 @@ Public Sub Query(system_string As String, _
 	LogColor("Worked: " & resobj, Colors.Blue)
 	
 '	StartActivity(Main)
-	General.PlaySound
+	If (Main.GetIsWorking) Then
+		General.PlaySound
+		Return resobj
+	End If
 	
-	Return resobj
 	
 End Sub
 
