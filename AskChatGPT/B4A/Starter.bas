@@ -18,6 +18,7 @@ Sub Process_Globals
 	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
+	Public ServerError 			As String = "♻ server"
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000
@@ -266,7 +267,19 @@ Public Sub Query(system_string As String, _
 			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
 				response = InstructureError
 			Else
-				response = "ChatGPT:Query-> Unsuccess: " & req.ErrorMessage
+				
+				Dim json_error As JSONParser
+					json_error.Initialize(req.ErrorMessage)
+				
+				Dim errorroot As Map = json_error.NextObject
+				Dim err_child As Map = errorroot.Get("error")
+				Dim typ As String = err_child.Get("type")
+				
+				If (typ = "server_error") Then
+					response = ServerError
+				Else
+					response = "ChatGPT:Query-> Unsuccess: " & req.ErrorMessage
+				End If
 			End If
 			
 '			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
@@ -280,7 +293,7 @@ Public Sub Query(system_string As String, _
 '			Else
 '				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
 '			End If
-
+			
 			resobj.Put("response", response)
 			resobj.Put("continue", False)
 			resobj.Put("QuestionIndex", QuestionIndex)
@@ -311,17 +324,17 @@ Public Sub Query(system_string As String, _
 		Dim stack As Map = MessageList.Get(i)
 		Dim indx As Int = stack.Get("QuestionIndex")
 		
-		Log("MessageList: " & MessageList)
-		Log(QuestionIndex & " : "  & stack & " : " & indx)
-		Log("-----")
+'		Log("MessageList: " & MessageList)
+'		Log(QuestionIndex & " : "  & stack & " : " & indx)
+'		Log("-----")
 		If (indx = QuestionIndex) Then
-			Log("indx = QuestionIndex")
+'			Log("indx = QuestionIndex")
 			MessageList.RemoveAt(i)
 			
 			stack.Initialize
 			stack.Put("QuestionIndex", indx)
 			stack.Put("Response", response)
-			Log("Stack => " & stack)
+'			Log("Stack => " & stack)
 			MessageList.Add(stack)
 			
 		End If
@@ -330,7 +343,6 @@ Public Sub Query(system_string As String, _
 	
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
-	
 	
 '	StartActivity(Main)
 	General.PlaySound

@@ -14,10 +14,14 @@ Sub Class_Globals
 	Type typeMessage (answer  As Int	,question  As Int	  ,waitingtxt 	As Int)
 	Private  typeMSG As typeMessage
 	
-	Private su As StringUtils
-	Private wrk_chat As ChatGPT
-	Private xui As XUI
-	Public 	MessageIndex As Int = -1
+	Public 	MessageIndex 			As Int = -1
+	Private wrk_chat 				As ChatGPT
+	Private xui 					As XUI
+	Private su 						As StringUtils
+	
+	
+	Private Const 	RETRYMAXTIME 	As Int = 2
+	Private 		RetryCout 		As Int = 0
 	
 	Private flowTabToolbar As ASFlowTabMenu
 	
@@ -1054,13 +1058,18 @@ Public Sub imgSend_Click
 	
 	If (clvMessages.Size > 0) Then
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-		If (msg.msgtype = typeMSG.waitingtxt) Then Return
+		If (msg.msgtype = typeMSG.waitingtxt) Then
+			RetryCout = RetryCout + 1
+			If (RetryCout > RETRYMAXTIME) Then
+				RetryCout = 0
+				Return
+			End If
+		End If
 	End If
 	
 	If Not (General.Pref.Memory) Then ResetAI
 	
 	Dim questionHolder As String = txtQuestion.Text.Trim
-	
 	If (imgSend.Tag = "text") Then
 		
 		If (clvMessages.Size > 0) Then
@@ -1146,7 +1155,11 @@ Public Sub imgSend_Click
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
 				
 				'# Funny Angry Teacher
-				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
+'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny an angry mode of a disrespectful character."$
+				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+'				sSystem = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
+'				sSystem = $"Behave as ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and rectify my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
+'				sSystem = $"Act like ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and fix my grammar, typos, and factual mistakes. Respond with the funny, angry demeanor of a disrespectful character."$
 				
 				sAssistant = ""
 				
@@ -1531,18 +1544,37 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 '	clvMessages.RemoveAt(clvMessages.Size - 1)
 	AdjustSize_Clv(0, True)
 	
+	'// This line convert response to error type, Only for Debug and Test
+'	responsetext = wrk_chat.ServerError
+	
 	If (txtQuestion.Text.Length < 1) Then
 		Select responsetext
 			Case wrk_chat.TimeoutText:
 				txtQuestion.Text = questionHolder
+				IsWorking = False
+				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
+				imgSend_Click
 			Case wrk_chat.OpenApiHostError  & " (Code 1)":
 				txtQuestion.Text = questionHolder
+				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
+				IsWorking = False
+				imgSend_Click
 			Case wrk_chat.OpenApiHostError  & " (Code 2)":
 				txtQuestion.Text = questionHolder
+				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
+				IsWorking = False
+				imgSend_Click
+			Case wrk_chat.ServerError
+				txtQuestion.Text = questionHolder
+				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
+				IsWorking = False
+				imgSend_Click
 			Case wrk_chat.InstructureError
 				flowTabToolbar.CurrentIndexAnimated = wrk_chat.TYPE_Translate
 				flowTabToolbar.RefreshTabProperties
+				ToastMessageShow($"Retry again...${(RetryCout + 1)} / ${RETRYMAXTIME}"$, False)
 				txtQuestion.Text = questionHolder
+				IsWorking = False
 				imgSend_Click
 				
 		End Select
@@ -2120,12 +2152,23 @@ Private Sub icMenuTopMenu_Click
 		End If
 		
 		Dim clr As Int = Colors.RGB(13, 85, 25)
+		
+		'// First Language
+		Dim newsectab As ASFlowTabMenu_Tab
+			newsectab.Initialize
+'			newsectab.Index = 1
+			newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
+			newsectab.Icon = flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr)
+		flowTabToolbar.SetTabProperties(1, newsectab)
+		
+		'// Second Language
 		If (General.Pref.SecondLang = "(None)") Or General.IsNull(General.Pref.SecondLang) Then
 			If (flowTabToolbar.Size = 5) Then
 				flowTabToolbar.RemoveTab(2)
 			End If
 			
 		Else
+			
 			If (flowTabToolbar.Size = 5) Then
 				Log("sec")
 				Dim newsectab As ASFlowTabMenu_Tab

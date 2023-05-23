@@ -20,6 +20,7 @@ Sub Class_Globals
 	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
+	Public ServerError 			As String = "♻ server"
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Private Const TIMEOUT		As Int 	= 90000
