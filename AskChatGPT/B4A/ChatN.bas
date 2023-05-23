@@ -2475,12 +2475,15 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 		Wait For Msgbox_Result (Result As Int)
 		
 		If (DialogResponse.POSITIVE = Result) Then
-		
+			
+			IsWorking = False
+			Main.GetIsWorking = IsWorking
+			Log("IsWorking: " & IsWorking)
 			Starter.MessageList.Clear
 			MessageIndex = -1
-			ResetAI
-		Else
-			Return
+			wrk_chat.Initialize
+			History = Null
+			
 		End If
 		
 	End If
