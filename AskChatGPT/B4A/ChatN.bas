@@ -302,7 +302,7 @@ Private Sub LoadLangTabs
 	
 	If Not (LanguageList.IsInitialized) Then LanguageList.Initialize
 	
-	LanguageList.AddAll(Array As String("(None)", "English", "Russian", "Spanish", "French", "Germany", _
+	LanguageList.AddAll(Array As String("(None)", "English", "Russian", "Spanish", "French", "German", _
 								"Japanese", "Turkish", "Portuguese", "Persian", "Italian", _
 								"Chinese", "Dutch", "Polish", "Vietnamese", _
 							   	"Arabic", "Korean", "Czech", "Indonesian", "Ukrainian", "Greec", _
@@ -317,7 +317,7 @@ Private Sub LoadLangTabs
 	flags.Put("Russian", "🇷🇺")
 	flags.Put("Spanish", "🇪🇸")
 	flags.Put("French", "🇫🇷")
-	flags.Put("Germany", "🇩🇪")
+	flags.Put("German", "🇩🇪")
 	flags.Put("Japanese", "🇯🇵")
 	flags.Put("Turkish", "🇹🇷")
 	flags.Put("Portuguese", "🇵🇹")
@@ -416,8 +416,7 @@ Private Sub LoadLangTabs
 '		supportLanguages.Add(Array As String("uk", "Українська"))
 '		supportLanguages.Add(Array As String("ur", "اردو"))
 '		supportLanguages.Add(Array As String("vi", "Tiếng Việt"))
-	#End Region
-	
+'	
 '	Dim indexFirst 	As Int = -1
 '	Dim indexSec 	As Int = -1
 '	Dim lenght 	As Int = LanguageList.Size - 1
@@ -430,9 +429,10 @@ Private Sub LoadLangTabs
 '	Next
 '	
 '	If Not (indexFirst > -1) Then indexFirst = 0
+	#End Region
 	
-	'######### First and Second Language
-	'#
+	'######### Load Toolbar Icons and Check First and Second Languages
+	'# Check Iran Flag to replace correct flag instead wrong one.
 	
 	Dim clr As Int = Colors.RGB(13, 85, 25)
 	
@@ -627,14 +627,26 @@ Private Sub LoadCLVSetup
 		myStrings.Add("💡")
 		myStrings.Add("Just Ask... 🤔")
 		myStrings.Add("I know all languages that might you know 😀")
-		myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
-		myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
+	If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
+			myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
+			myStrings.Add($"اگه زبان دوم را انتخاب کرده باشی، با نگه داشتن دکمه ی Voice میتونی با اون زبان صحبت کنی. :)"$)
+		End If
+		myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
 	
 	Dim index As Int
 		index = Rnd(0, myStrings.Size - 1)
+		
+	Dim Guide As List
+		Guide.Initialize
+		Guide.Add("✔️ Check: First option Is Check Grammar, that meaning you just Type anything you guesse Is correct, this option Is going To correct that For you : )")
+		Guide.Add("If you select Second language you can just HOLD VOICE button for a sec, you can talk with that language")
+		Guide.Add("✔️ Check: First option on toolbar is a Icon is Check Grammar, that meaning you just type anything you guesse is correct, this option is going to correct that for you : )")
 	
-	WriteAnswer(myStrings.Get(index), False, "", -1)
+	Dim GuideIndex As Int
+		GuideIndex = Rnd(0, Guide.Size - 1)
+	
+	WriteAnswer(myStrings.Get(index) & CRLF & CRLF & Guide.Get(GuideIndex) & CRLF, False, "", -1)
 	
 End Sub
 
@@ -1131,18 +1143,13 @@ Public Sub imgSend_Click
 				Main.GetIsWorking = IsWorking
 			
 				If (General.IsAWord(question)) Then
-'				sSystem = $"Fix word into ${General.Pref.FirstLang} or Translate word into ${General.Pref.FirstLang}:"$
-					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}:"$
+					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}: "$
 				Else
-'				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
-'					sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
-					sSystem = $"fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
+					sSystem = $"Correct this to standard ${General.Pref.FirstLang}:"$
 				End If
-			
-'				sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
-				sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} translator, proofreader, and corrector of spelling and grammar for punctuation."$
-			
-				question = sSystem & questionHolder
+				
+				question = sSystem & "\n" & CRLF & questionHolder
+				sAssistant = ""
 				
 			Case wrk_chat.TYPE_Translate
 			
@@ -1151,18 +1158,13 @@ Public Sub imgSend_Click
 				Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary, Show definition and synonyms use ${General.Pref.FirstLang} and so minimum and limited tokens."$
 					sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary; show definitions and synonyms using ${General.Pref.FirstLang} with a minimum and limited number of tokens."$
 				Else
-''				sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} translation engine that can only translate text and cannot interpret it."$
-'				sSystem = $"Only translate into standard ${General.Pref.FirstLang}, don't interpret it or only show meaning, definitions and synonyms."$
 					sSystem = $"Only translate into standard ${General.Pref.FirstLang}; do not interpret it or provide only meaning, definitions, and synonyms."$
 				End If
 			
 				question = sSystem & " The Text Is: " & CRLF & questionHolder
-				
-'				sAssistant = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} Translator and Improver."$
-				sAssistant = $"Translate this into ${General.Pref.FirstLang}."$
+				sAssistant = ""
 				
 			Case wrk_chat.TYPE_Second
 				
@@ -1171,18 +1173,14 @@ Public Sub imgSend_Click
 				Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
-'				sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} Dictionary, Show definition and synonyms use ${General.Pref.SecondLang} and so minimum and limited tokens."$
 					sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} dictionary; show definitions and synonyms using ${General.Pref.SecondLang} with a minimum of tokens."$
 				Else
-'				sSystem = $"Only translate into ${General.Pref.SecondLang}, don't interpret or only show meaning, definitions and synonyms."$
 					sSystem = $"Only translate into ${General.Pref.SecondLang}; do not interpret or provide meaning, definitions, or synonyms."$
 				End If
 				
-				sSystem = sSystem.Replace("\t", Null)
-				
 				question = sSystem & " The Text Is: " & CRLF & questionHolder
 				
-				sAssistant = $"Translate this into ${General.Pref.SecondLang}."$
+				sAssistant = ""
 			Case wrk_chat.TYPE_Pook
 				
 '				sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
@@ -1198,18 +1196,16 @@ Public Sub imgSend_Click
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
 				
 				'# Funny Angry Teacher
-'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with the funny an angry mode of a disrespectful character."$
-				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
-'				sSystem = $"Act as ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and correct my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
-'				sSystem = $"Behave as ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and rectify my grammar, typos, and factual errors. Answer with the funny angry mode of a disrespectful character."$
-'				sSystem = $"Act like ${General.a_OR_an(General.Pref.FirstLang)} strict teacher and fix my grammar, typos, and factual mistakes. Respond with the funny, angry demeanor of a disrespectful character."$
+'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
 				
 				sAssistant = ""
 				
 				question = questionHolder
 				
 			Case wrk_chat.TYPE_Chat
-				sSystem = "You are a smart and helpful assistant."
+'				sSystem = "You are a smart and helpful assistant."
+				sSystem = "You are an AI assistant. The assistant is helpful, creative, clever, and very friendly."
 				sAssistant = ""
 				
 				question = questionHolder
@@ -1223,7 +1219,8 @@ Public Sub imgSend_Click
 	Else If Main.voicer.IsSupported Then	
 		
 		ClickSimulation
-		VoiceLang("en")
+		Log("HERE")
+		VoiceLang(General.Pref.FirstLang)
 		Wait For (RecognizeVoice) Complete (Result As String)
 		If (Result <> "") Then
 			LogColor("Voice:" & Result, Colors.Blue)
@@ -1263,7 +1260,7 @@ End Sub
 
 Private Sub VoiceLang(lng As String)
 	
-	MyLog("VoiceLang: " & lng, ColorLog, False)
+	MyLog("VoiceLang: " & lng, ColorLog, True)
 	
 	If lng.Length > 0 Then
 		
@@ -1272,6 +1269,9 @@ Private Sub VoiceLang(lng As String)
 		
 		Select lng
 			Case "English"
+				langslug = "EN"
+				prompt   = "Speak Now"
+			Case "(None)"
 				langslug = "EN"
 				prompt   = "Speak Now"
 			Case "Russian"
@@ -1395,7 +1395,7 @@ Private Sub VoiceLang(lng As String)
 		Main.voicer.Language = langslug
 		Main.voicer.Prompt 	 = prompt
 	Else
-		Main.voicer.Language = "en"
+		Main.voicer.Language = "EN"
 		Main.voicer.Prompt = "Speak Now"
 	End If
 	
@@ -2059,7 +2059,7 @@ Private Sub SimulateMessage
 		myStrings.Add(v.SubString2(0, Rnd(5, 100)))
 '			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
 		myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
-'			myStrings.Add($"Try me in German...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
+'			myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
 		index = 10 Mod (myStrings.Size - 1)

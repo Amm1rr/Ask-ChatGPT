@@ -144,7 +144,7 @@ Public Sub Query(system_string As String, _
 '			json.Put("top_p", 1)
 '		
 '		Else 
-		If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Grammar) Then
+		If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Or (AI_Type = TYPE_Grammar) Then
 			json.Initialize
 			json.Put("model", "text-davinci-003")
 			json.Put("prompt", query_string)

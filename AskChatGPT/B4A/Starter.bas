@@ -115,21 +115,21 @@ Public Sub Query(system_string As String, _
 			
 			' Create an array of messages
 			Dim messages As List
-			messages.Initialize
+				messages.Initialize
 			Dim systemMessage As Map
-			systemMessage.Initialize
-			systemMessage.Put("role", "system")
-			systemMessage.Put("content", system_string)
+				systemMessage.Initialize
+				systemMessage.Put("role", "system")
+				systemMessage.Put("content", system_string)
 			messages.Add(systemMessage)
 			Dim userMessage As Map
-			userMessage.Initialize
-			userMessage.Put("role", "user")
-			userMessage.Put("content", query_string)
+				userMessage.Initialize
+				userMessage.Put("role", "user")
+				userMessage.Put("content", query_string)
 			messages.Add(userMessage)
 			Dim assistantMessage As Map
-			assistantMessage.Initialize
-			assistantMessage.Put("role", "assistant")
-			assistantMessage.Put("content", assistant_string)
+				assistantMessage.Initialize
+				assistantMessage.Put("role", "assistant")
+				assistantMessage.Put("content", assistant_string)
 			
 			messages.Add(assistantMessage)
 			
@@ -157,7 +157,7 @@ Public Sub Query(system_string As String, _
 			js.Initialize(json)
 		
 		'Raw JSON String Generated
-'		LogColor("Param: " & js.ToString, Colors.Magenta)
+		LogColor("Param: " & js.ToString, Colors.Magenta)
  		
 		Dim response 	As String
 		Dim resobj 		As Map
@@ -178,23 +178,22 @@ Public Sub Query(system_string As String, _
 			Case AITYPE_Translate, AITYPE_SecondLang, AITYPE_Grammar
 				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 			
-				
 		End Select
 		
 		'Abdull has supplied his own account API key which is very generous of
 		'him but you should not use it
 		'req.GetRequest.SetHeader("Authorization","Bearer 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")
- 
+		
 		'You can quite easily generate your own account API key by following
 		'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
 		'under heading [Getting a GPT-3 API Key]
 		req.GetRequest.SetHeader("Authorization", API_KEY)
 		LogColor("API Key: " & API_KEY, Colors.Magenta)
- 
+ 		
 		'If you generate your own account API key then Abdull's organisation
 		'key will be of no use to you
 		'req.GetRequest.SetHeader("OpenAI-Organization", "org-TV3YOqDRg5DXvAUcL7dC6lI9")
- 
+ 		
 		'If your account default organisation is "Personal" then you can supply
 		'a blank organisation key - or just comment this line out
 		req.GetRequest.SetHeader("OpenAI-Organization", "")
