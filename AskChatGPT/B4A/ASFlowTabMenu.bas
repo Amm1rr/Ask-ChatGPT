@@ -35,7 +35,7 @@ Sub Class_Globals
 	Private xpnl_TabBackground As B4XView
 	Private xpnl_TabSelector As B4XView
 	
-	Private mIconHeight As Float = 35dip
+	Private mIconHeight As Float = 29dip '35dip
 	Private mCurrentIndex As Int = 0
 	
 	Private m_BackgroundColor As Int

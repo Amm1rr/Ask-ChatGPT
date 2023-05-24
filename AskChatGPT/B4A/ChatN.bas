@@ -333,7 +333,7 @@ Private Sub LoadLangTabs
 	flags.Put("Japanese", "🇯🇵")
 	flags.Put("Turkish", "🇹🇷")
 	flags.Put("Portuguese", "🇵🇹")
-	flags.Put("Persian", "🇮🇷")
+	flags.Put("Persian", "🌐") 			'"🇮🇷"
 	flags.Put("Italian", "🇮🇹")
 	flags.Put("Chinese", "🇨🇳")
 	flags.Put("Dutch", "🇳🇱")
@@ -453,21 +453,29 @@ Private Sub LoadLangTabs
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
 		
-'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
-'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
+		If (General.Pref.FirstLang = "Persian") Then
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
+		Else
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+		End If
+		If (General.Pref.SecondLang = "Persian") Then
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.SecondLang.SubString2(0, 2))
+		Else
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
+		End If
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"),"Chat")
 		
 	Else
-'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8CE),True,20,clr),"Check")
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
-'		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE894),True,20,clr), General.Pref.FirstLang.SubString2(0, 2))
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap("🌐",True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+		If (General.Pref.FirstLang = "Persian") Then
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
+		Else
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+		End If
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
-		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"),"Chat")
 		
 	End If
 	
@@ -2244,8 +2252,12 @@ Private Sub icMenuTopMenu_Click
 		Dim newsectab As ASFlowTabMenu_Tab
 			newsectab.Initialize
 '			newsectab.Index = 1
-			newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
+		newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
+		If (General.Pref.FirstLang = "Persian") Then
+			newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+		Else
 			newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr)
+		End If
 		flowTabToolbar.SetTabProperties(1, newsectab)
 		
 		'// Second Language
@@ -2262,7 +2274,12 @@ Private Sub icMenuTopMenu_Click
 					newsectab.Initialize
 '					newsectab.Index = 2
 					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
-					newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
+					If (General.Pref.SecondLang = "Persian") Then
+						newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+					Else
+						newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
+					End If
+					
 				flowTabToolbar.SetTabProperties(2, newsectab)
 				
 			Else
@@ -2274,7 +2291,13 @@ Private Sub icMenuTopMenu_Click
 					newsectab.Initialize
 '					newsectab.Index = 2
 					newsectab.Text = General.Pref.SecondLang.SubString2(0, 2)
-					newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
+					
+					If (General.Pref.SecondLang = "Persian") Then
+						newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+					Else
+						newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr)
+					End If
+					
 				flowTabToolbar.SetTabProperties(2, newsectab)
 				
 				Dim newsectab As ASFlowTabMenu_Tab
