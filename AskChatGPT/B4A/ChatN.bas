@@ -41,7 +41,7 @@ Sub Class_Globals
 	Public pTopMenu As Panel
 	Private lblTitleTopMenu As Label
 	Private icMenuTopMenu As ImageView
-	Private icConfigTopMenu As ImageView
+	Private icHistoryTopMenu As ImageView
 	
 	Private ColorLog As Int = Colors.Black
 	
@@ -70,9 +70,6 @@ Sub Class_Globals
 	
 	Private panToolbar 			As B4XView
 	Private lblPaste As Label
-	Private UpDown1Drawer As UpDown
-	Private lblVersionTextDrawer As Label
-	Private lblVersionNameDrawer As Label
 	Public panMain As Panel
 	Private webQuestion As WebView
 	Private btnMore As Button
@@ -93,7 +90,6 @@ Sub Class_Globals
 	Private lblCopy As Label
 	Private LanguageList As List
 	Private flags As Map
-	Private chkAutoSendDrawer As CheckBox
 	
 	Private mainparent As B4XView
 	Private imgBrain As ImageView
@@ -123,7 +119,6 @@ Public Sub Initialize(parent As B4XView, text As String)
 	Drawer.Initialize(Me, "Drawer", parent, 300dip)
 	Drawer.CenterPanel.LoadLayout("Chat")
 	
-	Drawer.LeftPanel.LoadLayout("LeftDrawer")
 	Drawer.RightPanel.LoadLayout("RightDrawer")
 	Drawer.RightPanelEnabled = True
 	
@@ -143,7 +138,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 		csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
 	lblTitleTopMenu.Text = csTitle
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
-	icConfigTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icConfigTopMenu.Width, icConfigTopMenu.Height, True)).Gravity = Gravity.CENTER
+	icHistoryTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icHistoryTopMenu.Width, icHistoryTopMenu.Height, True)).Gravity = Gravity.CENTER
 	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "brain.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
 	
 	MemoryChanged
@@ -171,37 +166,12 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	wrk_chat.Initialize
 	
-	UpDown1Drawer.MinValue = 0
-	UpDown1Drawer.MaxValue = 9
-	UpDown1Drawer.StepIncremental = 1
-'	UpDown1Drawer.Value = Temperature * 10
-	
-	Dim csAppVersion As CSBuilder
-		csAppVersion.Initialize
-		csAppVersion.Color(Colors.DarkGray).Size(13).Append(Application.LabelName & CRLF).Pop
-		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB} Build ${Application.VersionCode} ${CRLF}${TAB} ${Application.VersionName}"$).Pop
-		csAppVersion.PopAll
-	lblVersionNameDrawer.Text = csAppVersion
-	
-	Dim csTitle As CSBuilder
-		csTitle.Initialize
-'		csTitle.Color(Colors.Gray).Size(10).Append("Dev by ").Pop
-		csTitle.Color(Colors.DarkGray).Size(18).Clickable("csTitle", "site").Append(Chr(0xF092)).Pop
-'		csTitle.Color(Colors.Gray).Size(10).Clickable("csTitle", "name").Append(" Amm1rr").Pop
-		csTitle.PopAll
-		csTitle.EnableClickEvents(lblVersionTextDrawer)
-	lblVersionTextDrawer.Text = csTitle
-	
 	resetTextboxToolbar
 	
 	LoadLangTabs
 	LoadListDB
 	
 	SetupSettingDialog(parent)
-	
-	UpDown1Drawer.Value = General.Pref.Creativity
-	chkAutoSendDrawer.Checked = General.Pref.AutoSend
-	
 	
 '	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
 '		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
@@ -238,11 +208,11 @@ End Sub
 
 Private Sub SetupSettingDialog(parent As B4XView)
 	
-	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2 )
+	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2)
 	prefdialog.mBase.Top = 20%y
 '	prefdialog.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
 '	prefdialog.Dialog.TitleBarColor = xui.Color_RGB(65, 105, 225)
-	prefdialog.Dialog.TitleBarHeight = 75dip
+	prefdialog.Dialog.TitleBarHeight = 65dip
 '	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
 	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
 	prefdialog.SetEventsListener(Me, "PrefDialog")
@@ -254,10 +224,28 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
 	'//
 	
-	prefdialog.SeparatorBackgroundColor = xui.Color_White
-	prefdialog.Dialog.BorderColor = Colors.RGB(2,76,109)
-	prefdialog.Dialog.BorderCornersRadius = 5dip
+	prefdialog.Dialog.BackgroundColor = Colors.RGB(222,222,222)
+	prefdialog.Dialog.BorderColor = Colors.RGB(244,171,34)
+	prefdialog.Dialog.BorderCornersRadius = 3dip
+	prefdialog.Dialog.BorderWidth = 2dip
 	prefdialog.Dialog.BlurBackground = True
+	prefdialog.SeparatorBackgroundColor = prefdialog.ItemsBackgroundColor
+	prefdialog.Dialog.VisibleAnimationDuration = 150
+	
+	Dim csAppVersion As CSBuilder
+		csAppVersion.Initialize
+		csAppVersion.Color(Colors.RGB(140,0,0)).Size(18).Append(CRLF & CRLF & TAB & TAB & Application.LabelName & CRLF).Pop
+		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB}${TAB}${TAB} Build ${Application.VersionCode} ${CRLF}${TAB}${TAB}${TAB} ${Application.VersionName}"$).Pop
+		csAppVersion.Append(CRLF & CRLF & CRLF & CRLF & CRLF & CRLF).Color(Colors.DarkGray).Size(14).Clickable("csTitle", "site").Append("🔗").Pop
+		csAppVersion.Color(Colors.RGB(48,84,187)).Clickable("csTitle", "site").Size(12).Clickable("csTitle", "name").Append("   github.com/Amm1rr").Pop
+		csAppVersion.PopAll
+	
+	Dim csAbout As CSBuilder
+		csAbout.Initialize
+	csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append(Application.LabelName).Size(9).Color(Colors.RGB(86,147,82)).Append(" build " & Application.VersionCode).Pop
+		csAbout.PopAll
+	
+	prefdialog.AddExplanationItem("About", csAbout, csAppVersion)
 	
 	Options.Initialize
 	Dim Options As Map = CreateMap()
@@ -477,17 +465,6 @@ Private Sub LoadLangTabs
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"),"Chat")
 		
-	End If
-	
-End Sub
-
-Private Sub Drawer_StateChanged (Open As Boolean)
-	MyLog("Drawer State Open: " & Open, ColorLog, True)
-	If (Open) Then
-		UpDown1Drawer.Value = General.Pref.Creativity 'Temperature * 10
-		chkAutoSendDrawer.Checked = General.Pref.AutoSend
-	Else
-		General.SaveSettingDB
 	End If
 	
 End Sub
@@ -1158,7 +1135,8 @@ Public Sub imgSend_Click
 					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}:"$
 				Else
 '				sSystem = $"Only Fix grammar and correct it into standard ${General.Pref.FirstLang}: "$
-					sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
+'					sSystem = $"Only fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
+					sSystem = $"fix the grammar and correct it into standard ${General.Pref.FirstLang}: "$
 				End If
 			
 '				sAssistant = $"Act As ${General.a_OR_an(General.Pref.FirstLang)} Translator, Proofreader, And Punctuation Corrector For Spelling And Grammar."$
@@ -1932,8 +1910,8 @@ Sub imgSend_MouseClicked (EventData As MouseEvent)
 	lblSend_Click
 	EventData.Consume
 End Sub
-Sub icConfigTopMenu_MouseClicked (EventData As MouseEvent)
-	icConfigTopMenu_Click
+Sub icHistoryTopMenu_MouseClicked (EventData As MouseEvent)
+	icHistoryTopMenu_Click
 	EventData.Consume
 End Sub
 #end if
@@ -2049,9 +2027,9 @@ Private Sub lblPaste_Click
 	End If
 End Sub
 
-Private Sub icConfigTopMenu_Click
+Private Sub icHistoryTopMenu_Click
 
-	MyLog("icConfigTopMenu_Click", ColorLog, True)
+	MyLog("icHistoryTopMenu_Click", ColorLog, True)
 	
 	ClickSimulation
 	
@@ -2181,47 +2159,47 @@ Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
 		If btnCancel.IsInitialized Then
 				btnCancel.Text = "Cancel"
 				btnCancel.Width = btnCancel.Width + 20dip
-				btnCancel.Left = btnCancel.Left - 20dip
+				btnCancel.Left = btnCancel.Left - 20dip - 10dip
 				btnCancel.TextColor = xui.Color_Red
 		End If
 		Dim btnOk As B4XView = prefdialog.Dialog.GetButton(xui.DialogResponse_Positive)
 		If btnOk.IsInitialized Then
 			btnOk.Text = "Save"
 			btnOk.Width = btnOk.Width + 20dip
-			btnOk.Left = btnCancel.Left - btnOk.Width
-			btnOk.TextColor = Colors.RGB(40,161,38)
+			btnOk.Left = btnCancel.Left - btnOk.Width - 5dip
+			btnOk.TextColor = Colors.RGB(40,161,38)			
 		End If
 	
-	For i = 0 To prefdialog.PrefItems.Size - 1
-		Dim pi As B4XPrefItem = prefdialog.PrefItems.Get(i)
-		LogColor("Type: " & pi.ItemType, Colors.Black)
-		
-		'## Resize Seprator befor APIKey
-		'##
-		If pi.ItemType = prefdialog.TYPE_SEPARATOR Then
-			If (pi.Title = "") Then
-				prefdialog.CustomListView1.ResizeItem(i, 80dip)
-				
-'			Else If (pi.Title = "OpenAI API Key") Then
+'	For i = 0 To prefdialog.PrefItems.Size - 1
+'		Dim pi As B4XPrefItem = prefdialog.PrefItems.Get(i)
+'		LogColor("Type: " & pi.ItemType, Colors.Black)
+'		
+'		'## Resize Seprator befor APIKey
+'		'##
+'		If pi.ItemType = prefdialog.TYPE_SEPARATOR Then
+'			If (pi.Title = "") Then
+'				prefdialog.CustomListView1.ResizeItem(i, 80dip)
 '				
-'				Dim pnl As B4XView = prefdialog.CustomListView1.GetPanel(i)
-'				pnl.Color =  xui.Color_RGB(65, 105, 225)
-''					pnl.Height = pnl.Parent.Height
-''					pnl.GetView(0).Height = pnl.Height - 20dip
-''					pnl.GetView(0).TextSize = 12
-''					pnl.GetView(1).Top = 20dip
-			End If
-		End If
-		
-'		If pi.ItemType = prefdialog.TYPE_TEXT  Then
-'			Dim txt As B4XFloatTextField = prefdialog.CustomListView1.GetPanel(i).GetView(0).Tag
-'			txt.TextField.Enabled = False
+''			Else If (pi.Title = "OpenAI API Key") Then
+''				
+''				Dim pnl As B4XView = prefdialog.CustomListView1.GetPanel(i)
+''				pnl.Color =  xui.Color_RGB(65, 105, 225)
+'''					pnl.Height = pnl.Parent.Height
+'''					pnl.GetView(0).Height = pnl.Height - 20dip
+'''					pnl.GetView(0).TextSize = 12
+'''					pnl.GetView(1).Top = 20dip
+'			End If
 '		End If
-'		If pi.ItemType=prefdialog.TYPE_BOOLEAN Then
-'			Dim bool As B4XSwitch = prefdialog.CustomListView1.GetPanel(i).GetView(1).Tag
-'			bool.Enabled = False
-'		End If
-	Next
+'		
+''		If pi.ItemType = prefdialog.TYPE_TEXT  Then
+''			Dim txt As B4XFloatTextField = prefdialog.CustomListView1.GetPanel(i).GetView(0).Tag
+''			txt.TextField.Enabled = False
+''		End If
+''		If pi.ItemType=prefdialog.TYPE_BOOLEAN Then
+''			Dim bool As B4XSwitch = prefdialog.CustomListView1.GetPanel(i).GetView(1).Tag
+''			bool.Enabled = False
+''		End If
+'	Next
 		
 	Catch
 		Log(LastException)
@@ -2229,6 +2207,8 @@ Private Sub PrefDialog_BeforeDialogDisplayed (Template As Object)
 End Sub
 
 Private Sub icMenuTopMenu_Click
+	
+	MyLog("icMenuTopMenu_Click", ColorLog, True)
 	
 	Wait For (prefdialog.ShowDialog(Options, "Save", "Cancel")) Complete (Result As Int)
 	
@@ -2319,18 +2299,6 @@ Private Sub icMenuTopMenu_Click
 	End If
 	
 '	Drawer.LeftOpen = Not (Drawer.LeftOpen)
-End Sub
-
-
-Private Sub UpDown1Drawer_ChangeValue
-	Temperature = (UpDown1Drawer.Value / 10)
-	General.Pref.Creativity = UpDown1Drawer.Value
-	General.SaveSettingDB
-End Sub
-
-Private Sub lblTemperatureDrawer_LongClick
-	UpDown1Drawer.Value = 5
-	ToastMessageShow("Creativity Reset to Default.", False)
 End Sub
 
 Private Sub lblCopy_Click
