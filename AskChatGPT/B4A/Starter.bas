@@ -203,7 +203,12 @@ Public Sub Query(system_string As String, _
 		
 		Wait For (req) JobDone(req As HttpJob)
 		
-		If Not (Main.GetIsWorking) Then Return ""
+		If Not (Main.GetIsWorking) Then
+			Dim resobj 		As Map
+				resobj.Initialize
+			Log("End Query")
+			Return resobj
+		End If
 		
 		If req.Success Then
 			
@@ -351,6 +356,9 @@ Public Sub Query(system_string As String, _
 		Return resobj
 	End If
 	
+	Dim resobj 		As Map
+		resobj.Initialize
+	Return resobj
 	
 End Sub
 

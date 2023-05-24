@@ -21,7 +21,7 @@ Sub Class_Globals
 	
 	
 	Private Const 	RETRYMAXTIME 	As Int = 2
-	Private 		RetryCout 		As Int = 0
+	Private 		RetryCount 		As Int = 0
 	
 	Private flowTabToolbar As ASFlowTabMenu
 	
@@ -627,9 +627,10 @@ Private Sub LoadCLVSetup
 		myStrings.Add("💡")
 		myStrings.Add("Just Ask... 🤔")
 		myStrings.Add("I know all languages that might you know 😀")
-	If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
-			myStrings.Add($"Try me in Farsi...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
-			myStrings.Add($"اگه زبان دوم را انتخاب کرده باشی، با نگه داشتن دکمه ی Voice میتونی با اون زبان صحبت کنی. :)"$)
+		If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
+			myStrings.Add($"Woman, Life, Freedom...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
+			myStrings.Add($"🎙️ دکمه Voice:${CRLF}   اگه زبان دوم را انتخاب کرده باشی، با نگه داشتن دکمه ی Voice میتونی با اون زبان صحبت کنی. :)"$)
+			myStrings.Add($"✔️ Check:${CRLF}   اولین گزینه این است که بررسی گرامر را انجام دهید، یعنی می توانید هر چیزی که فکر میکنید درست است را وارد کنید و این گزینه آن را برای شما تصحیح می کند. : )"$)
 		End If
 		myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
@@ -639,9 +640,10 @@ Private Sub LoadCLVSetup
 		
 	Dim Guide As List
 		Guide.Initialize
-		Guide.Add("✔️ Check: First option Is Check Grammar, that meaning you just Type anything you guesse Is correct, this option Is going To correct that For you : )")
-		Guide.Add("If you select Second language you can just HOLD VOICE button for a sec, you can talk with that language")
-		Guide.Add("✔️ Check: First option on toolbar is a Icon is Check Grammar, that meaning you just type anything you guesse is correct, this option is going to correct that for you : )")
+		Guide.Add($"✔️ Check:${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
+		Guide.Add($"🎙️ Voice Button:${CRLF} If you select a second language, you can just hold the voice button for a second and you can talk in that language."$)
+		Guide.Add($"✔️ Check:${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
+		Guide.Add($"💬️ Chat:${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
 	
 	Dim GuideIndex As Int
 		GuideIndex = Rnd(0, Guide.Size - 1)
@@ -1092,8 +1094,7 @@ Public Sub imgSend_Click
 	
 	If (IsWorking) Then Return
 	
-	IsWorking = True
-	Main.GetIsWorking = IsWorking
+	IsWorking = True:Main.GetIsWorking = IsWorking
 	Log("IsWorking: " & IsWorking)
 	
 '	Dim bartAI As Bart
@@ -1104,25 +1105,27 @@ Public Sub imgSend_Click
 	If (clvMessages.Size > 0) Then
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
 		If (msg.msgtype = typeMSG.waitingtxt) Then
-			RetryCout = RetryCout + 1
-			If (RetryCout > RETRYMAXTIME) Then
-				RetryCout = 0
+			RetryCount = RetryCount + 1
+			If (RetryCount > RETRYMAXTIME) Then
+				RetryCount = 0
+				IsWorking = False:Main.GetIsWorking = IsWorking
+				Log("IsWorking: " & IsWorking)
 				Return
 			End If
 		End If
 	End If
 	
 	If Not (General.Pref.Memory) Then ResetAI
-	IsWorking = True
-	Main.GetIsWorking = IsWorking
+	IsWorking = True:Main.GetIsWorking = IsWorking
+	Log("IsWorking: " & IsWorking)
 	
 	Dim questionHolder As String = txtQuestion.Text.Trim
 	If (imgSend.Tag = "text") Then
 		
-		If (clvMessages.Size > 0) Then
-			Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-			If (msg.msgtype = typeMSG.waitingtxt) Then Return
-		End If
+'		If (clvMessages.Size > 0) Then
+'			Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+'			If (msg.msgtype = typeMSG.waitingtxt) Then Return
+'		End If
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 		
@@ -1137,10 +1140,6 @@ Public Sub imgSend_Click
 		Select flowTabToolbar.CurrentIndex
 			
 			Case wrk_chat.TYPE_Grammar
-				
-				ResetAI
-				IsWorking = True
-				Main.GetIsWorking = IsWorking
 			
 				If (General.IsAWord(question)) Then
 					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}: "$
@@ -1212,9 +1211,15 @@ Public Sub imgSend_Click
 				
 		End Select
 		
-		WriteQuestion(questionHolder)
-		Ask(question, sAssistant, sSystem, questionHolder)
-		txtQuestion.Text = ""
+		If (RetryCount > 1) Then
+			LogColor("Red", Colors.Red)
+			Ask(question, sAssistant, sSystem, questionHolder)
+		Else
+			LogColor("Blue", Colors.Blue)
+			WriteQuestion(questionHolder)
+			Ask(question, sAssistant, sSystem, questionHolder)
+			txtQuestion.Text = ""
+		End If
 		
 	Else If Main.voicer.IsSupported Then	
 		
@@ -1596,56 +1601,66 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	'// This line convert response to error type, Only for Debug and Test
 '	responsetext = wrk_chat.ServerError
 	
-'	If (txtQuestion.Text.Length < 1) Then
-	
 	Dim txtnew As String = txtQuestion.Text
 	
-		Select responsetext
-			Case wrk_chat.TimeoutText:
+	Select responsetext
+		Case wrk_chat.TimeoutText:
+			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
-				IsWorking = False
-				Main.GetIsWorking = IsWorking
-			Log("IsWorking: " & IsWorking)
-				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
-				imgSend_Click
-				txtQuestion.Text = txtnew
-			Case wrk_chat.OpenApiHostError  & " (Code 1)":
+			End If
+'			ToastMessageShow($"Retry again...${(RetryCount)} / ${RETRYMAXTIME}"$, False)
+'			Log("IsWorking: " & IsWorking)
+'			If Not (IsWorking) Then Return
+'			WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
+'			IsWorking = False
+'			Main.GetIsWorking = IsWorking
+'			imgSend_Click
+'			txtQuestion.Text = txtnew
+		Case wrk_chat.OpenApiHostError  & " (Code 1)":
+			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
-				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
-				IsWorking = False
-				Main.GetIsWorking = IsWorking
-			Log("IsWorking: " & IsWorking)
-				imgSend_Click
-				txtQuestion.Text = txtnew
-			Case wrk_chat.OpenApiHostError  & " (Code 2)":
+			End If
+'			ToastMessageShow($"Retry again...${(RetryCount)} / ${RETRYMAXTIME}"$, False)
+'			Log("IsWorking: " & IsWorking)
+'			If Not (IsWorking) Then Return
+'			WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
+'			IsWorking = False
+'			Main.GetIsWorking = IsWorking
+'			imgSend_Click
+'			txtQuestion.Text = txtnew
+		Case wrk_chat.OpenApiHostError  & " (Code 2)":
+			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
-				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
-				IsWorking = False
-				Main.GetIsWorking = IsWorking
-			Log("IsWorking: " & IsWorking)
-				imgSend_Click
-				txtQuestion.Text = txtnew
-			Case wrk_chat.ServerError
+			End If
+'			ToastMessageShow($"Retry again...${(RetryCount)} / ${RETRYMAXTIME}"$, False)
+'			Log("IsWorking: " & IsWorking)
+'			IsWorking = False
+'			Main.GetIsWorking = IsWorking
+'			imgSend_Click
+'			txtQuestion.Text = txtnew
+		Case wrk_chat.ServerError
+			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
-				ToastMessageShow($"Retry again...${(RetryCout)} / ${RETRYMAXTIME}"$, False)
-				IsWorking = False
-				Main.GetIsWorking = IsWorking
-			Log("IsWorking: " & IsWorking)
-				imgSend_Click
-				txtQuestion.Text = txtnew
-			Case wrk_chat.InstructureError
-				flowTabToolbar.CurrentIndexAnimated = wrk_chat.TYPE_Translate
-				flowTabToolbar.RefreshTabProperties
-				ToastMessageShow($"Retry again...${(RetryCout + 1)} / ${RETRYMAXTIME}"$, False)
+			End If
+'			ToastMessageShow($"Retry again...${(RetryCount)} / ${RETRYMAXTIME}"$, False)
+'			IsWorking = False:Main.GetIsWorking = IsWorking
+'			LogColor("IsWorking: " & IsWorking, Colors.Blue)
+'			imgSend_Click
+'			txtQuestion.Text = txtnew
+		Case wrk_chat.InstructureError
+			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
-				IsWorking = False
-				Main.GetIsWorking = IsWorking
-			Log("IsWorking: " & IsWorking)
-				imgSend_Click
-				txtQuestion.Text = txtnew
-				
-		End Select
-'	End If
+			End If
+'			flowTabToolbar.CurrentIndexAnimated = wrk_chat.TYPE_Translate
+'			flowTabToolbar.RefreshTabProperties
+'			ToastMessageShow($"Retry again...${(RetryCount + 1)} / ${RETRYMAXTIME}"$, False)
+'			Log("IsWorking: " & IsWorking)
+'			IsWorking = False:Main.GetIsWorking = IsWorking
+'			imgSend_Click
+'			txtQuestion.Text = txtnew
+		Case Else:
+			
+	End Select
 	
 	If Not (IsWorking) Then Return
 '	Log("Answer:" & responsetext)
@@ -1656,7 +1671,7 @@ Public Sub Ask(question As String, assistant As String, system As String, questi
 	
 '	LogColor("Continue:" & contine, Colors.Blue)
 	
-	Return
+'	Return
 	
 End Sub
 
