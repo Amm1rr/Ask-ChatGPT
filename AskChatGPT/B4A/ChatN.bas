@@ -621,16 +621,20 @@ Private Sub LoadCLVSetup
 		myStrings.Add("What whould you like to know?")
 		myStrings.Add("Hi there, How are you?")
 		myStrings.Add("How can I help?")
-		myStrings.Add("💻")
-		myStrings.Add("👩")
-		myStrings.Add("🧑")
-		myStrings.Add("💡")
-		myStrings.Add("Just Ask... 🤔")
-		myStrings.Add("I know all languages that might you know 😀")
 		If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
-			myStrings.Add($"Woman, Life, Freedom...${CRLF}با هر زبانی که میخوای ازم سوال بپرس"$)
-			myStrings.Add($"🎙️ دکمه Voice:${CRLF}   اگه زبان دوم را انتخاب کرده باشی، با نگه داشتن دکمه ی Voice میتونی با اون زبان صحبت کنی. :)"$)
-			myStrings.Add($"✔️ Check:${CRLF}   اولین گزینه این است که بررسی گرامر را انجام دهید، یعنی می توانید هر چیزی که فکر میکنید درست است را وارد کنید و این گزینه آن را برای شما تصحیح می کند. : )"$)
+			myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   اگه زبان دوم را انتخاب کرده باشی، با نگه داشتن دکمه ی Voice میتونی با اون زبان صحبت کنی. :)"$)
+			myStrings.Add($"✔  Check:${CRLF}-----${CRLF}   اولین گزینه این است که بررسی گرامر را انجام دهید، یعنی می توانید هر چیزی که فکر میکنید درست است را وارد کنید و این گزینه آن را برای شما تصحیح می کند. : )"$)
+			myStrings.Add($"Woman, Life, Freedom...${CRLF}-----${CRLF}   با هر زبانی که میخوای ازم سوال بپرس"$)
+			myStrings.Add($"Translate:${CRLF}-----${CRLF}   همه زبان ها را ترجمه کنید${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪"$)
+			myStrings.Add($"🕳️  Pook${CRLF}-----${CRLF}   Pook یه حالت مودی از یه دوست هستش که برای تمرین زبانی که میخواهید یاد بگیرید کمکتون میکنه"$)
+			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بپرسید."$)
+		Else
+			myStrings.Add("💻")
+			myStrings.Add("👩")
+			myStrings.Add("🧑")
+			myStrings.Add("💡")
+			myStrings.Add("Just Ask... 🤔")
+			myStrings.Add("I know all languages that might you know 😀")
 		End If
 		myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
@@ -640,10 +644,10 @@ Private Sub LoadCLVSetup
 		
 	Dim Guide As List
 		Guide.Initialize
-		Guide.Add($"✔️ Check:${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
-		Guide.Add($"🎙️ Voice Button:${CRLF} If you select a second language, you can just hold the voice button for a second and you can talk in that language."$)
-		Guide.Add($"✔️ Check:${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
-		Guide.Add($"💬️ Chat:${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
+		Guide.Add($"✔  Check:${CRLF}-----${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
+		Guide.Add($"🎙  Voice Button:${CRLF}-----${CRLF} If you select a second language, you can just hold the voice button for a second and you can talk in that language."$)
+		Guide.Add($"✔️  Check:${CRLF}-----${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
+		Guide.Add($"💬️  Chat:${CRLF}-----${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
 	
 	Dim GuideIndex As Int
 		GuideIndex = Rnd(0, Guide.Size - 1)
