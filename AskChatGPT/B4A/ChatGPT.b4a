@@ -189,7 +189,7 @@ Private Sub CheckMessageTimer_Tick
 '	If (ConvertTicks(CheckMessageTimeOut) > 1) Then	'	=> 1 Minutes
 	
 	Dim res As Period = DateUtils.PeriodBetween(CheckMessageTimeOut, DateTime.Now)
-	Log(res)
+'	Log(res)
 	If (res.Minutes > 1) Then	'	=> 1 Minutes
 		CheckMessageTimeOut = -1
 		CheckMessageTimer.Enabled = False
@@ -352,24 +352,24 @@ Public Sub CheckMessageList
 	
 	Try
 		For i = 0 To count
-			Log("Here " & i & "/" & count)
+'			Log("Here " & i & "/" & count)
 			Dim stack As Map = Starter.MessageList.Get(i)
-			Log(stack)
+'			Log(stack)
 			Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
-			Log(indx)
+'			Log(indx)
 			Dim resp As String = stack.GetDefault("Response", "")
-			Log(resp)
+'			Log(resp)
 			
 			If (resp <> "") Then
 				
-				Log("Inside IF")
+				LogColor("Inside IF", Colors.Red)
 				
 				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
 				Log("Question: " & ques)
-				Dim answ As textMessage = ChatN1.clvMessages.GetValue(indx + 1)
-				Log("Answer: " & answ)
 				
-				If (answ.msgtype <> 0) Then '// 0: Answer 1: Question 3: WaitingText
+				Dim answ As textMessage = ChatN1.clvMessages.GetValue(ChatN1.clvMessages.Size-1)
+				Log("Answer: " & answ)
+				If (answ.msgtype = 3) Then '// 0: Answer 1: Question 3: WaitingText
 					Starter.MessageList.RemoveAt(i)
 					
 					ChatN1.WriteAnswer(resp, True, ques.Message, indx)

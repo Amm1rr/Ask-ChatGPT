@@ -1126,10 +1126,10 @@ Public Sub imgSend_Click
 	Dim questionHolder As String = txtQuestion.Text.Trim
 	If (imgSend.Tag = "text") Then
 		
-'		If (clvMessages.Size > 0) Then
-'			Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
-'			If (msg.msgtype = typeMSG.waitingtxt) Then Return
-'		End If
+		If (clvMessages.Size > 0) Then
+			Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size - 1)
+			If (msg.msgtype = typeMSG.waitingtxt) Then Return
+		End If
 		
 '		LogColor("imgSend_Click:" & clvMessages.Size & " - " & msg.message, Colors.Magenta)
 		
@@ -1166,9 +1166,9 @@ Public Sub imgSend_Click
 				If (General.IsAWord(question)) Then
 '					sSystem = $"* with a minimum of tokens."$
 '					sSystem = $"* using ${General.Pref.FirstLang}."$
-					sSystem = $"Translate into ${General.Pref.FirstLang} and Show definitions and synonyms."$
+					sSystem = $"Translate into ${General.Pref.FirstLang} and Show definitions and synonyms:"$
 				Else
-					sSystem = $"Translate into standard ${General.Pref.FirstLang}."$
+					sSystem = $"Translate into standard ${General.Pref.FirstLang}:"$
 				End If
 				
 				sAssistant = ""
@@ -1183,9 +1183,9 @@ Public Sub imgSend_Click
 				If (General.IsAWord(question)) Then
 '					sSystem = $"* with a minimum of tokens."$
 '					sSystem = $"* using ${General.Pref.SecondLang}."$
-					sSystem = $"Translate into ${General.Pref.SecondLang} and Show definitions and synonyms."$
+					sSystem = $"Translate into ${General.Pref.SecondLang} and Show definitions and synonyms:"$
 				Else
-					sSystem = $"Translate into standard ${General.Pref.SecondLang}."$
+					sSystem = $"Translate into standard ${General.Pref.SecondLang}:"$
 				End If
 				
 				sAssistant = ""
@@ -1208,7 +1208,8 @@ Public Sub imgSend_Click
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
 				
 				'# Funny Angry Teacher
-				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the funny and angry tones of a disrespectful character."$
 '				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
 				
 				sAssistant = ""
@@ -1681,15 +1682,15 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	
 	If Not (IsWorking) Then Return
 	
-	Dim count As Int = Starter.MessageList.Size - 1
-	For i = 0 To count
-		Dim stack As Map = Starter.MessageList.Get(i)
-		Dim resp As String = stack.GetDefault("Response", "")
-		
-		If (resp <> "") Then
-			Starter.MessageList.RemoveAt(i)
-		End If
-	Next
+'	Dim count As Int = Starter.MessageList.Size - 1
+'	For i = 0 To count
+'		Dim stack As Map = Starter.MessageList.Get(i)
+'		Dim resp As String = stack.GetDefault("Response", "")
+'		
+'		If (resp <> "") Then
+'			Starter.MessageList.RemoveAt(i)
+'		End If
+'	Next
 	
 '	Log("Answer:" & responsetext)
 '	Log("Question Holder:" & questionHolder)
@@ -1979,6 +1980,7 @@ Private Sub lblClearText_LongClick
 	ResetAI
 	MessageIndex = -1
 	clvMessages.Clear
+	Starter.MessageList.Clear
 	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
 	ToastMessageShow("New Session", False)
 End Sub
