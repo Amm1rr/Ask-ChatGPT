@@ -80,7 +80,7 @@ Sub Service_Destroy
 End Sub
 
 Public Sub Query(system_string As String, _
-				 query_string As String, _
+				 question_string As String, _
 				 assistant_string As String, _
 				 temperature As Double, _
 				 AI_Type As Int, _
@@ -88,19 +88,72 @@ Public Sub Query(system_string As String, _
 	Try
 		' Create a JSON object
 		Dim json As Map
+		Dim IsWord As Boolean
 		
-		If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Or (AI_Type = AITYPE_Grammar) Then
+		If (AI_Type = AITYPE_Grammar) Then
+			
+			If (General.IsAWord(question_string)) Then IsWord = True
+			
+			If (IsWord) Then
+				
+				json.Initialize
+				json.Put("model", "gpt-3.5-turbo")
+				json.Put("n", 1)
+				json.Put("stop", "stop")
+				json.Put("max_tokens", 244)
+				json.Put("temperature", temperature)
+				json.Put("stream", False)
+				
+				' Create an array of messages
+				Dim messages As List
+					messages.Initialize
+				Dim systemMessage As Map
+					systemMessage.Initialize
+					systemMessage.Put("role", "system")
+					systemMessage.Put("content", system_string)
+				messages.Add(systemMessage)
+				Dim userMessage As Map
+					userMessage.Initialize
+					userMessage.Put("role", "user")
+					userMessage.Put("content", question_string)
+				messages.Add(userMessage)
+				
+				json.Put("messages", messages)
+				
+			Else
+				json.Initialize
+				json.Put("model", "text-davinci-edit-001")
+				json.Put("input", question_string)
+				json.Put("instruction", system_string)
+				json.Put("temperature", temperature)
+				json.Put("top_p", 1)
+				
+			End If
+		
+		Else If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Then
 			json.Initialize
-			json.Put("model", "text-davinci-003")
-			json.Put("prompt", query_string)
-			Dim token As Int = query_string.Length + system_string.Length + assistant_string.Length
-			Log("token: " & token)
-			If (token >= MAXTOKEN) Then token = MAXTOKEN
-			json.Put("max_tokens", token)
-			json.Put("temperature", 0)
-			json.Put("top_p", 1)
-			json.Put("frequency_penalty", 0)
-			json.Put("presence_penalty", 0)
+			json.Put("model", "gpt-3.5-turbo")
+			json.Put("n", 1)
+			json.Put("stop", "stop")
+			json.Put("max_tokens", MAXTOKEN)
+			json.Put("temperature", temperature)
+			json.Put("stream", False)
+			
+			' Create an array of messages
+			Dim messages As List
+				messages.Initialize
+			Dim systemMessage As Map
+				systemMessage.Initialize
+				systemMessage.Put("role", "system")
+				systemMessage.Put("content", system_string)
+			messages.Add(systemMessage)
+			Dim userMessage As Map
+				userMessage.Initialize
+				userMessage.Put("role", "user")
+				userMessage.Put("content", question_string)
+			messages.Add(userMessage)
+			json.Put("messages", messages)
+			
 			
 		Else ' Chat - Pook
 			json.Initialize
@@ -124,7 +177,7 @@ Public Sub Query(system_string As String, _
 			Dim userMessage As Map
 				userMessage.Initialize
 				userMessage.Put("role", "user")
-				userMessage.Put("content", query_string)
+			userMessage.Put("content", question_string)
 			messages.Add(userMessage)
 			Dim assistantMessage As Map
 				assistantMessage.Initialize
@@ -169,30 +222,24 @@ Public Sub Query(system_string As String, _
 		'https://chat.openai.com/backend-api/conversation
 		Select AI_Type
 			
-			Case AITYPE_Chat, AITYPE_Pook
+			Case AITYPE_Grammar
+				If (IsWord) Then
+					req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
+				Else
+					req.PostString("https://api.openai.com/v1/edits", js.ToString)
+				End If
+			Case AITYPE_Chat, AITYPE_Pook, AITYPE_Translate, AITYPE_SecondLang
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
-				
-'			Case AITYPE_Grammar
-'				req.PostString("https://api.openai.com/v1/edits", js.ToString)
-				
-			Case AITYPE_Translate, AITYPE_SecondLang, AITYPE_Grammar
-				req.PostString("https://api.openai.com/v1/completions", js.ToString)
 			
 		End Select
-		
-		'Abdull has supplied his own account API key which is very generous of
-		'him but you should not use it
-		'req.GetRequest.SetHeader("Authorization","Bearer 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")
 		
 		'You can quite easily generate your own account API key by following
 		'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
 		'under heading [Getting a GPT-3 API Key]
 		req.GetRequest.SetHeader("Authorization", API_KEY)
-		LogColor("API Key: " & API_KEY, Colors.Magenta)
+'		LogColor("API Key: " & API_KEY, Colors.Magenta)
  		
-		'If you generate your own account API key then Abdull's organisation
-		'key will be of no use to you
-		'req.GetRequest.SetHeader("OpenAI-Organization", "org-TV3YOqDRg5DXvAUcL7dC6lI9")
+'		req.GetRequest.SetHeader("OpenAI-Organization", "org-XXXXXXXXXXXXXXXXXXXXXX")
  		
 		'If your account default organisation is "Personal" then you can supply
 		'a blank organisation key - or just comment this line out
@@ -213,27 +260,48 @@ Public Sub Query(system_string As String, _
 		If req.Success Then
 			
 			'Raw JSON Response
-'			LogColor("Respose: " & req.GetString, Colors.Blue)
+			LogColor("Respose: " & req.GetString, Colors.Blue)
 			
 '			conversationId = ParseJson(req.GetString, False, True)
 			
 			Dim parser As JSONParser
-			parser.Initialize(req.GetString)
+				parser.Initialize(req.GetString)
 			
-'			If (AI_Type = AITYPE_Grammar) Then
-'				Dim text 		As String  	= ParseJSONEditMode(req.GetString)
-'				If (response <> "") Then response = response & CRLF
-'				response = response & text.Trim
-'				resobj.Put("response", response)
-'				resobj.Put("continue", False)
-'			Else 
-			If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Or (AI_Type = AITYPE_Grammar) Then
-				Dim text 		As String  	= ParseJSONTranslate(req.GetString)
+			If (AI_Type = AITYPE_Grammar) Then
+				
+				If (IsWord) Then
+				
+					Dim text 		As String  	= ParseJson(req.GetString, False, False)
+					
+					resobj.Put("response", text)
+					resobj.Put("continue", False)
+					resobj.Put("QuestionIndex", QuestionIndex)
+					
+				Else
+					Dim text 		As String  	= ParseJSONEditMode(req.GetString)
+					
+					resobj.Put("response", text)
+					resobj.Put("continue", False)
+					resobj.Put("QuestionIndex", QuestionIndex)
+					
+				End If
+				
+			Else If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Then
+				Dim text 		As String  	= ParseJson(req.GetString, False, False)
+				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
 				If (response <> "") Then response = response & CRLF
 				response = response & text.Trim
-				resobj.Put("response", response)
-				resobj.Put("continue", False)
-				resobj.Put("QuestionIndex", QuestionIndex)
+				
+				If (endofconv <> "stop") Then
+					response = response & CRLF & "»»"
+					resobj.Put("response", response)
+					resobj.Put("continue", True)
+					resobj.Put("QuestionIndex", QuestionIndex)
+				Else
+					resobj.Put("response", response)
+					resobj.Put("continue", False)
+					resobj.Put("QuestionIndex", QuestionIndex)
+				End If
 			Else ' Chat and Pook
 				Dim text 		As String  	= ParseJson(req.GetString, False, False)
 				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
@@ -247,7 +315,7 @@ Public Sub Query(system_string As String, _
 					resobj.Put("QuestionIndex", QuestionIndex)
 				Else
 					resobj.Put("response", response)
-					resobj.Put("continue", True)
+					resobj.Put("continue", False)
 					resobj.Put("QuestionIndex", QuestionIndex)
 				End If
 				
@@ -311,13 +379,13 @@ Public Sub Query(system_string As String, _
 	Catch
 		
 		Dim response As String
-			response = "ChatGPT:Query-> ERROR: " & LastException
+		response = "ChatGPT:Query-> ERROR: " & LastException
 			
 		Dim resobj As Map
-			resobj.Initialize
-			resobj.Put("response", response)
-			resobj.Put("continue", False)
-			resobj.Put("QuestionIndex", QuestionIndex)
+		resobj.Initialize
+		resobj.Put("response", response)
+		resobj.Put("continue", False)
+		resobj.Put("QuestionIndex", QuestionIndex)
 			
 	End Try
 	

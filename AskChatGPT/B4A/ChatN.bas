@@ -1141,45 +1141,53 @@ Public Sub imgSend_Click
 			
 			Case wrk_chat.TYPE_Grammar
 			
+				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
+				
 				If (General.IsAWord(question)) Then
-					sSystem = $"Change this word into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}: "$
+					sSystem = $"Change this into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}."$
 				Else
-					sSystem = $"Correct this to standard ${General.Pref.FirstLang}:"$
+					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
 				End If
 				
-				question = sSystem & "\n" & CRLF & questionHolder
+				
 				sAssistant = ""
+				
+				question = questionHolder
 				
 			Case wrk_chat.TYPE_Translate
 			
-				ResetAI
-				IsWorking = True
-				Main.GetIsWorking = IsWorking
+				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
-					sSystem = $"You are ${General.a_OR_an(General.Pref.FirstLang)} Dictionary; show definitions and synonyms using ${General.Pref.FirstLang} with a minimum and limited number of tokens."$
+'					sSystem = $"* with a minimum of tokens."$
+'					sSystem = $"* using ${General.Pref.FirstLang}."$
+					sSystem = $"Translate into ${General.Pref.FirstLang} and Show definitions and synonyms."$
 				Else
-					sSystem = $"Only translate into standard ${General.Pref.FirstLang}; do not interpret it or provide only meaning, definitions, and synonyms."$
+					sSystem = $"Translate into standard ${General.Pref.FirstLang}."$
 				End If
-			
-				question = sSystem & " The Text Is: " & CRLF & questionHolder
+				
 				sAssistant = ""
+				
+				question = questionHolder
+				
 				
 			Case wrk_chat.TYPE_Second
 				
-				ResetAI
-				IsWorking = True
-				Main.GetIsWorking = IsWorking
+				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
 				
 				If (General.IsAWord(question)) Then
-					sSystem = $"You are ${General.a_OR_an(General.Pref.SecondLang)} dictionary; show definitions and synonyms using ${General.Pref.SecondLang} with a minimum of tokens."$
+'					sSystem = $"* with a minimum of tokens."$
+'					sSystem = $"* using ${General.Pref.SecondLang}."$
+					sSystem = $"Translate into ${General.Pref.SecondLang} and Show definitions and synonyms."$
 				Else
-					sSystem = $"Only translate into ${General.Pref.SecondLang}; do not interpret or provide meaning, definitions, or synonyms."$
+					sSystem = $"Translate into standard ${General.Pref.SecondLang}."$
 				End If
 				
-				question = sSystem & " The Text Is: " & CRLF & questionHolder
-				
 				sAssistant = ""
+				
+				question = questionHolder
+				
+				
 			Case wrk_chat.TYPE_Pook
 				
 '				sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
@@ -1195,8 +1203,8 @@ Public Sub imgSend_Click
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
 				
 				'# Funny Angry Teacher
-'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
-				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+'				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
 				
 				sAssistant = ""
 				
@@ -1211,13 +1219,17 @@ Public Sub imgSend_Click
 				
 		End Select
 		
+'		LogColor("System: " & sSystem, Colors.Red)
+'		LogColor("Question: " & question, Colors.Red)
+'		LogColor("Assistant: " & sAssistant, Colors.Red)
+		
 		If (RetryCount > 1) Then
 			LogColor("Red", Colors.Red)
-			Ask(question, sAssistant, sSystem, questionHolder)
+			Ask(sSystem, question, sAssistant, questionHolder)
 		Else
 			LogColor("Blue", Colors.Blue)
 			WriteQuestion(questionHolder)
-			Ask(question, sAssistant, sSystem, questionHolder)
+			Ask(sSystem, question, sAssistant, questionHolder)
 			txtQuestion.Text = ""
 		End If
 		
@@ -1524,7 +1536,7 @@ Public Sub AddtoHistory(question As String, answer As String)
 
 End Sub
 
-Public Sub Ask(question As String, assistant As String, system As String, questionHolder As String)
+Public Sub Ask(system As String,question As String, assistant As String, questionHolder As String)
 	
 	MyLog("Ask: " & questionHolder, ColorLog, True)
 	
