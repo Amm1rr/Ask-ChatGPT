@@ -39,48 +39,6 @@ Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 	End If
 End Sub
 
-Public Sub SaveSetting
-	
-	MyLog("General.SaveSetting", ColorLog, False)
-	
-	If Not(Sett.IsInitialized) Then
-		Sett.Initialize(File.DirInternal, ConfigFileName)
-	End If
-
-	Sett.Put("FirstLang", Pref.FirstLang)
-	Sett.Put("SecondLang", Pref.SecondLang)
-	Sett.Put("Creativity", Pref.Creativity)
-	Sett.Put("AutoSend", Pref.AutoSend)
-	Sett.Put("Memory", Pref.Memory)
-	Sett.Put("IsDevMode", Pref.IsDevMode)
-	Sett.Put("APIKEY", Pref.APIKEY)
-	
-'	LogColor($"SaveSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
-'			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
-'			 ${Pref.IsDevMode}"$, Colors.Blue)
-End Sub
-
-Public Sub LoadSetting
-	
-	MyLog("General.LoadSetting", ColorLog, False)
-	
-	If Not(Sett.IsInitialized) Then
-		Sett.Initialize(File.DirInternal, "AskChatGPT.conf")
-	End If
-	
-	Pref.FirstLang = GetLangFirstStr(Sett.Get("FirstLang").As(String))
-	Pref.SecondLang = GetLangSecStr(Sett.Get("SecondLang"))
-	Pref.Creativity = GetCreativityInt(Sett.Get("Creativity"))
-	Pref.AutoSend = GetBoolean(Sett.Get("AutoSend"))
-	Pref.Memory = GetDefaultMemory(Sett.Get("Memory"))	'Default True
-	Pref.IsDevMode = GetBoolean(Sett.Get("IsDevMode"))
-	Pref.APIKEY = DecKey(GetStr(Sett.Get("APIKEY")))
-	
-'	LogColor($"LoadSetting: ${Pref.FirstLang} : ${Pref.SecondLang} :
-'			 ${Pref.Creativity} : ${Pref.AutoSend} : ${Pref.Memory} :
-'			 ${Pref.IsDevMode}"$, Colors.Blue)
-End Sub
-
 Private Sub CreateDB
 	
 	MyLog("General.CreateDB", ColorLog, True)
@@ -99,7 +57,7 @@ Private Sub CreateDB
 	"SecondLang"	TEXT,
 	"Creativity"	INTEGER DEFAULT 4,
 	"AutoSend"	INTEGER DEFAULT 0,
-	"Memory"	INTEGER DEFAULT 1,
+	"Memory"	INTEGER DEFAULT 0,
 	"APIKEY"	TEXT,
 	"IsDevMode"	INTEGER DEFAULT 0,
 	"LastTypeModel"	INTEGER DEFAULT 0
@@ -134,10 +92,10 @@ Public Sub LoadSettingDB
 		Pref.SecondLang =  "(None)"
 		Pref.Creativity = 4
 		Pref.AutoSend = False
-		Pref.Memory = True
+		Pref.Memory = False
 		Pref.IsDevMode = IsDebug
 		Pref.APIKEY = ""
-		Pref.LastTypeModel = 4
+		Pref.LastTypeModel = 0
 		
 		SaveSettingDB
 	Else
