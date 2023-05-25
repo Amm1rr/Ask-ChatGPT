@@ -359,17 +359,23 @@ Public Sub CheckMessageList
 			Log(indx)
 			Dim resp As String = stack.GetDefault("Response", "")
 			Log(resp)
-								
+			
 			If (resp <> "") Then
 				
 				Log("Inside IF")
-				Starter.MessageList.RemoveAt(i)
 				
 				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
-				Log(ques.Message)
-				ChatN1.WriteAnswer(resp, True, ques.Message, indx)
+				Log("Question: " & ques)
+				Dim answ As textMessage = ChatN1.clvMessages.GetValue(indx + 1)
+				Log("Answer: " & answ)
 				
-				ChatN1.AddtoHistory(ques.Message, resp)
+				If (answ.msgtype <> 0) Then '// 0: Answer 1: Question 3: WaitingText
+					Starter.MessageList.RemoveAt(i)
+					
+					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
+					
+					ChatN1.AddtoHistory(ques.Message, resp)
+				End If
 				
 			End If
 			

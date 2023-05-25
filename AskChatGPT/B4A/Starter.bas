@@ -18,7 +18,7 @@ Sub Process_Globals
 	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
-	Public ServerError 			As String = "♻ server"
+	Public ServerError 			As String = "♻ server (try agian)"
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000
@@ -250,6 +250,8 @@ Public Sub Query(system_string As String, _
 		
 		Wait For (req) JobDone(req As HttpJob)
 		
+'		LogColor(req, Colors.Blue)
+		
 		If Not (Main.GetIsWorking) Then
 			Dim resobj 		As Map
 				resobj.Initialize
@@ -272,15 +274,17 @@ Public Sub Query(system_string As String, _
 				If (IsWord) Then
 				
 					Dim text 		As String  	= ParseJson(req.GetString, False, False)
-					
-					resobj.Put("response", text)
+'					LogColor("--------------------- LOG HERE: text" & text, Colors.Magenta)
+					response = text
+					resobj.Put("response", response)
 					resobj.Put("continue", False)
 					resobj.Put("QuestionIndex", QuestionIndex)
 					
 				Else
 					Dim text 		As String  	= ParseJSONEditMode(req.GetString)
-					
-					resobj.Put("response", text)
+'					LogColor("+++++++++++++++++++++ LOG HERE: text" & text, Colors.Magenta)
+					response = text
+					resobj.Put("response", response)
 					resobj.Put("continue", False)
 					resobj.Put("QuestionIndex", QuestionIndex)
 					
@@ -356,18 +360,6 @@ Public Sub Query(system_string As String, _
 				End If
 			End If
 			
-'			If (req.ErrorMessage = "java.net.SocketTimeoutException: timeout") Then
-'				response = TimeoutText
-'			Else If (req.ErrorMessage = "java.net.UnknownHostException: Unable to resolve host ""api.openai.com"": No address associated with hostname") Then
-'				response = OpenApiHostError & " (Code 1)"
-'			Else If (req.ErrorMessage = "java.net.ConnectException: Failed to connect to api.openai.com/104.18.7.192:443") Then
-'				response = OpenApiHostError & " (Code 2)"
-'			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
-'				response = InstructureError
-'			Else
-'				response = "ChatGPT:Query-> ERROR Unsuccess: " & req.ErrorMessage
-'			End If
-			
 			resobj.Put("response", response)
 			resobj.Put("continue", False)
 			resobj.Put("QuestionIndex", QuestionIndex)
@@ -379,13 +371,13 @@ Public Sub Query(system_string As String, _
 	Catch
 		
 		Dim response As String
-		response = "ChatGPT:Query-> ERROR: " & LastException
+			response = "ChatGPT:Query-> ERROR: " & LastException
 			
 		Dim resobj As Map
-		resobj.Initialize
-		resobj.Put("response", response)
-		resobj.Put("continue", False)
-		resobj.Put("QuestionIndex", QuestionIndex)
+			resobj.Initialize
+			resobj.Put("response", response)
+			resobj.Put("continue", False)
+			resobj.Put("QuestionIndex", QuestionIndex)
 			
 	End Try
 	
@@ -452,7 +444,7 @@ Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolea
 '	Dim totalTokens As Int
 '		totalTokens = usage.Get("total_tokens")
 	Dim choices As List
-	choices = root.Get("choices")
+		choices = root.Get("choices")
 	Dim choiceIndex As Int
 	Dim content As String
 	For choiceIndex = 0 To choices.Size - 1
@@ -460,18 +452,17 @@ Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolea
 		choice = choices.Get(choiceIndex)
 		Dim message As Map
 		message = choice.Get("message")
-		Dim role As String
-		role = message.Get("role")
+'		Dim role As String
+'		role = message.Get("role")
 		If content <> "" Then content = content & CRLF
 		content = content & message.Get("content")
-		Dim finishReason As String
-		finishReason = choice.Get("finish_reason")
+		Dim finishReason As String = choice.Get("finish_reason")
 		If (CheckEndOfConv) Then _
 			content = finishReason
-		Log("Choice " & choiceIndex)
-		Log("Role: " & role)
-		Log("Content: " & content)
-		Log("Finish Reason: " & finishReason)
+'		Log("Choice " & choiceIndex)
+'		Log("Role: " & role)
+'		Log("Content: " & content)
+'		Log("Finish Reason: " & finishReason)
 	Next
 	If (getID) Then content = id
 	Return content

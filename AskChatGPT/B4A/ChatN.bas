@@ -12,7 +12,7 @@ Sub Class_Globals
 	
 	Type textMessage (Message As String	,assistant As Boolean ,msgtype 		As Int)
 	Type typeMessage (answer  As Int	,question  As Int	  ,waitingtxt 	As Int)
-	Private  typeMSG As typeMessage
+	Private  typeMSG As typeMessage	'// If typeMSG set as Public, Starter dosn't work at background! I never look at this problem why this happen.
 	
 	Public 	MessageIndex 			As Int = -1
 	Private wrk_chat 				As ChatGPT
@@ -1150,7 +1150,8 @@ Public Sub imgSend_Click
 				If (General.IsAWord(question)) Then
 					sSystem = $"Change this into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}."$
 				Else
-					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
+'					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
+					sSystem = $"Correct this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
 				End If
 				
 				
@@ -1512,7 +1513,7 @@ Private Sub SaveMessage(title As String)
 		
 	Else
 		
-		LogColor("Update: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
+'		LogColor("Update: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
 		
 		Dim query As String = "UPDATE Messages SET JsonMessage=? WHERE ID=?"
 		
@@ -1605,9 +1606,9 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	
 	If Not (IsWorking) Then Return
 	
-	Dim responsetext As String 	= response.Get("response")
-	Dim QuestionIndex As Int = msgindx 'response.GetDefault("QuestionIndex", 0)
-'	Dim Contine 	 As Boolean = response.Get("continue")
+	Dim responsetext 	As String 	= 	response.Get("response")
+	Dim QuestionIndex 	As Int 	  	= 	response.GetDefault("QuestionIndex", 0) 'msgindx
+'	Dim Contine 	 	As Boolean 	= 	response.Get("continue")
 	
 	AddtoHistory(questionHolder, responsetext)
 	
@@ -1679,6 +1680,17 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	End Select
 	
 	If Not (IsWorking) Then Return
+	
+	Dim count As Int = Starter.MessageList.Size - 1
+	For i = 0 To count
+		Dim stack As Map = Starter.MessageList.Get(i)
+		Dim resp As String = stack.GetDefault("Response", "")
+		
+		If (resp <> "") Then
+			Starter.MessageList.RemoveAt(i)
+		End If
+	Next
+	
 '	Log("Answer:" & responsetext)
 '	Log("Question Holder:" & questionHolder)
 	WriteAnswer(responsetext, True, questionHolder, QuestionIndex)

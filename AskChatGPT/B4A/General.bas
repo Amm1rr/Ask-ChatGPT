@@ -28,6 +28,8 @@ Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 	DateTime.DateFormat = "HH:mm:ss.SSS"
 	Dim time As String  = DateTime.Date(DateTime.Now)
 	
+	Return
+	
 	If (AlwaysShow) Then
 		LogColor(text & TAB & " (" & time & ")", color)
 		Return
