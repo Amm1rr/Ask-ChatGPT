@@ -95,6 +95,7 @@ Library18=webviewextras2
 Library19=xcustomlistview
 Library2=byteconverter
 Library20=xui views
+Library21=b4xgifview
 Library3=clipboard
 Library4=contentresolver
 Library5=core
@@ -116,7 +117,7 @@ Module7=CLVNested
 Module8=General
 Module9=PreferencesDialog
 NumberOfFiles=41
-NumberOfLibraries=20
+NumberOfLibraries=21
 NumberOfModules=12
 Version=12.2
 @EndOfDesignText@

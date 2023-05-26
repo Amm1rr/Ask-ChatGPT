@@ -45,7 +45,7 @@ Sub Class_Globals
 	
 	Private ColorLog As Int = Colors.Black
 	
-	Private WaitingText As String = "Proccessing..."
+	Private WaitingText As String = "Waiting..."
 	Private History 	As String
 	Public IsWorking As Boolean
 	
@@ -103,6 +103,23 @@ Sub Class_Globals
 	
 	Public prefdialog As PreferencesDialog
 	Private Options	As Map
+	
+	Private gifWaiting As B4XGifView
+	Private WaitingTimer	As Timer
+	Private WaitCount		As Int = 0
+End Sub
+
+Private Sub WaitingTimer_Tick
+	
+	Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
+	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size-1)
+	If (msg.msgtype = typeMSG.waitingtxt) Then
+		Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
+		
+		WaitCount = WaitCount + 1
+		lblTimer.Text = WaitingText & " (" & WaitCount & ")"
+	End If
+	 
 End Sub
 
 'Initializes the object. You can add parameters to this method if needed.
@@ -129,6 +146,9 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
+	
+	WaitingTimer.Initialize("WaitingTimer", 1000)
+	WaitingTimer.Enabled = False
 	
 '	History = "You are a helpful assistant."
 	
@@ -761,7 +781,7 @@ End Sub
 Private Sub clvMessages_ItemLongClick (Index As Int, Value As Object)
 	LogColor("clvMessages_ItemLongClick:" & Value, Colors.Blue)
 	Dim msg As textMessage = Value
-	If (msg.message = WaitingText) Then Return
+	If (msg.msgtype = 3) Then Return
 	ToastMessageShow("Copied", False)
 	Dim cp As BClipboard
 	Dim msg As textMessage = Value
@@ -1563,9 +1583,13 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	panWaitingText.Height = lblWaitingText.GetHeight
 	lblWaitingText.FallbackLineSpacing = False
 	
+'	gifWaiting.SetGif(File.DirAssets, "Ripple-1.1s-484px.gif")
+	WaitCount = 0
+	WaitingTimer.Enabled = True
+	
 '	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
 '	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
-
+	
 	p.SetLayoutAnimated(50,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
 	
 	RemoveSeperator
@@ -1700,6 +1724,9 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	
 	MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
 	
+	WaitCount = 0
+	WaitingTimer.Enabled = False
+	
 	Dim m As textMessage
 		m.Initialize
 		m.message = message
@@ -1792,7 +1819,13 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 		clvMessages.Add(p, m)
 	Else
 		If (clvMessages.Size > 0) Then
-			clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
+'			LogColor(clvMessages.Size, Colors.Red)
+'			LogColor(QuestionIndex, Colors.Red)
+			If (clvMessages.Size-1) < (QuestionIndex+1) Then
+				clvMessages.Add(p, m)
+			Else
+				clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
+			End If
 		Else
 			'It's the first message in clvMessage
 			clvMessages.Add(p, m)
@@ -2088,25 +2121,28 @@ Private Sub SimulateMessage
 		
 		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100."
 		
+		WaitCount = 0
+		WaitingTimer.Enabled = False
+		
 		Dim myStrings As List
-		myStrings.Initialize
-		myStrings.Add("Hi there, How are you?")
+			myStrings.Initialize
+			myStrings.Add("Hi there, How are you?")
 '			myStrings.Add("🤔")
-		myStrings.Add(v)
-		myStrings.Add(v.SubString2(0, Rnd(5, 100)))
+			myStrings.Add(v)
+			myStrings.Add(v.SubString2(0, Rnd(5, 100)))
 '			myStrings.Add(v & CRLF & v & CRLF & v & CRLF & v & CRLF & v)
-		myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
+			myStrings.Add($"Try me in Farsi...${CRLF}فارسی بپرس"$)
 '			myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
 		
 		Dim index As Int
-		index = 10 Mod (myStrings.Size - 1)
+			index = 10 Mod (myStrings.Size - 1)
 		
 '		Dim index As Int
-'			index = Rnd(10, myStrings.Size - 1)
+'			index = Rnd(0, myStrings.Size - 1)
 		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
-				WriteAnswer(myStrings.Get(index), True, "", LastMsgIndex)
+				WriteAnswer(myStrings.Get(index), True, "", clvMessages.Size - 1)
 			Else
 				WriteQuestion(myStrings.Get(index))
 			End If
@@ -2114,10 +2150,10 @@ Private Sub SimulateMessage
 			Log("Do something: Proccessing")
 			
 			Dim m As textMessage
-			m.Initialize
-			m.message = WaitingText '"Proccessing..."
-			m.assistant = False
-			m.msgtype = typeMSG.waitingtxt
+				m.Initialize
+				m.message = WaitingText '"Proccessing..."
+				m.assistant = False
+				m.msgtype = typeMSG.waitingtxt
 			
 			Dim p As B4XView = xui.CreatePanel("")
 			mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
@@ -2130,6 +2166,10 @@ Private Sub SimulateMessage
 			panWaitingText.Height = lblWaitingText.GetHeight
 			panWaitingText.Width = 80%x
 			lblWaitingText.FallbackLineSpacing = False
+			
+'			gifWaiting.SetGif(File.DirAssets, "Ripple.gif")
+			WaitCount = 0
+			WaitingTimer.Enabled = True
 			
 			p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
 			
@@ -2410,7 +2450,9 @@ Private Sub lblTitleTopMenu_LongClick
 	
 	MyLog("lblTitleTopMenu_LongClick", ColorLog, True)
 	
-	If (General.Pref.IsDevMode) Then SimulateMessage
+'	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
+'	If (General.Pref.IsDevMode) Then SimulateMessage
+	SimulateMessage
 	
 End Sub
 
