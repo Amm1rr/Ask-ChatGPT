@@ -23,6 +23,10 @@ Sub Process_Globals
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000
 	
+	Public WaitingTimer	As Timer
+	Public WaitCount		As Int = 0
+	Public WaitTimeout		As Int = TIMEOUT / 1000
+	
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
 	
@@ -34,12 +38,27 @@ Sub Process_Globals
 	
 End Sub
 
+Private Sub WaitingTimer_Tick
+	
+	If (WaitCount > WaitTimeout) Then
+'		WaitCount = 0
+		WaitingTimer.Enabled = False
+	Else
+		WaitCount = WaitCount + 1
+	End If
+	
+	 
+End Sub
+
 Sub Service_Create
 	'This is the program entry point.
 	'This is a good place to load resources that are not specific to a single activity.
 	
 	MessageList.Initialize
 	ChatHistoryList.Initialize
+	
+	WaitingTimer.Initialize("WaitingTimer", 1000)
+	WaitingTimer.Enabled = False
 	
 '	LogColor("Initialize:" & dec, Colors.Red)
 

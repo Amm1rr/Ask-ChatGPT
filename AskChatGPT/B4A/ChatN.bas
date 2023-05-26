@@ -105,20 +105,28 @@ Sub Class_Globals
 	Private Options	As Map
 	
 	Private gifWaiting As B4XGifView
-	Private WaitingTimer	As Timer
-	Private WaitCount		As Int = 0
+	Private WaitingTimer As Timer
 End Sub
 
 Private Sub WaitingTimer_Tick
 	
-	Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
 	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size-1)
 	If (msg.msgtype = typeMSG.waitingtxt) Then
+		Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
 		Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
 		
-		WaitCount = WaitCount + 1
-		lblTimer.Text = WaitingText & " (" & WaitCount & ")"
+		If (Starter.WaitCount > Starter.WaitTimeout) Then
+			Starter.WaitCount = 0
+			Starter.WaitingTimer.Enabled = False
+			WaitingTimer.Enabled = False
+			WriteAnswer("Timeout (try again)", False, "", clvMessages.Size - 2)
+		Else
+			lblTimer.Text = WaitingText & " (" & Starter.WaitCount & " sec)"
+		End If
+		
 	Else
+		Starter.WaitCount = 0
+		Starter.WaitingTimer.Enabled = False
 		WaitingTimer.Enabled = False
 	End If
 	 
@@ -1568,36 +1576,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	
 	Dim msgindx As Int = LastMsgIndex
 	
-	Dim m As textMessage
-		m.Initialize
-		m.message = WaitingText '"Proccessing..."
-		m.assistant = True
-		m.msgtype = typeMSG.waitingtxt
-	
-	Dim p As B4XView = xui.CreatePanel("")
-	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
-	p.LoadLayout("clvWaitingText")
-	p.RemoveViewFromParent
-	p.Tag = WaitingText
-	
-	lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
-	lblWaitingText.Text = m.message
-	panWaitingText.Height = lblWaitingText.GetHeight
-	lblWaitingText.FallbackLineSpacing = False
-	
-'	gifWaiting.SetGif(File.DirAssets, "Ripple-1.1s-484px.gif")
-	WaitCount = 0
-	WaitingTimer.Enabled = True
-	
-'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
-'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
-	
-	p.SetLayoutAnimated(50,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
-	
-	RemoveSeperator
-	clvMessages.Add(p, m)
-	
-	AdjustSize_Clv(0, True)
+	WriteWait
 	
 '	If (History.Length > 1000) Then
 '		History = History.SubString(History.Length / 2)
@@ -1722,12 +1701,51 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	
 End Sub
 
+Private Sub WriteWait
+	
+	Starter.WaitCount = 0
+	Starter.WaitingTimer.Enabled = False
+	
+	Dim m As textMessage
+		m.Initialize
+		m.message = WaitingText '"Proccessing..."
+		m.assistant = True
+		m.msgtype = typeMSG.waitingtxt
+	
+	Dim p As B4XView = xui.CreatePanel("")
+	mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
+	p.LoadLayout("clvWaitingText")
+	p.RemoveViewFromParent
+	p.Tag = WaitingText
+	
+	lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
+	lblWaitingText.Text = m.message
+	panWaitingText.Height = lblWaitingText.GetHeight
+	lblWaitingText.FallbackLineSpacing = False
+	
+'	gifWaiting.SetGif(File.DirAssets, "Ripple-1.1s-484px.gif")
+	Starter.WaitCount = 0
+	Starter.WaitingTimer.Enabled = True
+	WaitingTimer.Enabled = True
+	
+'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
+'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
+	
+	p.SetLayoutAnimated(200,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
+	
+	RemoveSeperator
+	clvMessages.Add(p, m)
+	
+	AdjustSize_Clv(0, True)
+	
+End Sub
+
 Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, QuestionIndex As Int) 'Left Side
 	
 	MyLog($"WriteAnswer: ${message}"$, ColorLog, True)
 	
-	WaitCount = 0
-	WaitingTimer.Enabled = False
+	Starter.WaitCount = 0
+	Starter.WaitingTimer.Enabled = False
 	
 	Dim m As textMessage
 		m.Initialize
@@ -2123,8 +2141,8 @@ Private Sub SimulateMessage
 		
 		Dim v As String = "0، 1، 2، 3، 4، 5، 6، 7، 8، 9، 10، 11، 12، 13، 14، 15، 16، 17، 18، 19، 20، 21، 22، 23، 24، 25، 26، 27، 28، 29، 30، 31، 32، 33، 34، 35، 36، 37، 38، 39، 40، 41، 42، 43، 44، 45، 46، 47، 48، 49، 50، 51، 52، 53، 54، 55، 56، 57، 58، 59، 60، 61، 62، 63، 64، 65، 66، 67، 68، 69، 70، 71، 72، 73، 74، 75، 76، 77، 78، 79، 80، 81، 82، 83، 84، 85، 86، 87، 88، 89، 90، 91، 92، 93، 94، 95، 96، 97، 98، 99، 100."
 		
-		WaitCount = 0
-		WaitingTimer.Enabled = False
+		Starter.WaitCount = 0
+		Starter.WaitingTimer.Enabled = False
 		
 		Dim myStrings As List
 			myStrings.Initialize
@@ -2151,34 +2169,7 @@ Private Sub SimulateMessage
 		Else
 			Log("Do something: Proccessing")
 			
-			Dim m As textMessage
-				m.Initialize
-				m.message = WaitingText '"Proccessing..."
-				m.assistant = False
-				m.msgtype = typeMSG.waitingtxt
-			
-			Dim p As B4XView = xui.CreatePanel("")
-			mainparent.AddView(p,0,0,clvMessages.AsView.Width,200dip)
-			p.LoadLayout("clvWaitingText")
-			p.RemoveViewFromParent
-			p.Tag = WaitingText
-			
-			lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
-			lblWaitingText.Text = m.message
-			panWaitingText.Height = lblWaitingText.GetHeight
-			panWaitingText.Width = 80%x
-			lblWaitingText.FallbackLineSpacing = False
-			
-'			gifWaiting.SetGif(File.DirAssets, "Ripple.gif")
-			WaitCount = 0
-			WaitingTimer.Enabled = True
-			
-			p.SetLayoutAnimated(0, 0, 0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
-			
-			RemoveSeperator
-			clvMessages.Add(p, m)
-			
-			AdjustSize_Clv(0, True)
+			WriteWait
 			
 		End If
 '	End If
