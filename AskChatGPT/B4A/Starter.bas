@@ -14,11 +14,11 @@ Sub Process_Globals
 	'These variables can be accessed from all modules.
 	
 	Private API_KEY 			As String
-	Public TimeoutText 			As String = $"Timeout ${CRLF} Server is busy. Just try again. ${CRLF} سرور شلوغ است، مجددا امتحان کنید."$
-	Public OpenApiHostError 	As String = $"api.openai.com is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
-	Public ConnectException 	As String = $"Internet is unreachable. ${CRLF} دسترسی به سرور وجود ندارد، اینترنت خود را چک کنید."$
+	Public TimeoutText 			As String = $"Timeout ${CRLF} Server is busy, just try again."$
+	Public OpenApiHostError 	As String = $"api.openai.com is unreachable${CRLF}Check you internet"$
+	Public ConnectException 	As String = $"Internet is unreachable${CRLF}Check you internet"$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
-	Public ServerError 			As String = "♻ server (try agian)"
+	Public ServerError 			As String = $"🤮 server (♻ try agian)"$ '🤢 '💩 '🚽 '👎 '🪫
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000
@@ -125,7 +125,7 @@ Public Sub Query(system_string As String, _
 				json.Put("model", "text-davinci-edit-001")
 				json.Put("input", question_string)
 				json.Put("instruction", system_string)
-				json.Put("temperature", temperature)
+				json.Put("temperature", 0)
 				json.Put("top_p", 1)
 				
 			End If
@@ -282,6 +282,7 @@ Public Sub Query(system_string As String, _
 					
 				Else
 					Dim text 		As String  	= ParseJSONEditMode(req.GetString)
+					If (text.Trim = "") Then response = "(try agian)"
 '					LogColor("+++++++++++++++++++++ LOG HERE: text" & text, Colors.Magenta)
 					response = text
 					resobj.Put("response", response)

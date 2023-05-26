@@ -1151,9 +1151,8 @@ Public Sub imgSend_Click
 					sSystem = $"Change this into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}."$
 				Else
 '					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
-					sSystem = $"Correct this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
+					sSystem = $"Correct text to ${General.Pref.FirstLang}:"$
 				End If
-				
 				
 				sAssistant = ""
 				
@@ -1195,22 +1194,15 @@ Public Sub imgSend_Click
 				
 			Case wrk_chat.TYPE_Pook
 				
-'				sSystem = $"Act as a spoken ${General.Pref.FirstLang} teacher and improver and strictly correct my grammar, typos, and factual errors.
-'Reply Correct ${General.Pref.FirstLang} of my question and answer disrespectfully."$
-				
-'				sAssistant = $"Reply in Correct ${General.Pref.FirstLang} and Answer disrespectfully to the question:"$
-				
-				'# Funny Angry
-'				sSystem = $"Act as a spoken teacher and improver and strictly correct my grammar, typos, and factual errors.
-				'Correct my mistakes And answer like a funny angry And disrespectful character."$
-				
-				'# Teacher
+'				'# Teacher
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
+'				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
 				
 				'# Funny Angry Teacher
-'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
-				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the funny and angry tones of a disrespectful character."$
-'				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+'				sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
+'Respond in ${General.Pref.FirstLang} funny, And angry tones of a disrespectful character."$
+				sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
+Respond in funny, and angry tones of a disrespectful character."$
 				
 				sAssistant = ""
 				
