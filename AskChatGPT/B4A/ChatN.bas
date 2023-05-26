@@ -118,6 +118,8 @@ Private Sub WaitingTimer_Tick
 		
 		WaitCount = WaitCount + 1
 		lblTimer.Text = WaitingText & " (" & WaitCount & ")"
+	Else
+		WaitingTimer.Enabled = False
 	End If
 	 
 End Sub
