@@ -669,30 +669,29 @@ Private Sub LoadCLVSetup
 			myStrings.Add($"🕳️  Pook${CRLF}-----${CRLF}   Pook یه حالت مودی از یه دوست هستش که برای تمرین زبانی که میخواهید یاد بگیرید کمکتون میکنه"$)
 			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بپرسید."$)
 		Else
-			myStrings.Add("💻")
-			myStrings.Add("👩")
-			myStrings.Add("🧑")
-			myStrings.Add("💡")
-			myStrings.Add("Just Ask... 🤔")
-			myStrings.Add("I know all languages that might you know 😀")
+'			myStrings.Add("💻")
+'			myStrings.Add("👩")
+'			myStrings.Add("🧑")
+'			myStrings.Add("💡")
+'			myStrings.Add("Just Ask... 🤔")
+'			myStrings.Add("I know all languages that might you know 😀")
+			myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
+			myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
+			myStrings.Add($"✔  Check:${CRLF}-----${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
+			myStrings.Add($"🎙  Voice Button:${CRLF}-----${CRLF} If you select a second language, you can just hold the voice button for a second and you can talk in that language."$)
+			myStrings.Add($"✔️  Check:${CRLF}-----${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
+			myStrings.Add($"💬️  Chat:${CRLF}-----${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
 		End If
-		myStrings.Add($"Try me in Germany...${CRLF}Versuchen wir es mit Deutsch 🇩🇪"$)
-		myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
 	
 	Dim index As Int
 		index = Rnd(0, myStrings.Size - 1)
 		
-	Dim Guide As List
-		Guide.Initialize
-		Guide.Add($"✔  Check:${CRLF}-----${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
-		Guide.Add($"🎙  Voice Button:${CRLF}-----${CRLF} If you select a second language, you can just hold the voice button for a second and you can talk in that language."$)
-		Guide.Add($"✔️  Check:${CRLF}-----${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
-		Guide.Add($"💬️  Chat:${CRLF}-----${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
+'	Dim Guide As List
+'		Guide.Initialize
+'	Dim GuideIndex As Int
+'		GuideIndex = Rnd(0, Guide.Size - 1)
 	
-	Dim GuideIndex As Int
-		GuideIndex = Rnd(0, Guide.Size - 1)
-	
-	WriteAnswer(myStrings.Get(index) & CRLF & CRLF & Guide.Get(GuideIndex) & CRLF, False, "", -1)
+	WriteAnswer(myStrings.Get(index) & CRLF, False, "", -1)
 	
 End Sub
 
@@ -1240,10 +1239,41 @@ Private Sub CreatePrompt(questionHolder As String) As Map
 	Dim question As String = questionHolder
 	Dim sAssistant As String
 	Dim sSystem As String
-		
+	
+	Dim current As String = flowTabToolbar.GetTabPropertiesAt(flowTabToolbar.CurrentIndex).Text
+	
 	Select flowTabToolbar.CurrentIndex
+		
+		Case Starter.AITYPE_Grammar
+			current = Starter.AIGRAMMER_TEXT
 			
-		Case wrk_chat.TYPE_Grammar
+		Case Starter.AITYPE_Translate
+			current = Starter.AITRANSLATE_TEXT
+			
+		Case Starter.AITYPE_SecondLang
+			If (current = Starter.AIPOOK_TEXT) Then
+				current = Starter.AIPOOK_TEXT
+			Else
+				current = Starter.AISECONDLANG_TEXT
+			End If
+			
+		Case Starter.AITYPE_Pook
+			If (current = Starter.AICHAT_TEXT) Then
+				current = Starter.AICHAT_TEXT
+			Else
+				current = Starter.AIPOOK_TEXT
+			End If
+			
+		Case Starter.AITYPE_Chat
+			current = Starter.AICHAT_TEXT
+			
+	End Select
+	
+'	LogColor("Create Prompt: " & current, Colors.Red)
+	
+	Select current
+		
+		Case Starter.AIGRAMMER_TEXT
 			
 			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
 			
@@ -1258,7 +1288,7 @@ Private Sub CreatePrompt(questionHolder As String) As Map
 				
 			question = questionHolder
 				
-		Case wrk_chat.TYPE_Translate
+		Case Starter.AITRANSLATE_TEXT
 			
 			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
 			
@@ -1275,7 +1305,7 @@ Private Sub CreatePrompt(questionHolder As String) As Map
 			question = questionHolder
 				
 				
-		Case wrk_chat.TYPE_Second
+		Case Starter.AISECONDLANG_TEXT
 				
 			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
 			
@@ -1292,7 +1322,7 @@ Private Sub CreatePrompt(questionHolder As String) As Map
 			question = questionHolder
 				
 				
-		Case wrk_chat.TYPE_Pook
+		Case Starter.AIPOOK_TEXT
 				
 '				'# Teacher
 '				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
@@ -1308,7 +1338,7 @@ Respond in funny, and angry tones of a disrespectful character."$
 				
 			question = questionHolder
 				
-		Case wrk_chat.TYPE_Chat
+		Case Starter.AICHAT_TEXT
 '				sSystem = "You are a smart and helpful assistant."
 			sSystem = "You are an AI assistant. The assistant is helpful, creative, clever, and very friendly."
 			sAssistant = ""

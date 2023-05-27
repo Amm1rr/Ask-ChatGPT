@@ -31,11 +31,17 @@ Sub Process_Globals
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
 	
-	Public Const AITYPE_Grammar 		As Int	= 0
-	Public Const AITYPE_Translate 		As Int 	= 1
-	Public Const AITYPE_SecondLang 		As Int	= 2
-	Public Const AITYPE_Pook 			As Int	= 3
-	Public Const AITYPE_Chat 			As Int	= 4
+	Public Const AITYPE_Grammar 		As Int		= 0
+	Public Const AITYPE_Translate 		As Int 		= 1
+	Public Const AITYPE_SecondLang 		As Int		= 2
+	Public Const AITYPE_Pook 			As Int		= 3
+	Public Const AITYPE_Chat 			As Int		= 4
+	
+	Public Const AIGRAMMER_TEXT  		As String 	= "Check"
+	Public Const AITRANSLATE_TEXT  		As String 	= "Translate"
+	Public Const AISECONDLANG_TEXT  	As String 	= "Second"
+	Public Const AIPOOK_TEXT  			As String 	= "Pook"
+	Public Const AICHAT_TEXT  			As String 	= "Chat"
 	
 End Sub
 
