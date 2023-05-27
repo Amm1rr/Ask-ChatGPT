@@ -110,25 +110,35 @@ End Sub
 
 Private Sub WaitingTimer_Tick
 	
-	Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size-1)
-	If (msg.msgtype = typeMSG.waitingtxt) Then
-		Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
-		Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
+	Try
+		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size-1)
+		If (msg.msgtype = typeMSG.waitingtxt) Then
+			Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
+			Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
 		
-		If (Starter.WaitCount > Starter.WaitTimeout) Then
+			If (Starter.WaitCount > Starter.WaitTimeout) Then
+				Starter.WaitCount = 0
+				Starter.WaitingTimer.Enabled = False
+				WaitingTimer.Enabled = False
+				WriteAnswer("Timeout (try again)", False, "", clvMessages.Size - 2)
+			End If
+		
+			lblTimer.Text = WaitingText & " (" & Starter.WaitCount & " sec)"
+		
+		Else
 			Starter.WaitCount = 0
 			Starter.WaitingTimer.Enabled = False
 			WaitingTimer.Enabled = False
-			WriteAnswer("Timeout (try again)", False, "", clvMessages.Size - 2)
-		Else
-			lblTimer.Text = WaitingText & " (" & Starter.WaitCount & " sec)"
 		End If
+	Catch
+		LogColor("WaitingTimer_Tick:" & LastException, Colors.Red)
 		
-	Else
 		Starter.WaitCount = 0
 		Starter.WaitingTimer.Enabled = False
 		WaitingTimer.Enabled = False
-	End If
+'		WriteAnswer("Timeout (try again)", False, "", clvMessages.Size - 2)
+		
+	End Try
 	 
 End Sub
 

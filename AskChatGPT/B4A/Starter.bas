@@ -43,9 +43,8 @@ Private Sub WaitingTimer_Tick
 	If (WaitCount > WaitTimeout) Then
 '		WaitCount = 0
 		WaitingTimer.Enabled = False
-	Else
-		WaitCount = WaitCount + 1
 	End If
+	WaitCount = WaitCount + 1
 	
 	 
 End Sub
