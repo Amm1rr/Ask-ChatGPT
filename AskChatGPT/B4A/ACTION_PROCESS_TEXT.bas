@@ -5,7 +5,7 @@ Type=Activity
 Version=8.8
 @EndOfDesignText@
 #Region Attributes 
-	#IgnoreWarnings: 9,12
+	#IgnoreWarnings: 12
 #End Region
 
 Sub Process_Globals
@@ -96,6 +96,8 @@ Sub Activity_Create(FirstTime As Boolean)
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
 		SharedQuestion = lblShareText.Text
+		
+		lblShareMenuTopMenu_Click
 	
 	Else If intpub.Action="android.intent.extra.TEXT" Then		'//## Share SECOND
 		
@@ -128,6 +130,8 @@ Sub Activity_Create(FirstTime As Boolean)
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
 		SharedQuestion = lblShareText.Text
+		
+		lblShareMenuTopMenu_Click
 		
 	Else If (Main.TextShared <> "") Then						'//## Share LAST IF
 		
@@ -178,7 +182,7 @@ End Sub
 'SetShadow(Pane1, 4dip, 0xFF757575)
 'SetShadow(Button1, 4dip, 0xFF757575)
 '
-Private Sub SetShadow (View As B4XView, Offset As Double, Color As Int)
+Private Sub SetShadow (View As B4XView, Offset As Double)
     #if B4J
     Dim DropShadow As JavaObject
 	'You might prefer to ignore panels as the shadow is different.

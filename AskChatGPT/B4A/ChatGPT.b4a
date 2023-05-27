@@ -124,7 +124,7 @@ Version=12.2
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
-	#IgnoreWarnings: 9, 12
+	#IgnoreWarnings: 12, 16
 #End Region
 
 #Region Activity Attributes
@@ -180,7 +180,7 @@ Private Sub CheckMessageTimer_Tick
 '		CheckMessageTimeOut = DateTime.Date(DateTime.Now)
 		DateTime.SetTimeZone(0)
 		CheckMessageTimeOut = DateTime.Now
-		Dim timeout As Int = (Starter.TIMEOUT/1000) / 60 '	=> 1.5 Minutes
+'		Dim timeout As Int = (Starter.TIMEOUT/1000) / 60 '	=> 1.5 Minutes
 	End If
 	
 '	If (ConvertTicks(CheckMessageTimeOut) > 1) Then	'	=> 1 Minutes
@@ -197,19 +197,20 @@ Private Sub CheckMessageTimer_Tick
 End Sub
 
 Public Sub ConvertTicks(t As Long) As Int
-	Dim days, hours, minutes, seconds As Int
-	days = t / DateTime.TicksPerDay
-	hours = (t Mod DateTime.TicksPerDay) / DateTime.TicksPerHour
+	Dim minutes As Int
+'	Dim days , hours, minutes, seconds As Int
+'	days = t / DateTime.TicksPerDay
+'	hours = (t Mod DateTime.TicksPerDay) / DateTime.TicksPerHour
 	minutes = (t Mod DateTime.TicksPerHour) / DateTime.TicksPerMinute
-	seconds = (t Mod DateTime.TicksPerMinute) / DateTime.TicksPerSecond
+'	seconds = (t Mod DateTime.TicksPerMinute) / DateTime.TicksPerSecond
 	
-	Dim day As Int = days
-	Dim hour As Int = NumberFormat(hours, 2, 0)
-    Dim minu As Int = NumberFormat(minutes, 2, 0)
-	Dim seconds As Int = NumberFormat(seconds, 2, 0)
-	
-	Log (days & " days, " & NumberFormat(hours, 2, 0) & " hours, " _
-        & NumberFormat(minutes, 2, 0) & " minutes and " & NumberFormat(seconds, 2, 0) & " seconds")
+'	Dim day As Int = days
+'	Dim hour As Int = NumberFormat(hours, 2, 0)
+	Dim minu As Int = NumberFormat(minutes, 2, 0)
+'	Dim seconds As Int = NumberFormat(seconds, 2, 0)
+'	
+'	Log (days & " days, " & NumberFormat(hours, 2, 0) & " hours, " _
+'        & NumberFormat(minutes, 2, 0) & " minutes and " & NumberFormat(seconds, 2, 0) & " seconds")
 	
 	Return minu
 	
@@ -415,52 +416,51 @@ Private Sub ShareText(text As String)
 End Sub
 
 Private Sub SendToInstagram(text As String)
-'	MyLog("SendToInstagram: " & text, ColorLog, False)
-'	Dim u As Uri 'ContentResolver library
+	MyLog("SendToInstagram: " & text, ColorLog, False)
+	Dim u As Uri 'ContentResolver library
 '	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
-'	Dim inten As Intent
-'	Dim tmpt As String = "your text"
-'	inten.Initialize(inten.ACTION_SEND,"")
-'	inten.SetType("image/*")
-'	inten.PutExtra("android.intent.extra.STREAM",u)
-'	inten.PutExtra("android.intent.extra.TEXT",tmpt)
-'	inten.SetComponent("com.instagram.android/com.instagram.share.handleractivity.ShareHandlerActivity")
-'	StartActivity(inten)
+	Dim inten As Intent
+	Dim tmpt As String = "your text"
+	inten.Initialize(inten.ACTION_SEND,"")
+	inten.SetType("image/*")
+	inten.PutExtra("android.intent.extra.STREAM",u)
+	inten.PutExtra("android.intent.extra.TEXT",tmpt)
+	inten.SetComponent("com.instagram.android/com.instagram.share.handleractivity.ShareHandlerActivity")
+	StartActivity(inten)
 End Sub
 
 Private Sub SendToTwitter(text As String)
-'	MyLog("SendToTwitter: " & text, ColorLog, False)
-'	Dim u As Uri 'ContentResolver library
+	MyLog("SendToTwitter: " & text, ColorLog, False)
+	Dim u As Uri 'ContentResolver library
 '	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
-'	Dim inten As Intent
-'	Dim tmpt As String = "your text"
-'	inten.Initialize(inten.ACTION_SEND,"")
-'	inten.SetType("image/*")
-'	inten.PutExtra("android.intent.extra.STREAM",u)
-'	inten.PutExtra("android.intent.extra.TEXT",tmpt)
-'	inten.SetComponent("com.twitter.android/com.twitter.composer.ComposerActivity")
-'	StartActivity(inten)
+	Dim inten As Intent
+	Dim tmpt As String = "your text"
+	inten.Initialize(inten.ACTION_SEND,"")
+	inten.SetType("image/*")
+	inten.PutExtra("android.intent.extra.STREAM",u)
+	inten.PutExtra("android.intent.extra.TEXT",tmpt)
+	inten.SetComponent("com.twitter.android/com.twitter.composer.ComposerActivity")
+	StartActivity(inten)
 
 
-'	Dim IntentInstagram As String
-'	Dim IntentTwitter As String
-'	Dim pm As PackageManager
-'    
-'	For Each cn As String In pm.QueryIntentActivities(inten)
-'		'Instagram
-'		If cn.SubString2(0,19) = "com.twitter.android" Then
-'			IntentTwitter = cn
-'			Exit
-'		End If
-'
-'		'OR
-'
-'		'Twitter
-'		If cn.SubString2(0,21) = "com.instagram.android" Then
-'			IntentInstagram = cn
-'			Exit
-'		End If
-'	Next
+	
+	Dim pm As PackageManager
+    
+	For Each cn As String In pm.QueryIntentActivities(inten)
+		'Instagram
+		If cn.SubString2(0,19) = "com.twitter.android" Then
+'			Dim IntentTwitter As String = cn
+			Exit
+		End If
+
+		'OR
+
+		'Twitter
+		If cn.SubString2(0,21) = "com.instagram.android" Then
+'			Dim IntentInstagram As String = cn
+			Exit
+		End If
+	Next
 End Sub
 
 #if Java

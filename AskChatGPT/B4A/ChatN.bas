@@ -5,7 +5,7 @@ Type=Class
 Version=12.2
 @EndOfDesignText@
 #Region Attributes 
-	#IgnoreWarnings: 9,12,11
+	#IgnoreWarnings: 12, 11
 #End Region
 
 Sub Class_Globals
@@ -82,7 +82,7 @@ Sub Class_Globals
 	Private base As B4XView
 	Private Scrolled As Boolean
 	Private StartOffset As Float
-	Private ScrollPosition As Float
+'	Private ScrollPosition As Float
 '	Private lastY As Float
 	
 	Private lblClearText As Label
@@ -647,7 +647,7 @@ Private Sub tpc_OnInterceptTouchEvent (Action As Int, X As Float, Y As Float, Mo
 '		If inner <> Null Then
 			StartOffset = Y
 			Scrolled = False
-			ScrollPosition =  clvMessages.sv.ScrollViewOffsetY
+'			ScrollPosition =  clvMessages.sv.ScrollViewOffsetY
 			Return True
 '		End If
 	End If
@@ -1503,14 +1503,14 @@ End Sub
 ''	End If
 'End Sub
 
-Private Sub ChangeHeight(height As Int)
+'Private Sub ChangeHeight(height As Int)
 ''	MyLog("ChangeHeight: " & height, ColorLog, False)
 '	Dim y As Int = DipToCurrent(webAnswerExtra.GetContentHeight) * webAnswerExtra.GetScale / 100
 '	webAnswerExtra.FlingScroll(0, y * 100)
 '	pnlAnswer.Height = webAnswerExtra.GetContentHeight
 ''	webAnswer.Height = webAnswerExtra.GetContentHeight
 '	LogColor(webAnswerExtra.GetContentHeight, Colors.Magenta)
-End Sub
+'End Sub
 
 Private Sub SaveMessage(title As String)
 	
@@ -1645,7 +1645,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	'// This line convert response to error type, Only for Debug and Test
 '	responsetext = wrk_chat.ServerError
 	
-	Dim txtnew As String = txtQuestion.Text
+'	Dim txtnew As String = txtQuestion.Text
 	
 	Select responsetext
 		Case wrk_chat.TimeoutText:

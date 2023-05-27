@@ -5,7 +5,7 @@ Type=StaticCode
 Version=12.2
 @EndOfDesignText@
 #Region Attributes 
-	#IgnoreWarnings: 0, 12
+	#IgnoreWarnings: 12
 #End Region
 
 Sub Process_Globals

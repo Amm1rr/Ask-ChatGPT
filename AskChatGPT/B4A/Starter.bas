@@ -7,7 +7,7 @@ Version=9.85
 #Region  Service Attributes 
 	#StartAtBoot: False
 	#ExcludeFromLibrary: True
-	#IgnoreWarnings: 12
+	#IgnoreWarnings: 
 #End Region
 
 Sub Process_Globals
@@ -512,43 +512,43 @@ Private Sub ParseJSONEditMode(json As String) As String 'As Map
 	'    Return result
 	Return choice.Get("text")
 End Sub
-
-Private Sub ParseJSONTranslate(jsonString As String) As String 'As Map
-	Dim JSON As JSONParser
-	JSON.Initialize(jsonString)
-	Dim root As Map = JSON.NextObject
-    
-	Dim id As String = root.Get("id")
-	Dim obj As String = root.Get("object")
-	Dim created As Long = root.Get("created")
-	Dim model As String = root.Get("model")
-    
-	Dim choices As List = root.Get("choices")
-	Dim choice As Map = choices.Get(0)
-	Dim text As String = choice.Get("text")
-	Dim index As Int = choice.Get("index")
-	Dim logprobs As Object = choice.Get("logprobs")
-	Dim finish_reason As String = choice.Get("finish_reason")
-    
-	Dim usage As Map = root.Get("usage")
-	Dim prompt_tokens As Int = usage.Get("prompt_tokens")
-	Dim completion_tokens As Int = usage.Get("completion_tokens")
-	Dim total_tokens As Int = usage.Get("total_tokens")
-    
-	Dim parsedData As Map
-	parsedData.Initialize
-	parsedData.Put("id", id)
-	parsedData.Put("object", obj)
-	parsedData.Put("created", created)
-	parsedData.Put("model", model)
-	parsedData.Put("text", text)
-	parsedData.Put("index", index)
-	parsedData.Put("logprobs", logprobs)
-	parsedData.Put("finish_reason", finish_reason)
-	parsedData.Put("prompt_tokens", prompt_tokens)
-	parsedData.Put("completion_tokens", completion_tokens)
-	parsedData.Put("total_tokens", total_tokens)
-    
-	'    Return parsedData
-	Return text
-End Sub
+'
+'Private Sub ParseJSONTranslate(jsonString As String) As String 'As Map
+'	Dim JSON As JSONParser
+'	JSON.Initialize(jsonString)
+'	Dim root As Map = JSON.NextObject
+'    
+'	Dim id As String = root.Get("id")
+'	Dim obj As String = root.Get("object")
+'	Dim created As Long = root.Get("created")
+'	Dim model As String = root.Get("model")
+'    
+'	Dim choices As List = root.Get("choices")
+'	Dim choice As Map = choices.Get(0)
+'	Dim text As String = choice.Get("text")
+'	Dim index As Int = choice.Get("index")
+'	Dim logprobs As Object = choice.Get("logprobs")
+'	Dim finish_reason As String = choice.Get("finish_reason")
+'    
+'	Dim usage As Map = root.Get("usage")
+'	Dim prompt_tokens As Int = usage.Get("prompt_tokens")
+'	Dim completion_tokens As Int = usage.Get("completion_tokens")
+'	Dim total_tokens As Int = usage.Get("total_tokens")
+'    
+'	Dim parsedData As Map
+'	parsedData.Initialize
+'	parsedData.Put("id", id)
+'	parsedData.Put("object", obj)
+'	parsedData.Put("created", created)
+'	parsedData.Put("model", model)
+'	parsedData.Put("text", text)
+'	parsedData.Put("index", index)
+'	parsedData.Put("logprobs", logprobs)
+'	parsedData.Put("finish_reason", finish_reason)
+'	parsedData.Put("prompt_tokens", prompt_tokens)
+'	parsedData.Put("completion_tokens", completion_tokens)
+'	parsedData.Put("total_tokens", total_tokens)
+'    
+'	'    Return parsedData
+'	Return text
+'End Sub
