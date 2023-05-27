@@ -481,7 +481,7 @@ Private Sub LoadLangTabs
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
 		
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT)
 		If (General.Pref.FirstLang = "Persian") Then
 			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
 		Else
@@ -492,18 +492,18 @@ Private Sub LoadLangTabs
 		Else
 			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
 		End If
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"),"Chat")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT)
 		
 	Else
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"),"Check")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT)
 		If (General.Pref.FirstLang = "Persian") Then
 			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
 		Else
 			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
 		End If
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"),"Pook")
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"),"Chat")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT)
 		
 	End If
 	
