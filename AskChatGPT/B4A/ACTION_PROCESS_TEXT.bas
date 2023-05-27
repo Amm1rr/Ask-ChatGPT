@@ -23,16 +23,11 @@ Sub Globals
 	
 	Private dd 	As DDD
 	Private xui As XUI
-	Private icConfigTopMenu As ImageView
+	Private icShareConfigTopMenu As ImageView
 	Private icShareMenuTopMenu As ImageView
 	Private lblShareTitleTopMenu As Label
 	Private panShare As Panel
 	Private pShareTopMenu As Panel
-	Private chkShareAllign As CheckBox
-	Private chkShareGrammar As CheckBox
-	Private chkShareSec As CheckBox
-	Private chkShareTranslate As CheckBox
-	Private icShareMenuTopMenu As ImageView
 	Private lblShareText As Label
 	Private panShareToolbar As Panel
 	
@@ -74,10 +69,10 @@ Sub Activity_Create(FirstTime As Boolean)
 	intpub = Activity.GetStartingIntent
 	Activity.LoadLayout("Share")
 	
-	If intpub.Action="android.intent.action.PROCESS_TEXT" Then
+	If intpub.Action="android.intent.action.PROCESS_TEXT" Then '//## Share Menu
 		SharedText = Activity.GetStartingIntent.GetExtra("android.intent.extra.PROCESS_TEXT")
 		
-		MyLog($"Activity_Resume: ${SharedText}"$, ColorLog, True)
+		LogColor($"Share Menu: ${SharedText}"$, Colors.Red)
 		
 '		General.Set_StatusBarColor(0xFF74A5FF)
 		
@@ -102,8 +97,11 @@ Sub Activity_Create(FirstTime As Boolean)
 		lblShareResult.Text = SharedText
 		SharedQuestion = lblShareText.Text
 	
-	Else If intpub.Action="android.intent.extra.TEXT" Then
+	Else If intpub.Action="android.intent.extra.TEXT" Then		'//## Share SECOND
+		
 		Dim intent As JavaObject = Activity.GetStartingIntent
+		
+		LogColor($"Share SECOND: ${intent}"$, Colors.Red)
 		
 		Dim cType As String = intent.RunMethod("getType", Null)
 		If Not (cType.Contains("text")) Then Return
@@ -114,19 +112,31 @@ Sub Activity_Create(FirstTime As Boolean)
 		lblShareResult.Text = SharedText
 		SharedQuestion = lblShareText.Text
 	
-	Else If IsRelevantIntent(intpub) Then
+	Else If IsRelevantIntent(intpub) Then						'//## Share Text
 		
 		SharedText = intpub.GetExtra("android.intent.extra.TEXT")
+		
+		LogColor($"Share Menu: ${SharedText}"$, Colors.Red)
+		
+'		Dim res As Map = StartMagic(questionHolder)
+'		Dim sSystem As String = res.Get("System")
+'		Dim question As String = res.Get("Question")
+'		Dim sAssistant As String = res.Get("Assistant")
+'		Dim questionHolder As String = res.Get("QuestionHolder")
+'		Ask(sSystem, question, sAssistant, questionHolder)
+		
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText
 		SharedQuestion = lblShareText.Text
 		
-	Else If (Main.TextShared <> "") Then
+	Else If (Main.TextShared <> "") Then						'//## Share LAST IF
 		
 		Dim cs As CSBuilder
 			cs.Initialize
 			cs.Color(Colors.Gray).Append(Application.LabelName & " " & Application.VersionCode).Color(Colors.Blue).Append(Application.VersionName).PopAll
 		lblShareTitleTopMenu.Text = cs
+		
+		LogColor($"Share Last IF: ${SharedText}"$, Colors.Red)
 		
 		lblShareText.Text = SharedText
 		lblShareResult.Text = SharedText

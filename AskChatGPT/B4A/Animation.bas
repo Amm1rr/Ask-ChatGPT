@@ -4,6 +4,10 @@ ModulesStructureVersion=1
 Type=StaticCode
 Version=12.2
 @EndOfDesignText@
+#Region Attributes 
+	#IgnoreWarnings: 12
+#End Region
+
 'Code module
 'Subs in this code module will be accessible from all modules.
 Sub Process_Globals

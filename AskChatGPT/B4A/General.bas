@@ -5,13 +5,12 @@ Type=StaticCode
 Version=12.2
 @EndOfDesignText@
 #Region Attributes 
-	#IgnoreWarnings: 0
+	#IgnoreWarnings: 0, 12
 #End Region
 
 Sub Process_Globals
 	Private xui 					As XUI
 	Private ColorLog				As Int 		= Colors.LightGray
-	Public 	Sett 					As KeyValueStore
 	Public 	Pref 					As Setting
 	Public  IsDebug					As Boolean 	= False
 	Public 	SaveFileName			As String 	= "AskChatGPT.save"
@@ -27,18 +26,17 @@ Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 	
 	DateTime.DateFormat = "HH:mm:ss.SSS"
 	Dim time As String  = DateTime.Date(DateTime.Now)
-	
-	Return
-	
-	If (AlwaysShow) Then
-		LogColor(text & TAB & " (" & time & ")", color)
-		Return
-	End If
 		
 	If (IsDebug) Then
 		LogColor(text & TAB & " (" & time & ")", color)
 		Return
 	End If
+	
+	If (AlwaysShow) Then
+		LogColor(text & TAB & " (" & time & ")", color)
+		Return
+	End If
+	
 End Sub
 
 Private Sub CreateDB

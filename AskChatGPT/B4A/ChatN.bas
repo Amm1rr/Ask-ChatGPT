@@ -5,7 +5,7 @@ Type=Class
 Version=12.2
 @EndOfDesignText@
 #Region Attributes 
-	#IgnoreWarnings: 9,12
+	#IgnoreWarnings: 9,12,11
 #End Region
 
 Sub Class_Globals
@@ -62,17 +62,17 @@ Sub Class_Globals
 	Private pnlQuestion As Panel
 	Private imgQuestion As ImageView
 	
-	Private webAnswer As WebView
-	Private md As md2html
+'	Private webAnswer As WebView
+'	Private md As md2html
 	
-	Private webAnswerExtra As WebViewExtras
-	Private jsi As DefaultJavascriptInterface
+'	Private webAnswerExtra As WebViewExtras
+'	Private jsi As DefaultJavascriptInterface
 	
 	Private panToolbar 			As B4XView
 	Private lblPaste As Label
 	Public panMain As Panel
-	Private webQuestion As WebView
-	Private btnMore As Button
+'	Private webQuestion As WebView
+'	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
 	Private dd 	As DDD
 	Private Drawer As B4XDrawerAdvanced
@@ -83,7 +83,7 @@ Sub Class_Globals
 	Private Scrolled As Boolean
 	Private StartOffset As Float
 	Private ScrollPosition As Float
-	Private lastY As Float
+'	Private lastY As Float
 	
 	Private lblClearText As Label
 	Private panTextToolbar As Panel
@@ -618,7 +618,7 @@ Private Sub panMain_Touch_OLD (Action As Int, X As Float, Y As Float) As Boolean
 				If Abs(deltaOffset) > 10dip Then Scrolled = True
 			End If
 			If Scrolled Then
-				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
+'				webAnswerExtra.FlingScroll(0, ScrollPosition + Y)
 			End If
 			LogColor("panMain_Touch_ACTION_MOVE: " & deltaOffset, Colors.LightGray)
 		Case base.TOUCH_ACTION_UP
@@ -709,7 +709,7 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 		
 					p.LoadLayout("clvAnswerRow")
 					lblAnswer.Text = m.message
-					webAnswer.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
+'					webAnswer.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
 					
 					imgAnswer.Height = 3%y
 					imgAnswer.Top = 0
@@ -756,10 +756,10 @@ Private Sub TTTclvMessages_VisibleRangeChanged (FirstIndex As Int, LastIndex As 
 '					pnlAnswer.Height = webAnswer.Height + TopMargin + BottomMargin
 					clvMessages.ResizeItem(i,pnlAnswer.Height)
 					
-					webAnswerExtra.Initialize(webAnswer)
-					jsi.Initialize
-					webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
-					pnlAnswer.Height = webAnswer.Height + 100
+'					webAnswerExtra.Initialize(webAnswer)
+'					jsi.Initialize
+'					webAnswerExtra.AddJavascriptInterface(jsi,"B4A")
+'					pnlAnswer.Height = webAnswer.Height + 100
 					clvMessages.ResizeItem(i, pnlAnswer.Height)
 				
 				Else
@@ -1177,89 +1177,11 @@ Public Sub imgSend_Click
 		
 		ClickSimulation
 		
-		Dim question As String = questionHolder
-		Dim sAssistant As String
-		Dim sSystem As String
-		
-		Select flowTabToolbar.CurrentIndex
-			
-			Case wrk_chat.TYPE_Grammar
-			
-				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
-				
-				If (General.IsAWord(question)) Then
-					sSystem = $"Change this into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}."$
-				Else
-'					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
-					sSystem = $"Correct text to ${General.Pref.FirstLang}:"$
-				End If
-				
-				sAssistant = ""
-				
-				question = questionHolder
-				
-			Case wrk_chat.TYPE_Translate
-			
-				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
-				
-				If (General.IsAWord(question)) Then
-'					sSystem = $"* with a minimum of tokens."$
-'					sSystem = $"* using ${General.Pref.FirstLang}."$
-					sSystem = $"Translate into ${General.Pref.FirstLang} and Show definitions and synonyms:"$
-				Else
-					sSystem = $"Translate into standard ${General.Pref.FirstLang}:"$
-				End If
-				
-				sAssistant = ""
-				
-				question = questionHolder
-				
-				
-			Case wrk_chat.TYPE_Second
-				
-				ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
-				
-				If (General.IsAWord(question)) Then
-'					sSystem = $"* with a minimum of tokens."$
-'					sSystem = $"* using ${General.Pref.SecondLang}."$
-					sSystem = $"Translate into ${General.Pref.SecondLang} and Show definitions and synonyms:"$
-				Else
-					sSystem = $"Translate into standard ${General.Pref.SecondLang}:"$
-				End If
-				
-				sAssistant = ""
-				
-				question = questionHolder
-				
-				
-			Case wrk_chat.TYPE_Pook
-				
-'				'# Teacher
-'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
-'				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
-				
-				'# Funny Angry Teacher
-'				sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
-'Respond in ${General.Pref.FirstLang} funny, And angry tones of a disrespectful character."$
-				sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
-Respond in funny, and angry tones of a disrespectful character."$
-				
-				sAssistant = ""
-				
-				question = questionHolder
-				
-			Case wrk_chat.TYPE_Chat
-'				sSystem = "You are a smart and helpful assistant."
-				sSystem = "You are an AI assistant. The assistant is helpful, creative, clever, and very friendly."
-				sAssistant = ""
-				
-				question = questionHolder
-				
-		End Select
-		
-'		LogColor("System: " & sSystem, Colors.Red)
-'		LogColor("Question: " & question, Colors.Red)
-'		LogColor("Assistant: " & sAssistant, Colors.Red)
+		Dim res As Map = CreatePrompt(questionHolder)
+			Dim sSystem As String = res.Get("System")
+			Dim question As String = res.Get("Question")
+			Dim sAssistant As String = res.Get("Assistant")
+			Dim questionHolder As String = res.Get("QuestionHolder")
 		
 		If (RetryCount > 1) Then
 			LogColor("Red", Colors.Red)
@@ -1310,6 +1232,103 @@ Respond in funny, and angry tones of a disrespectful character."$
 '		Dim ta As TextView = txtQuestion
 '			ta.SelectAll
 '	#end if
+	
+End Sub
+
+Private Sub CreatePrompt(questionHolder As String) As Map
+	
+	Dim question As String = questionHolder
+	Dim sAssistant As String
+	Dim sSystem As String
+		
+	Select flowTabToolbar.CurrentIndex
+			
+		Case wrk_chat.TYPE_Grammar
+			
+			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
+			
+			If (General.IsAWord(question)) Then
+				sSystem = $"Change this into ${General.Pref.FirstLang} or translate it into ${General.Pref.FirstLang}."$
+			Else
+'					sSystem = $"Change this into ${General.Pref.FirstLang} or Translate it into ${General.Pref.FirstLang}."$
+				sSystem = $"Correct text to ${General.Pref.FirstLang}:"$
+			End If
+			
+			sAssistant = ""
+				
+			question = questionHolder
+				
+		Case wrk_chat.TYPE_Translate
+			
+			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
+			
+			If (General.IsAWord(question)) Then
+'					sSystem = $"* with a minimum of tokens."$
+'					sSystem = $"* using ${General.Pref.FirstLang}."$
+				sSystem = $"Translate into ${General.Pref.FirstLang} and Show definitions and synonyms:"$
+			Else
+				sSystem = $"Translate into standard ${General.Pref.FirstLang}:"$
+			End If
+				
+			sAssistant = ""
+				
+			question = questionHolder
+				
+				
+		Case wrk_chat.TYPE_Second
+				
+			ResetAI:IsWorking = True:Main.GetIsWorking = IsWorking
+			
+			If (General.IsAWord(question)) Then
+'					sSystem = $"* with a minimum of tokens."$
+'					sSystem = $"* using ${General.Pref.SecondLang}."$
+				sSystem = $"Translate into ${General.Pref.SecondLang} and Show definitions and synonyms:"$
+			Else
+				sSystem = $"Translate into standard ${General.Pref.SecondLang}:"$
+			End If
+				
+			sAssistant = ""
+				
+			question = questionHolder
+				
+				
+		Case wrk_chat.TYPE_Pook
+				
+'				'# Teacher
+'				sSystem = $"Act as a strict teacher and correct my grammar, typos, and factual errors. Answer with an air of disapproval and disdain."$
+'				sSystem = $"You are an AI assistant. The assistant is helpful, creative, clever, Act as a strict teacher and correct my grammar, typos, and factual errors. Respond in the friendly, funny, and angry tones of a disrespectful character."$
+				
+			'# Funny Angry Teacher
+'				sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
+			'Respond in ${General.Pref.FirstLang} funny, And angry tones of a disrespectful character."$
+			sSystem = $"You are a Pook assistant. The assistant is helpful, creative, and clever, acts as a strict teacher and corrects my grammar, typos, and factual errors.
+Respond in funny, and angry tones of a disrespectful character."$
+				
+			sAssistant = ""
+				
+			question = questionHolder
+				
+		Case wrk_chat.TYPE_Chat
+'				sSystem = "You are a smart and helpful assistant."
+			sSystem = "You are an AI assistant. The assistant is helpful, creative, clever, and very friendly."
+			sAssistant = ""
+				
+			question = questionHolder
+				
+	End Select
+		
+'		LogColor("System: " & sSystem, Colors.Red)
+'		LogColor("Question: " & question, Colors.Red)
+'		LogColor("Assistant: " & sAssistant, Colors.Red)
+	
+	Dim res As Map
+		res.Initialize
+		res.Put("System", sSystem)
+		res.Put("Question", question)
+		res.Put("Assistant", sAssistant)
+		res.Put("QuestionHolder", questionHolder)
+		
+	Return res
 	
 End Sub
 
@@ -1485,12 +1504,12 @@ End Sub
 'End Sub
 
 Private Sub ChangeHeight(height As Int)
-'	MyLog("ChangeHeight: " & height, ColorLog, False)
-	Dim y As Int = DipToCurrent(webAnswerExtra.GetContentHeight) * webAnswerExtra.GetScale / 100
-	webAnswerExtra.FlingScroll(0, y * 100)
-	pnlAnswer.Height = webAnswerExtra.GetContentHeight
-	webAnswer.Height = webAnswerExtra.GetContentHeight
-	LogColor(webAnswerExtra.GetContentHeight, Colors.Magenta)
+''	MyLog("ChangeHeight: " & height, ColorLog, False)
+'	Dim y As Int = DipToCurrent(webAnswerExtra.GetContentHeight) * webAnswerExtra.GetScale / 100
+'	webAnswerExtra.FlingScroll(0, y * 100)
+'	pnlAnswer.Height = webAnswerExtra.GetContentHeight
+''	webAnswer.Height = webAnswerExtra.GetContentHeight
+'	LogColor(webAnswerExtra.GetContentHeight, Colors.Magenta)
 End Sub
 
 Private Sub SaveMessage(title As String)
@@ -2089,10 +2108,10 @@ End Sub
 
 
 Private Sub btnMore_Click
-'	Dim y As Int = webAnswerExtra.GetContentHeight * webAnswerExtra.GetScale / 100
-'	ChangeHeight(y)
-	webAnswer.Height = pnlAnswer.Height * pnlAnswer.Height
-	pnlAnswer.Height = webAnswer.Height
+''	Dim y As Int = webAnswerExtra.GetContentHeight * webAnswerExtra.GetScale / 100
+''	ChangeHeight(y)
+'	webAnswer.Height = pnlAnswer.Height * pnlAnswer.Height
+'	pnlAnswer.Height = webAnswer.Height
 End Sub
 
 'Example:

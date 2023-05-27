@@ -7,6 +7,7 @@ Version=9.85
 #Region  Service Attributes 
 	#StartAtBoot: False
 	#ExcludeFromLibrary: True
+	#IgnoreWarnings: 12
 #End Region
 
 Sub Process_Globals
