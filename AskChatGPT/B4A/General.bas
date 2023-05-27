@@ -355,7 +355,7 @@ Public Sub PlaySound
 		Dim media As MediaPlayer
 			media.Initialize
 			media.SetVolume(0.5, 0.5)
-			media.Load(File.DirAssets, "3.mp3")
+			media.Load(File.DirAssets, "Notice.mp3")
 			media.Play
 	Catch
 		Log("General.PlaySound: " & LastException)

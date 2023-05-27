@@ -1,6 +1,6 @@
 **Privacy Policy**
 
-Mohammad Khani built the Ask ChatGPT app as a Commercial app. This SERVICE is provided by Mohammad Khani and is intended for use as is.
+Amm1rr (on github) built the Ask ChatGPT app as a Free app. This SERVICE is provided by Amm1rr and is intended for use as is.
 
 This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
 

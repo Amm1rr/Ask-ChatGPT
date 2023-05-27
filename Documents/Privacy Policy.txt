@@ -8,9 +8,9 @@
     </head>
     <body>
     <strong>Privacy Policy</strong> <p>
-                  Mohammad Khani built the Ask ChatGPT app as
+                  Amm1rr (on github) built the Ask ChatGPT app as
                   a Commercial app. This SERVICE is provided by
-                  Mohammad Khani  and is intended for use as
+                  Amm1rr and is intended for use as
                   is.
                 </p> <p>
                   This page is used to inform visitors regarding my
