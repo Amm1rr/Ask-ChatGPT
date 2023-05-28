@@ -274,9 +274,12 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
 		csAppVersion.Color(Colors.RGB(140,0,0)).Size(18).Append(CRLF & CRLF & TAB & TAB & Application.LabelName & CRLF).Pop
-		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB}${TAB}${TAB} Build ${Application.VersionCode} ${CRLF}${TAB}${TAB}${TAB} ${Application.VersionName}"$).Pop
-		csAppVersion.Append(CRLF & CRLF & CRLF & CRLF & CRLF & CRLF).Color(Colors.DarkGray).Size(14).Clickable("csTitle", "site").Append("🔗").Pop
-		csAppVersion.Color(Colors.RGB(48,84,187)).Clickable("csTitle", "site").Size(12).Clickable("csTitle", "name").Append("   github.com/Amm1rr").Pop
+		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB}${TAB}${TAB} Build ${Application.VersionCode} ${CRLF}${TAB}${TAB}${TAB} ${Application.VersionName}${CRLF}${CRLF}"$).Pop
+		csAppVersion.Color(Colors.RGB(25,126,40)).Append(TAB & TAB & "Full Version").Size(18).Pop
+		csAppVersion.Color(Colors.LightGray).Size(11).Append(CRLF & CRLF & "MIT License - Freeware").Pop
+		csAppVersion.Append(CRLF & CRLF & CRLF & CRLF).Color(Colors.DarkGray).Size(14).Clickable("csTitle", "site").Append("🔗").Pop
+		csAppVersion.Color(Colors.RGB(48,84,187)).Clickable("csTitle", "site").Size(12).Clickable("csTitle", "name").Append("   https://github.com/Amm1rr").Pop
+		csAppVersion.Append(CRLF & CRLF & CRLF & TAB & TAB & TAB & TAB & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright (c) 2023").Pop
 		csAppVersion.PopAll
 	
 	Dim csAbout As CSBuilder
