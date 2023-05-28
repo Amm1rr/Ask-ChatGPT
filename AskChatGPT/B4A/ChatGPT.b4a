@@ -265,7 +265,12 @@ Sub Activity_Pause (UserClosed As Boolean)
 	ChatN1.IME_HeightChanged(100%y, 0)
 	General.SaveSettingDB
 	
-	If (UserClosed) Then General.sql.Close
+	If (UserClosed) Then
+		General.sql.Close
+		StopService(Starter)
+		Activity.Finish
+		ExitApplication
+	End If
 	
 End Sub
 
@@ -342,49 +347,105 @@ End Sub
 
 Public Sub CheckMessageList
 	
-	Dim count As Int = Starter.MessageList.Size - 1
-				
+
 	Log("CheckMessageList: " & Starter.MessageList)
-	
+
 	Try
-		For i = 0 To count
-'			Log("Here " & i & "/" & count)
-			Dim stack As Map = Starter.MessageList.Get(i)
-'			Log(stack)
-			Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
-'			Log(indx)
-			Dim resp As String = stack.GetDefault("Response", "")
-'			Log(resp)
-			
+		Dim lstDelete As List
+			lstDelete.Initialize
+		
+		For i = Starter.MessageList.Size - 1 To 0 Step -1
+			Dim stack 	As Map 		= Starter.MessageList.Get(i)
+			Dim indx 	As Int 		= stack.GetDefault("QuestionIndex", 0)
+			Dim resp 	As String 	= stack.GetDefault("Response", "")
+
 			If (resp <> "") Then
-				
 				LogColor("Inside IF", Colors.Red)
-				
+
 				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
 				Log("Question: " & ques)
-				
-				Dim answ As textMessage = ChatN1.clvMessages.GetValue(ChatN1.clvMessages.Size-1)
+
+				Dim answ As textMessage = ChatN1.clvMessages.GetValue(ChatN1.clvMessages.Size - 1)
 				Log("Answer: " & answ)
+
 				If (answ.msgtype = 3) Then '// 0: Answer 1: Question 3: WaitingText
-					Starter.MessageList.RemoveAt(i)
-					
+					lstDelete.Add(i)
+
 					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
-					
 					ChatN1.AddtoHistory(ques.Message, resp)
 				End If
-				
 			End If
-			
+		Next
+		
+		For i = lstDelete.Size - 1 To 0 Step -1
+			Log(lstDelete.Get(i) & "/" & lstDelete.Size)
+			Starter.MessageList.RemoveAt(lstDelete.Get(i))
 		Next
 		
 	Catch
 		Log(Starter.MessageList)
 		Log(Starter.MessageList.Size)
 		Log(LastException)
-		CheckMessageTimer.Enabled = True
+'		CheckMessageTimer.Enabled = True
 	End Try
 	
 End Sub
+
+
+'Public Sub CheckMessageList
+'	
+'	Dim count As Int = Starter.MessageList.Size - 1
+'	Dim lstDelete As List
+'		lstDelete.Initialize
+'	
+'	Log("CheckMessageList: " & Starter.MessageList)
+'	
+''	Try
+'		For i = 0 To count
+''			Log("Here " & i & "/" & count)
+'			
+'			Dim stack As Map = Starter.MessageList.Get(i)
+''			Log(stack)
+'			Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
+''			Log(indx)
+'			Dim resp As String = stack.GetDefault("Response", "")
+''			Log(resp)
+'			
+'			If (resp <> "") Then
+'				
+'				LogColor("Inside IF", Colors.Red)
+'				
+'				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
+'				Log("Question: " & ques)
+'				
+'				Dim answ As textMessage = ChatN1.clvMessages.GetValue(ChatN1.clvMessages.Size-1)
+'				Log("Answer: " & answ)
+'				If (answ.msgtype = 3) Then '// 0: Answer 1: Question 3: WaitingText
+'					
+'					lstDelete.Add(i)
+'					
+'					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
+'					
+'					ChatN1.AddtoHistory(ques.Message, resp)
+'				End If
+'				
+'			End If
+'		Next
+'		
+'		For i = 0 To lstDelete.Size - 1
+'			Log(lstDelete.Get(i) & "/" & lstDelete.Size)
+'			Starter.MessageList.RemoveAt(lstDelete.Get(i))
+'		Next
+'		
+'		
+''	Catch
+''		Log(Starter.MessageList)
+''		Log(Starter.MessageList.Size)
+''		Log(LastException)
+'''		CheckMessageTimer.Enabled = True
+''	End Try
+'	
+'End Sub
 
 Private Sub Activity_KeyPress (KeyCode As Int) As Boolean 'Return True to consume the event
 	If KeyCode = KeyCodes.KEYCODE_BACK Then

@@ -432,11 +432,10 @@ Public Sub Query(system_string As String, _
 			stack.Put("Response", response)
 '			Log("Stack => " & stack)
 			MessageList.Add(stack)
-			
+'			Exit
 		End If
-		
 	Next
-	
+		
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
 	
