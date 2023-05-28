@@ -96,8 +96,6 @@ Sub Class_Globals
 	Private lblWaitingText As ResizingTextComponent
 	Private panWaitingText As Panel
 	Private lblSample As Label
-	Private btnLoad As Button
-	Private btnSave As Button
 	Private panRightMainDrawer As Panel
 	Private clvTitles	As CustomListView
 	
@@ -108,6 +106,7 @@ Sub Class_Globals
 	Private WaitingTimer As Timer
 	
 	Private TitleClickAnimation As Boolean = False
+	Private lblNewMSG As Label
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -942,7 +941,7 @@ Private Sub TextboxHeightChange(text As String)
 	
 	MyLog("TextboxHeightChange: " & text, ColorLog, False)
 	
-	Private i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
+	Dim i As Int = su.MeasureMultilineTextHeight(txtQuestion, text)
 	If i > MaximumSize Then Return 'Reached the size limit.
 	
 	
@@ -989,6 +988,7 @@ Private Sub TextboxHeightChange(text As String)
 			AdjustSize_Clv(0, False)
 		End If
 	End If
+	
 End Sub
 
 public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
@@ -1043,6 +1043,7 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, NewHeight - panBottom.Height - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
+		lblNewMSG.Top = panToolbar.Top - 5%y
 	Else							' Half Screen
 '		LogColor("ChatN.IME_HeightChanged.Half: " & NewHeight, ColorLog)
 		
@@ -1053,7 +1054,7 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
-		
+		lblNewMSG.Top = panToolbar.Top - 5%y
 	End If
 	
 '	clvMessages.sv.Height = NewHeight
@@ -1546,8 +1547,6 @@ Private Sub SaveMessage(title As String)
 	
 	MyLog("SaveMessage", ColorLog, True)
 	
-	btnSave.Enabled = False
-	
 	Dim count 	As Int  = clvMessages.Size - 1
 	Dim map1 	As Map
 	Dim lst 	As List
@@ -1605,8 +1604,6 @@ Private Sub SaveMessage(title As String)
 		
 		General.sql.ExecNonQuery2(query, Args)
 	End If
-	
-	btnSave.Enabled = True
 	
 '	ToastMessageShow("Saved !", False)
 	
@@ -2084,13 +2081,7 @@ Private Sub lblClearText_Click
 End Sub
 
 Private Sub lblClearText_LongClick
-	ClickSimulation
-	ResetAI
-	MessageIndex = -1
-	clvMessages.Clear
-	Starter.MessageList.Clear
-	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
-	ToastMessageShow("New Session", False)
+	lblNewMSG_LongClick
 End Sub
 
 Public Sub ResetAI
@@ -2342,6 +2333,9 @@ Private Sub icMenuTopMenu_Click
 	
 	MyLog("icMenuTopMenu_Click", ColorLog, True)
 	
+	ClickSimulation
+	ClickSimulation
+	
 	Wait For (prefdialog.ShowDialog(Options, "Save", "Cancel")) Complete (Result As Int)
 	
 	If Result = xui.DialogResponse_Positive Then
@@ -2545,19 +2539,7 @@ End Sub
 Private Sub panTextToolbar_Click
 	
 End Sub
-
-
-Private Sub btnSave_Click
-	SaveList_OLD
-End Sub
-
-Private Sub btnLoad_Click
-	LoadList_OLD
-End Sub
-
 Private Sub SaveList_OLD
-	
-	btnSave.Enabled = False
 	
 	Dim count 	As Int  = clvMessages.Size - 1
 	Dim map1 	As Map
@@ -2579,8 +2561,6 @@ Private Sub SaveList_OLD
 		jso.Initialize2(lst)
 	
 	File.WriteString(File.DirInternal, General.SaveFileName, jso.ToString)
-	
-	btnSave.Enabled = True
 	
 '	LogColor(jso.ToString, Colors.Red)
 	
@@ -2774,16 +2754,6 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 		
 End Sub
 
-
-Private Sub lblNew_Click
-	MyLog("lblNew_Click", ColorLog, True)
-	
-	lblClearText_LongClick
-	ClickSimulation
-	
-End Sub
-
-
 Private Sub btnClearTitles_Click
 	
 	Msgbox2Async("Clear All Messages ?", "Delete All", "Delete", "CANCEL", "", Null, True)
@@ -2822,5 +2792,19 @@ Private Sub flowTabToolbar_TabClick(index As Int)
 '			chkToFarsi.Checked = False
 '			chkChat.Checked = False
 '	End Select
+	
+End Sub
+
+Private Sub lblNewMSG_LongClick
+	
+	MyLog("btnNew_Click", ColorLog, True)
+	
+	ClickSimulation
+	ResetAI
+	MessageIndex = -1
+	clvMessages.Clear
+	Starter.MessageList.Clear
+	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
+	ToastMessageShow("New Session", False)
 	
 End Sub
