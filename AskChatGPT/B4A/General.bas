@@ -24,15 +24,17 @@ End Sub
 
 Public Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
 	
+	If Not (IsDebug) Then Return
+	
 	DateTime.DateFormat = "HH:mm:ss.SSS"
-	Dim time As String  = DateTime.Date(DateTime.Now)
-		
-	If (IsDebug) Then
+	Dim time As String  = DateTime.Date(DateTime.Now)	
+	
+	If (AlwaysShow) Then
 		LogColor(text & TAB & " (" & time & ")", color)
 		Return
 	End If
 	
-	If (AlwaysShow) Then
+	If (IsDebug) Then
 		LogColor(text & TAB & " (" & time & ")", color)
 		Return
 	End If
@@ -88,16 +90,18 @@ Public Sub LoadSettingDB
 	
 	LogColor("Config Row Count: " & CurSettingSql.RowCount, Colors.Red)
 	If (CurSettingSql.RowCount < 1) Then
-		Pref.FirstLang = "English"
-		Pref.SecondLang =  "(None)"
-		Pref.Creativity = 4
-		Pref.AutoSend = False
-		Pref.Memory = False
-		Pref.IsDevMode = IsDebug
-		Pref.APIKEY = ""
-		Pref.LastTypeModel = 0
+		Pref.FirstLang 		= 	"English"
+		Pref.SecondLang 	= 	"(None)"
+		Pref.Creativity 	= 	4
+		Pref.AutoSend 		= 	False
+		Pref.Memory 		= 	False
+		Pref.IsDevMode 		= 	IsDebug
+		Pref.APIKEY 		= 	""
+		Pref.LastTypeModel 	= 	0
 		
+		Log(Pref.APIKEY)
 		SaveSettingDB
+		Log(Pref.APIKEY)
 	Else
 		CurSettingSql.Position = 0
 		Pref.FirstLang = CurSettingSql.GetString("FirstLang")
@@ -106,8 +110,9 @@ Public Sub LoadSettingDB
 		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
 		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
-		Pref.APIKEY = DecKey(GetStr(CurSettingSql.GetString("APIKEY")))
+		Pref.APIKEY = DecKey(CurSettingSql.GetString("APIKEY"))
 		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
+		Log(Pref.APIKEY)
 	End If
 	
 	CurSettingSql.Close
@@ -122,21 +127,22 @@ Public Sub SaveSettingDB
 	
 	sql.ExecNonQuery("DELETE FROM Config")
 	
-	Dim query As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode, LastTypeModel) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
-	Dim Args(8) As Object
-		Args(0) = Pref.FirstLang
-		Args(1) = Pref.SecondLang
-		Args(2) = Pref.Creativity
-		Args(3) = Pref.AutoSend
-		Args(4) = Pref.Memory
-		If IsNull(Pref.APIKEY) Then
-			Args(5) = ""
+	Dim query 		As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode, LastTypeModel) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+	Dim Args(8) 	As Object
+		Args(0) 	= Pref.FirstLang
+		Args(1) 	= Pref.SecondLang
+		Args(2) 	= Pref.Creativity
+		Args(3) 	= Pref.AutoSend
+		Args(4) 	= Pref.Memory
+		If IsNull(Pref.APIKEY.Trim) Then
+			Args(5) = Null
+			Log("API Save: ###################### " & Args(5))
 		Else
-			Args(5) = EncKey(Pref.APIKEY)
+			Args(5) = EncKey(Pref.APIKEY.Trim)
+			Log("API Save: ---------------------- " & Args(5))
 		End If
-		Args(6) = Pref.IsDevMode
-		Args(7) = Pref.LastTypeModel
-	
+		Args(6) 	= Pref.IsDevMode
+		Args(7) 	= Pref.LastTypeModel
 	
 	Log(query)
 	

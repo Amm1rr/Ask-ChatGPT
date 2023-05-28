@@ -15,7 +15,7 @@ Sub Class_Globals
 	Private  typeMSG As typeMessage	'// If typeMSG set as Public, Starter dosn't work at background! I never look at this problem why this happen.
 	
 	Public 	MessageIndex 			As Int = -1
-	Private wrk_chat 				As ChatGPT
+'	Private wrk_chat 				As ChatGPT
 	Private xui 					As XUI
 	Private su 						As StringUtils
 	
@@ -106,6 +106,8 @@ Sub Class_Globals
 	
 	Private gifWaiting As B4XGifView
 	Private WaitingTimer As Timer
+	
+	Private TitleClickAnimation As Boolean = False
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -172,7 +174,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 	
 '	History = "You are a helpful assistant."
 	
-	'TOP MENU
+	'TOP TITLTE
 	Dim csTitle As CSBuilder
 		csTitle.Initialize
 		csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("GPT").PopAll
@@ -201,10 +203,6 @@ Public Sub Initialize(parent As B4XView, text As String)
 	typeMSG.answer = 0
 	typeMSG.question = 1
 	typeMSG.waitingtxt = 3
-	
-	LoadCLVSetup
-	
-	wrk_chat.Initialize
 	
 	resetTextboxToolbar
 	
@@ -244,6 +242,8 @@ Public Sub Initialize(parent As B4XView, text As String)
 	General.sql.TransactionSuccessful
 	General.sql.EndTransaction
 	
+	LoadCLVSetup
+	
 End Sub
 
 Private Sub SetupSettingDialog(parent As B4XView)
@@ -269,8 +269,8 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	prefdialog.Dialog.BorderCornersRadius = 3dip
 	prefdialog.Dialog.BorderWidth = 2dip
 	prefdialog.Dialog.BlurBackground = True
-	prefdialog.SeparatorBackgroundColor = prefdialog.ItemsBackgroundColor
 	prefdialog.Dialog.VisibleAnimationDuration = 150
+	prefdialog.SeparatorBackgroundColor = prefdialog.ItemsBackgroundColor
 	
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
@@ -1244,27 +1244,27 @@ Private Sub CreatePrompt(questionHolder As String) As Map
 	
 	Select flowTabToolbar.CurrentIndex
 		
-		Case Starter.AITYPE_Grammar
+		Case Starter.TYPE_Grammar
 			current = Starter.AIGRAMMER_TEXT
 			
-		Case Starter.AITYPE_Translate
+		Case Starter.TYPE_Translate
 			current = Starter.AITRANSLATE_TEXT
 			
-		Case Starter.AITYPE_SecondLang
+		Case Starter.TYPE_Second
 			If (current = Starter.AIPOOK_TEXT) Then
 				current = Starter.AIPOOK_TEXT
 			Else
 				current = Starter.AISECONDLANG_TEXT
 			End If
 			
-		Case Starter.AITYPE_Pook
+		Case Starter.TYPE_Pook
 			If (current = Starter.AICHAT_TEXT) Then
 				current = Starter.AICHAT_TEXT
 			Else
 				current = Starter.AIPOOK_TEXT
 			End If
 			
-		Case Starter.AITYPE_Chat
+		Case Starter.TYPE_Chat
 			current = Starter.AICHAT_TEXT
 			
 	End Select
@@ -1642,16 +1642,16 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '	End If
 	
 	Dim AIType As Int
-	If (General.Pref.LastTypeModel = wrk_chat.TYPE_Grammar) Then
-		AIType = wrk_chat.TYPE_Grammar
-	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Translate) Then
-		AIType = wrk_chat.TYPE_Translate
-	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Second) Then
-		AIType = wrk_chat.TYPE_Second
-	Else If (General.Pref.LastTypeModel = wrk_chat.TYPE_Pook) Then
-		AIType = wrk_chat.TYPE_Pook
+	If (General.Pref.LastTypeModel = Starter.TYPE_Grammar) Then
+		AIType = Starter.TYPE_Grammar
+	Else If (General.Pref.LastTypeModel = Starter.TYPE_Translate) Then
+		AIType = Starter.TYPE_Translate
+	Else If (General.Pref.LastTypeModel = Starter.TYPE_Second) Then
+		AIType = Starter.TYPE_Second
+	Else If (General.Pref.LastTypeModel = Starter.TYPE_Pook) Then
+		AIType = Starter.TYPE_Pook
 	Else
-		AIType = wrk_chat.TYPE_Chat
+		AIType = Starter.TYPE_Chat
 	End If
 	
 	Wait For (Starter.Query(system, _
@@ -1678,7 +1678,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '	Dim txtnew As String = txtQuestion.Text
 	
 	Select responsetext
-		Case wrk_chat.TimeoutText:
+		Case Starter.TimeoutText:
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
 			End If
@@ -1690,7 +1690,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '			Main.GetIsWorking = IsWorking
 '			imgSend_Click
 '			txtQuestion.Text = txtnew
-		Case wrk_chat.OpenApiHostError  & " (Code 1)":
+		Case Starter.OpenApiHostError  & " (Code 1)":
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
 			End If
@@ -1702,7 +1702,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '			Main.GetIsWorking = IsWorking
 '			imgSend_Click
 '			txtQuestion.Text = txtnew
-		Case wrk_chat.OpenApiHostError  & " (Code 2)":
+		Case Starter.OpenApiHostError  & " (Code 2)":
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
 			End If
@@ -1712,7 +1712,7 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '			Main.GetIsWorking = IsWorking
 '			imgSend_Click
 '			txtQuestion.Text = txtnew
-		Case wrk_chat.ServerError
+		Case Starter.ServerError
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
 			End If
@@ -1721,7 +1721,11 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '			LogColor("IsWorking: " & IsWorking, Colors.Blue)
 '			imgSend_Click
 '			txtQuestion.Text = txtnew
-		Case wrk_chat.InstructureError
+		Case Starter.APIError
+			If (txtQuestion.Text.Length < 1) Then
+				txtQuestion.Text = questionHolder
+			End If
+		Case Starter.InstructureError
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder
 			End If
@@ -2037,7 +2041,7 @@ Sub WriteQuestion(message As String) 'Right Side
 		stack.Put("Response", "")
 	Starter.MessageList.Add(stack)
 	
-	LogColor("Write Question: " & Starter.MessageList, Colors.Red)
+	LogColor("Write Question: " & Starter.MessageList.Size, Colors.Red)
 	LogColor("Write Stack: " & stack, Colors.Red)
 	
 	
@@ -2093,12 +2097,11 @@ Public Sub ResetAI
 	
 	MyLog("ResetAI", ColorLog, True)
 	
-	wrk_chat.Initialize
 	IsWorking = False
 	Main.GetIsWorking = IsWorking
 	Log("IsWorking: " & IsWorking)
 	History = Null
-	wrk_chat.ChatHistoryList.Initialize
+	Starter.ChatHistoryList.Initialize
 	
 	If (clvMessages.Size > 0) Then
 		
@@ -2345,9 +2348,9 @@ Private Sub icMenuTopMenu_Click
 		LogColor(Options, Colors.Blue)
 		
 		General.Pref.Creativity = Options.Get("Creativity")
-		General.Pref.FirstLang = Options.Get("FirstLang")
+		General.Pref.FirstLang 	= Options.Get("FirstLang")
 		General.Pref.SecondLang = Options.Get("SecondLang")
-		General.Pref.APIKEY = Options.Get("APIKEY")
+		General.Pref.APIKEY 	= Options.Get("APIKEY").As(String).Trim
 		
 		If General.IsNull(Options.Get("AutoSend")) Then
 			General.Pref.AutoSend = False
@@ -2416,12 +2419,13 @@ Private Sub icMenuTopMenu_Click
 					newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
 				flowTabToolbar.SetTabProperties(3, newsectab)
 				
-				
 			End If
 		End If
 		
-		
 		flowTabToolbar.RefreshTabProperties
+		
+		flowTabToolbar.CurrentIndex = 0
+		General.Pref.LastTypeModel = 0
 		
 		General.SaveSettingDB
 		
@@ -2487,6 +2491,14 @@ End Sub
 'End Sub
 
 Private Sub lblTitleTopMenu_Click
+	
+	TitleClickAnimation = Not (TitleClickAnimation)
+	If (TitleClickAnimation) Then
+		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize + 2)
+	Else
+		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize - 2)
+	End If
+	
 	If (General.Pref.Memory) Then
 		General.Pref.Memory = False
 '		ToastMessageShow("Memory Deactivated", False)
@@ -2501,6 +2513,19 @@ End Sub
 Private Sub lblTitleTopMenu_LongClick
 	
 	MyLog("lblTitleTopMenu_LongClick", ColorLog, True)
+	
+	TitleClickAnimation = Not(TitleClickAnimation)
+	
+	Dim txt_size As Float = lblTitleTopMenu.TextSize
+	If TitleClickAnimation Then
+		lblTitleTopMenu.SetTextSizeAnimated(300/2,1)
+		Sleep(300/2)
+		lblTitleTopMenu.SetTextSizeAnimated(300/2,txt_size)
+	Else
+		lblTitleTopMenu.SetTextSizeAnimated(300/2,1)
+		Sleep(300/2)
+		lblTitleTopMenu.SetTextSizeAnimated(300/2,txt_size)
+	End If
 	
 '	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
 '	If (General.Pref.IsDevMode) Then SimulateMessage
@@ -2649,7 +2674,6 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 			Log("IsWorking: " & IsWorking)
 			Starter.MessageList.Clear
 			MessageIndex = -1
-			wrk_chat.Initialize
 			History = Null
 			
 		End If

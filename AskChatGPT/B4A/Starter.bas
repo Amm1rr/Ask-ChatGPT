@@ -20,6 +20,7 @@ Sub Process_Globals
 	Public ConnectException 	As String = $"Internet is unreachable${CRLF}Check you internet"$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	Public ServerError 			As String = $"🤮 server (♻ try agian)"$ '🤢 '💩 '🚽 '👎 '🪫
+	Public APIError 			As String = $"API is not valid, check your free API in settings."$ '🤢 '💩 '🚽 '👎 '🪫
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000
@@ -31,11 +32,11 @@ Sub Process_Globals
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
 	
-	Public Const AITYPE_Grammar 		As Int		= 0
-	Public Const AITYPE_Translate 		As Int 		= 1
-	Public Const AITYPE_SecondLang 		As Int		= 2
-	Public Const AITYPE_Pook 			As Int		= 3
-	Public Const AITYPE_Chat 			As Int		= 4
+	Public Const TYPE_Grammar 		As Int = 0
+	Public Const TYPE_Translate 	As Int = 1
+	Public Const TYPE_Second		As Int = 2
+	Public Const TYPE_Pook	  		As Int = 3
+	Public Const TYPE_Chat 			As Int = 4
 	
 	Public Const AIGRAMMER_TEXT  		As String 	= "Check"
 	Public Const AITRANSLATE_TEXT  		As String 	= "Translate"
@@ -115,7 +116,7 @@ Public Sub Query(system_string As String, _
 		Dim json As Map
 		Dim IsWord As Boolean
 		
-		If (AI_Type = AITYPE_Grammar) Then
+		If (AI_Type = TYPE_Grammar) Then
 			
 			If (General.IsAWord(question_string)) Then IsWord = True
 			
@@ -155,7 +156,7 @@ Public Sub Query(system_string As String, _
 				
 			End If
 		
-		Else If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Then
+		Else If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Then
 			json.Initialize
 			json.Put("model", "gpt-3.5-turbo")
 			json.Put("n", 1)
@@ -187,7 +188,7 @@ Public Sub Query(system_string As String, _
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
-			If (AI_Type = AITYPE_Chat) Then json.Put("temperature", 0.10)
+			If (AI_Type = TYPE_Chat) Then json.Put("temperature", 0.10)
 			json.Put("temperature", temperature)
 			json.Put("stream", False)
 			
@@ -247,13 +248,13 @@ Public Sub Query(system_string As String, _
 		'https://chat.openai.com/backend-api/conversation
 		Select AI_Type
 			
-			Case AITYPE_Grammar
+			Case TYPE_Grammar
 				If (IsWord) Then
 					req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 				Else
 					req.PostString("https://api.openai.com/v1/edits", js.ToString)
 				End If
-			Case AITYPE_Chat, AITYPE_Pook, AITYPE_Translate, AITYPE_SecondLang
+			Case TYPE_Chat, TYPE_Pook, TYPE_Translate, TYPE_Second
 				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
 			
 		End Select
@@ -294,7 +295,7 @@ Public Sub Query(system_string As String, _
 			Dim parser As JSONParser
 				parser.Initialize(req.GetString)
 			
-			If (AI_Type = AITYPE_Grammar) Then
+			If (AI_Type = TYPE_Grammar) Then
 				
 				If (IsWord) Then
 				
@@ -316,7 +317,7 @@ Public Sub Query(system_string As String, _
 					
 				End If
 				
-			Else If (AI_Type = AITYPE_Translate) Or (AI_Type = AITYPE_SecondLang) Then
+			Else If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Then
 				Dim text 		As String  	= ParseJson(req.GetString, False, False)
 				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
 				If (response <> "") Then response = response & CRLF
@@ -378,9 +379,12 @@ Public Sub Query(system_string As String, _
 				Dim errorroot As Map = json_error.NextObject
 				Dim err_child As Map = errorroot.Get("error")
 				Dim typ As String = err_child.Get("type")
+				Dim errcode As String = err_child.Get("code")
 				
 				If (typ = "server_error") Then
 					response = ServerError
+				Else If errcode ="invalid_api_key" Then
+					response = APIError
 				Else
 					response = "ChatGPT:Query-> Unsuccess: " & req.ErrorMessage
 				End If

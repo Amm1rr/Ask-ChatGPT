@@ -101,20 +101,19 @@ Library8=ime2
 Library9=json
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="31"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~   <action android:name="android.intent.action.SEND" />~\n~   <category android:name="android.intent.category.DEFAULT" />~\n~   <data android:mimeType="text/*" />~\n~</intent-filter>)~\n~'  <data android:mimeType="image/*" />~\n~~\n~SetApplicationAttribute(android:launchMode,  "singleTask")~\n~'SetActivityAttribute(main, android:launchMode, "standard")~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:launchMode, "singleTop")~\n~~\n~'For Creating custom Text Selection actions with ACTION_PROCESS_TEXT~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:label, "Ask ChatGPT")~\n~AddActivityText(ACTION_PROCESS_TEXT,~\n~<intent-filter>~\n~	<action android:name="android.intent.action.PROCESS_TEXT" />~\n~	<category android:name="android.intent.category.DEFAULT" />~\n~	<data android:mimeType="text/plain" />~\n~</intent-filter>)~\n~~\n~~\n~'########## Transparent 		# First Method: Without Transparent Statusbar~\n~' این روش نور وضعیت رو سیاه رنگ میکنه ولی از طریق کد~\n~' نوار وضعیت رو شفاف کردم~\n~~\n~'SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@android:style/Theme.Translucent")~\n~'SetActivityAttribute (Reciver, android:theme, "@android:style/Theme.Translucent")~\n~~\n~'########## Transparent 		# Seconde Method: With Transparent Statusbar~\n~' این متد نوار وظیفه رو همرنگ پس زمینه میکنه ولی در هنگار اجرای اولیه ی اکتیویتی~\n~' یه لِگ کوچیک داره که زیاد جالب نیست، با جستجوی بیشتر احتمالا میشه مشکلش رو حل کرد.~\n~~\n~SetActivityAttribute(ACTION_PROCESS_TEXT, android:theme, "@style/Theme_Main")~\n~~\n~CreateResource (values, theme_main.xml,~\n~<resources>~\n~	<style name="Theme_Main" parent="android:Theme">~\n~		<item name="android:windowIsTranslucent">true</item>~\n~		<item name="android:windowBackground">@android:color/transparent</item>~\n~		<item name="android:windowContentOverlay">@null</item>~\n~		<item name="android:windowNoTitle">true</item>~\n~		<item name="android:windowIsFloating">true</item>~\n~		<item name="android:backgroundDimEnabled">false</item>~\n~	</style>~\n~</resources>~\n~)~\n~~\n~'########## PreferencesDialog~\n~SetActivityAttribute(main, android:windowSoftInputMode, adjustResize|stateHidden)~\n~
 Module1=ACTION_PROCESS_TEXT
-Module10=ResizingTextComponent
-Module11=Starter
-Module12=UpDown
+Module10=Starter
+Module11=UpDown
 Module2=Animation
 Module3=ASFlowTabMenu
 Module4=Bart
-Module5=ChatGPT
-Module6=ChatN
-Module7=CLVNested
-Module8=General
-Module9=PreferencesDialog
+Module5=ChatN
+Module6=CLVNested
+Module7=General
+Module8=PreferencesDialog
+Module9=ResizingTextComponent
 NumberOfFiles=41
 NumberOfLibraries=17
-NumberOfModules=12
+NumberOfModules=11
 Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
@@ -339,7 +338,6 @@ Sub Activity_Resume
 		CheckMessageList
 	End If
 	
-	
 End Sub
 
 Public Sub CheckMessageList
@@ -433,18 +431,16 @@ Private Sub SendToTwitter(text As String)
 	MyLog("SendToTwitter: " & text, ColorLog, False)
 	Dim u As Uri 'ContentResolver library
 '	u.Parse("file://" & File.Combine(a, "tmpfile.jpg"))
+	Dim tmpt  As String = "your text"
 	Dim inten As Intent
-	Dim tmpt As String = "your text"
-	inten.Initialize(inten.ACTION_SEND,"")
-	inten.SetType("image/*")
-	inten.PutExtra("android.intent.extra.STREAM",u)
-	inten.PutExtra("android.intent.extra.TEXT",tmpt)
-	inten.SetComponent("com.twitter.android/com.twitter.composer.ComposerActivity")
+		inten.Initialize(inten.ACTION_SEND,"")
+		inten.SetType("image/*")
+		inten.PutExtra("android.intent.extra.STREAM",u)
+		inten.PutExtra("android.intent.extra.TEXT",tmpt)
+		inten.SetComponent("com.twitter.android/com.twitter.composer.ComposerActivity")
 	StartActivity(inten)
-
-
 	
-	Dim pm As PackageManager
+	Dim pm 	As PackageManager
     
 	For Each cn As String In pm.QueryIntentActivities(inten)
 		'Instagram
@@ -452,9 +448,9 @@ Private Sub SendToTwitter(text As String)
 '			Dim IntentTwitter As String = cn
 			Exit
 		End If
-
+		
 		'OR
-
+		
 		'Twitter
 		If cn.SubString2(0,21) = "com.instagram.android" Then
 '			Dim IntentInstagram As String = cn

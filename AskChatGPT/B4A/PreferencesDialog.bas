@@ -551,17 +551,17 @@ Private Sub CreateLayouts (PrefItem As B4XPrefItem) As B4XView
 				ft.LargeLabelTextSize = DefaultHintLargeSize
 				ft.Update
 				
-			Dim lbltitle As String = PrefItem.Extra.Get("labeltitle")
-			Dim lbl As Label = p.GetView(0)
-				lbl.Text = lbltitle
+			Dim lbltitle 	As String 	= PrefItem.Extra.Get("labeltitle")
+			Dim lbl 		As Label 	= p.GetView(0)
+				lbl.Text 				= lbltitle
 			
 			'//## Get width to set label left to assign center width
 			'##
-			Dim bmp As Bitmap
+			Dim bmp 	As Bitmap
 				bmp.InitializeMutable(1dip, 1dip)
-			Dim cvs As Canvas
+			Dim cvs 	As Canvas
 				cvs.Initialize2(bmp)
-			Dim widt As Int = cvs.MeasureStringWidth(lbl.Text, lbl.Typeface , lbl.TextSize)
+			Dim widt 	As Int = cvs.MeasureStringWidth(lbl.Text, lbl.Typeface , lbl.TextSize)
 			lbl.Left = (p.Width - widt) / 2
 			
 		Case TYPE_MULTILINETEXT
