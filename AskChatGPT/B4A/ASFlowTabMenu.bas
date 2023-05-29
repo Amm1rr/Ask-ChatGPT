@@ -223,6 +223,10 @@ End Sub
 'Call RefreshTabProperties after this
 Public Sub SetTabProperties(Index As Int,TabProperties As ASFlowTabMenu_Tab)
 	xpnl_TabBackground.GetView(Index).Tag = TabProperties
+	
+	Dim xpnl_Tab As B4XView = xpnl_TabBackground.GetView(Index)
+	setTooltip(xpnl_Tab, TabProperties.Tooltip)
+	
 End Sub
 'If you change Tab Properties then call this function to apply this
 Public Sub RefreshTabProperties
