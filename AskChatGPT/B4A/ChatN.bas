@@ -2684,20 +2684,30 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 			MessageIndex = -1
 			History = Null
 			
+			MessageIndex = Index
+			LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
+			
+			Dim recsetJson As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
+			
+			Do While recsetJson.NextRow
+				LoadMessage(recsetJson.GetString("JsonMessage"))
+			Loop
+			
+			recsetJson.Close
 		End If
-		
+	Else
+		MessageIndex = Index
+		LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
+			
+		Dim recsetJson As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
+			
+		Do While recsetJson.NextRow
+			LoadMessage(recsetJson.GetString("JsonMessage"))
+		Loop
+			
+		recsetJson.Close
 	End If
 	
-	MessageIndex = Index
-	LogColor("MessageIndex: " & MessageIndex & "/" & (clvTitles.Size - 1), Colors.Red)
-	
-	Dim recsetJson As ResultSet = General.sql.ExecQuery($"SELECT * FROM Messages WHERE ID='${Value}'"$)
-	
-	Do While recsetJson.NextRow
-		LoadMessage(recsetJson.GetString("JsonMessage"))
-	Loop
-	
-	recsetJson.Close
 	
 End Sub
 
