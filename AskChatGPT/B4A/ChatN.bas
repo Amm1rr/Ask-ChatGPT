@@ -107,6 +107,7 @@ Sub Class_Globals
 	
 	Private TitleClickAnimation As Boolean = False
 	Private lblNewMSG As Label
+	Private btnClearTitles As Button
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -237,12 +238,34 @@ Public Sub Initialize(parent As B4XView, text As String)
 '		txtQuestion.Text = text
 ''		imgSend_Click
 '	End If
+
+	addAllTooltips
 	
 	General.sql.TransactionSuccessful
 	General.sql.EndTransaction
 	
 	LoadCLVSetup
 	
+End Sub
+
+'in each activity, I use a single sub to add all the tooltips on that screen
+Sub addAllTooltips
+	setTooltip(icMenuTopMenu, "Setting")
+	setTooltip(icHistoryTopMenu, "Conversation History")
+	setTooltip(lblNewMSG, "Create new conversation ")
+	setTooltip(imgBrain, "Active/Deactive Memory (default Deactive)")
+	setTooltip(btnClearTitles, "Clear All History")
+End Sub
+
+'on Android 8+, attaches a tooltip to the given view.
+'Ignored on earlier versions of Android
+Sub setTooltip(viewArg As View, textArg As String)
+	Dim p As Phone
+	If p.SdkVersion >= 26 Then
+		Dim viewJO As JavaObject = viewArg
+		viewJO.RunMethod("setOnLongClickListener", Array As Object(Null))   'remove any longClick listener
+		viewJO.RunMethod("setTooltip", Array As Object(textArg))
+	End If
 End Sub
 
 Private Sub SetupSettingDialog(parent As B4XView)
