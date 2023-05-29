@@ -252,14 +252,13 @@ End Sub
 Sub addAllTooltips
 	setTooltip(icMenuTopMenu, "Setting")
 	setTooltip(icHistoryTopMenu, "Conversation History")
-	setTooltip(lblNewMSG, "Create new conversation ")
 	setTooltip(imgBrain, "Active/Deactive Memory (default Deactive)")
 	setTooltip(btnClearTitles, "Clear All History")
 End Sub
 
 'on Android 8+, attaches a tooltip to the given view.
 'Ignored on earlier versions of Android
-Sub setTooltip(viewArg As View, textArg As String)
+Private Sub setTooltip(viewArg As View, textArg As String)
 	Dim p As Phone
 	If p.SdkVersion >= 26 Then
 		Dim viewJO As JavaObject = viewArg
@@ -1034,6 +1033,8 @@ public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
 		End If
 		clvMessages.Base_Resize(clvMessages.AsView.Width, clvMessages.AsView.Height)
 		
+		lblNewMSG.Top = panToolbar.Top - 5%y
+		
 ''		If (height > 0) Then clvMessages.ResizeItem(clvMessages.Size - 1, height + panBottom.Top + panBottom.Height)
 '		panToolbar.SetLayoutAnimated(0, 0%x, (clvMessages.sv.Height + pTopMenu.Height) - panToolbar.Height, 100%x, panToolbar.Height)
 		Sleep(0) 'To make sure you've adjusted the size, before scrolling down (IMPORTANT SLEEP HERE!)
@@ -1070,7 +1071,6 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, NewHeight - panBottom.Height - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
-		lblNewMSG.Top = panToolbar.Top - 5%y
 	Else							' Half Screen
 '		LogColor("ChatN.IME_HeightChanged.Half: " & NewHeight, ColorLog)
 		
@@ -1081,7 +1081,6 @@ Sub IME_HeightChanged(NewHeight As Int, OldHeight As Int)
 		imgSend.SetLayout(imgSend.Left, NewHeight - imgSend.Height - 1%y, imgSend.Width, imgSend.Height)
 		panToolbar.SetLayoutAnimated(0, panToolbar.Left, panBottom.Top - panToolbar.Height, panToolbar.Width, panToolbar.Height)
 		AdjustSize_Clv(0, False)
-		lblNewMSG.Top = panToolbar.Top - 5%y
 	End If
 	
 '	clvMessages.sv.Height = NewHeight

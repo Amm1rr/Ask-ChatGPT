@@ -34,6 +34,8 @@ Sub Globals
 	Private lblShareResult 	As Label
 	Private ColorLog		As Int = Colors.Magenta
 	
+	Private lblShareConfigTopMenu As Label
+	Private lblShareMenuTopMenu As Label
 End Sub
 
 Private Sub MyLog(text As String, color As Int, AlwaysShow As Boolean)
@@ -159,6 +161,23 @@ Private Sub IsRelevantIntent(in As Intent) As Boolean
 		Return True
 	End If
 	Return False
+End Sub
+
+'in each activity, I use a single sub to add all the tooltips on that screen
+Sub addAllTooltips
+	setTooltip(lblShareMenuTopMenu, "Share this text with current open conversation.")
+	setTooltip(lblShareConfigTopMenu, "Create and Open New Conversation")
+End Sub
+
+'on Android 8+, attaches a tooltip to the given view.
+'Ignored on earlier versions of Android
+Private Sub setTooltip(viewArg As View, textArg As String)
+	Dim p As Phone
+	If p.SdkVersion >= 26 Then
+		Dim viewJO As JavaObject = viewArg
+		viewJO.RunMethod("setOnLongClickListener", Array As Object(Null))   'remove any longClick listener
+		viewJO.RunMethod("setTooltip", Array As Object(textArg))
+	End If
 End Sub
 
 Sub Activity_Resume
