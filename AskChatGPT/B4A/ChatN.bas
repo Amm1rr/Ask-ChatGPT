@@ -102,7 +102,6 @@ Sub Class_Globals
 	Public prefdialog As PreferencesDialog
 	Private Options	As Map
 	
-	Private gifWaiting As B4XGifView
 	Private WaitingTimer As Timer
 	
 	Private TitleClickAnimation As Boolean = False
@@ -1811,7 +1810,6 @@ Private Sub WriteWait
 	panWaitingText.Height = lblWaitingText.GetHeight
 	lblWaitingText.FallbackLineSpacing = False
 	
-'	gifWaiting.SetGif(File.DirAssets, "Ripple-1.1s-484px.gif")
 	Starter.WaitCount = 0
 	Starter.WaitingTimer.Enabled = True
 	WaitingTimer.Enabled = True
