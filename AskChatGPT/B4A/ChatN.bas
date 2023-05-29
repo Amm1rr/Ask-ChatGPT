@@ -296,18 +296,19 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
-		csAppVersion.Color(Colors.RGB(140,0,0)).Size(18).Append(CRLF & CRLF & TAB & TAB & Application.LabelName & CRLF).Pop
-		csAppVersion.Color(Colors.Gray).Size(15).Append($"${TAB}${TAB}${TAB} Build ${Application.VersionCode} ${CRLF}${TAB}${TAB}${TAB} ${Application.VersionName}${CRLF}${CRLF}"$).Pop
-		csAppVersion.Color(Colors.RGB(25,126,40)).Append(TAB & TAB & "Full Version").Size(18).Pop
+		csAppVersion.Color(Colors.RGB(89,46,121)).Size(18).Append(CRLF & CRLF & TAB & TAB & Application.LabelName & CRLF & CRLF).Pop
+		csAppVersion.Color(Colors.RGB(89,46,121)).Size(17).Append($"${TAB}${TAB}${TAB} v${Application.VersionCode}.0 ${TAB}"$).Pop
+		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($"${CRLF}${TAB}${TAB}${TAB} ${Application.VersionName}${CRLF}${CRLF}${CRLF}${CRLF} "$).Pop
+		csAppVersion.Color(Colors.RGB(25,126,40)).Append(TAB & TAB & "Full Version").Size(15).Pop
 		csAppVersion.Color(Colors.LightGray).Size(11).Append(CRLF & CRLF & "MIT License - Freeware").Pop
-		csAppVersion.Append(CRLF & CRLF & CRLF & CRLF).Color(Colors.DarkGray).Size(14).Clickable("csTitle", "site").Append("🔗").Pop
+		csAppVersion.Append(CRLF & CRLF).Color(Colors.DarkGray).Size(14).Clickable("csTitle", "site").Append("🔗").Pop
 		csAppVersion.Color(Colors.RGB(48,84,187)).Clickable("csTitle", "site").Size(12).Clickable("csTitle", "name").Append("   https://github.com/Amm1rr").Pop
-		csAppVersion.Append(CRLF & CRLF & CRLF & TAB & TAB & TAB & TAB & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright (c) 2023").Pop
+		csAppVersion.Append(CRLF & TAB & TAB & TAB & TAB & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright (c) 2023").Pop
 		csAppVersion.PopAll
 	
 	Dim csAbout As CSBuilder
 		csAbout.Initialize
-	csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append(Application.LabelName).Size(9).Color(Colors.RGB(86,147,82)).Append(" build " & Application.VersionCode).Pop
+		csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append("About " & Application.LabelName).Pop
 		csAbout.PopAll
 	
 	prefdialog.AddExplanationItem("About", csAbout, csAppVersion)
@@ -336,11 +337,11 @@ End Sub
 Public Sub MemoryChanged
 	MyLog("MemoryChanged", ColorLog, False)
 	If (General.Pref.Memory) Then
-		imgBrain.SetVisibleAnimated(300, True)
+		imgBrain.SetVisibleAnimated(150, True)
 '		imgBrain.SetColorAnimated(0, Colors.ARGB(100,116,165,255), Colors.ARGB(100,116,165,105))
 '		lblTitleTopMenu.Color = Colors.RGB(82,144,255)	'0xFF5290FF
 	Else
-		imgBrain.SetVisibleAnimated(300, False)
+		imgBrain.SetVisibleAnimated(150, False)
 '		imgBrain.SetColorAnimated(100, Colors.ARGB(0,116,165,255), Colors.ARGB(0,116,165,205))
 '		lblTitleTopMenu.Color = Colors.RGB(116,165,255) '0xFF74A5FF
 	End If
