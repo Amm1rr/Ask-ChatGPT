@@ -25,6 +25,7 @@ V1.1
 #DesignerProperty: Key: SelectorColor, DisplayName: Selector Color, FieldType: Color, DefaultValue: 0x982d8879, Description: Text color
 
 #Event: TabClick(index as int)
+#Event: TabLongClick(index as int)
 
 Sub Class_Globals
 	Private mEventName As String 'ignore
@@ -37,6 +38,7 @@ Sub Class_Globals
 	
 	Private mIconHeight As Float = 29dip '35dip
 	Private mCurrentIndex As Int = 0
+	Private mLongClickIndex As Int = 0
 	
 	Private m_BackgroundColor As Int
 	Private m_SelectorColor As Int
@@ -257,7 +259,11 @@ End Sub
 Private Sub xpnl_Tab_Click
 	TabClick(Sender)
 End Sub
+Private Sub xpnl_Tab_LongClick
+	TabLongClick(Sender)
+End Sub
 #End If
+
 
 Private Sub TabClick(xpnl_Tab As B4XView)
 	
@@ -277,6 +283,17 @@ End Sub
 Private Sub TabClickEvent
 	If xui.SubExists(mCallBack, mEventName & "_TabClick",1) Then
 		CallSub2(mCallBack, mEventName & "_TabClick",mCurrentIndex)
+	End If
+End Sub
+
+Private Sub TabLongClick(xpnl_Tab As B4XView)
+	mLongClickIndex = xpnl_Tab.Tag.As(ASFlowTabMenu_Tab).Index
+	TabLongClickEvent
+End Sub
+
+Private Sub TabLongClickEvent
+	If xui.SubExists(mCallBack, mEventName & "_TabLongClick",1) Then
+		CallSub2(mCallBack, mEventName & "_TabLongClick",mLongClickIndex)
 	End If
 End Sub
 

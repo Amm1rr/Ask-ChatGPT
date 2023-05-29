@@ -2831,6 +2831,10 @@ Private Sub flowTabToolbar_TabClick(index As Int)
 	
 End Sub
 
+Private Sub flowTabToolbar_TabLongClick(index As Int)
+	
+End Sub
+
 Private Sub lblNewMSG_LongClick
 	
 	MyLog("btnNew_Click", ColorLog, True)
