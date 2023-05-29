@@ -1613,7 +1613,7 @@ Private Sub SaveMessage(title As String)
 		Dim count As Int = clvTitles.Size + 1
 		clvTitles.AddTextItem(count & ". " & title, id)
 		
-		Log(count)
+		Log("Messages Count: " & count)
 		
 		MessageIndex = clvTitles.Size - 1
 		
