@@ -18,6 +18,7 @@ Sub Process_Globals
 	Public 	SQLFileName				As String 	= "AskChatGPT.db"
 	Public 	sql						As SQL
 	Public 	APIKeyLabel				As String	= "Get your free OpenAI Key (Click Here)"
+	Public  FirstRUN				As Boolean	= False
 End Sub
 
 #Region Save and Load Settings
@@ -53,6 +54,8 @@ Private Sub CreateDB
 		sql.BeginTransaction
 		Return
 	End If
+	
+	FirstRUN = True
 	
 	Dim tblConfig As String = $"CREATE TABLE "Config" (
 	"FirstLang"	TEXT Not Null DEFAULT 'English',
@@ -99,9 +102,9 @@ Public Sub LoadSettingDB
 		Pref.APIKEY 		= 	""
 		Pref.LastTypeModel 	= 	0
 		
-		Log(Pref.APIKEY)
+		FirstRUN = True
+		
 		SaveSettingDB
-		Log(Pref.APIKEY)
 	Else
 		CurSettingSql.Position = 0
 		Pref.FirstLang = CurSettingSql.GetString("FirstLang")
@@ -112,7 +115,8 @@ Public Sub LoadSettingDB
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
 		Pref.APIKEY = DecKey(CurSettingSql.GetString("APIKEY"))
 		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
-		Log(Pref.APIKEY)
+		FirstRUN = False
+'		Log(Pref.APIKEY)
 	End If
 	
 	CurSettingSql.Close
@@ -136,15 +140,15 @@ Public Sub SaveSettingDB
 		Args(4) 	= Pref.Memory
 		If IsNull(Pref.APIKEY.Trim) Then
 			Args(5) = Null
-			Log("API Save: ###################### " & Args(5))
+'			Log("API Save: ###################### " & Args(5))
 		Else
 			Args(5) = EncKey(Pref.APIKEY.Trim)
-			Log("API Save: ---------------------- " & Args(5))
+'			Log("API Save: ---------------------- " & Args(5))
 		End If
 		Args(6) 	= Pref.IsDevMode
 		Args(7) 	= Pref.LastTypeModel
 	
-	Log(query)
+'	Log(query)
 	
 	sql.ExecNonQuery2(query, Args)
 	

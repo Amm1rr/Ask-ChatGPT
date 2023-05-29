@@ -413,7 +413,7 @@ Public Sub Query(system_string As String, _
 	
 	Dim count As Int = MessageList.Size - 1
 	
-	Log("response: " & response)
+'	Log("response: " & response)
 	
 	For i = 0 To count
 		

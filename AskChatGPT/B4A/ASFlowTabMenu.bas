@@ -46,6 +46,7 @@ Sub Class_Globals
 	Type ASFlowTabMenu_Tab (Index As Int,Icon As B4XBitmap,Text As String,TextColor As Int,xFont As B4XFont, Tooltip As String)
 	
 	Private gTabProp As ASFlowTabMenu_Tab
+	Private xpnl_Tab As B4XView
 End Sub
 
 Public Sub Initialize (Callback As Object, EventName As String)
@@ -171,14 +172,13 @@ Private Sub setTooltip(viewArg As View, textArg As String)
 End Sub
 'Add a new tab
 Public Sub AddTab(Icon As B4XBitmap,Text As String, Tooltip As String)
-	
-	Dim xpnl_Tab As B4XView = xui.CreatePanel("xpnl_Tab")
-		xpnl_Tab.SetLayoutAnimated(0,0,0,0,0)
-	'xpnl_Tab.Color = Rnd(xui.Color_Black,xui.Color_White)
+	xpnl_Tab = xui.CreatePanel("xpnl_Tab")
+	xpnl_Tab.SetLayoutAnimated(0,0,0,0,0)
+'	xpnl_Tab.Color = Rnd(xui.Color_Black,xui.Color_White)
 	Dim xlbl_Text As B4XView = CreateLabel("")
 	Dim xiv_Icon As B4XView = CreateImageView("")
 	
-	If (Tooltip <> Null) Or (Tooltip <> "") Then setTooltip(xpnl_Tab, Tooltip)
+	If (Tooltip <> Null) And (Tooltip <> "") Then setTooltip(xpnl_Tab, Tooltip)
 	
 	xpnl_Tab.AddView(xlbl_Text,0,0,0,0)
 	xpnl_Tab.AddView(xiv_Icon,0,0,0,0)
@@ -280,12 +280,12 @@ End Sub
 #End If
 
 
-Private Sub TabClick(xpnl_Tab As B4XView)
+Private Sub TabClick(xpnl_Tab2 As B4XView)
 	
 	'For i = 0 To xpnl_TabBackground.NumberOfViews -1
 	'If xpnl_TabBackground.GetView(i).Tag.As(ASFlowTabMenu_Tab).Index = xpnl_Tab.Tag.As(ASFlowTabMenu_Tab).Index Then
-	If mCurrentIndex <> xpnl_Tab.Tag.As(ASFlowTabMenu_Tab).Index Then
-		mCurrentIndex = xpnl_Tab.Tag.As(ASFlowTabMenu_Tab).Index
+	If mCurrentIndex <> xpnl_Tab2.Tag.As(ASFlowTabMenu_Tab).Index Then
+		mCurrentIndex = xpnl_Tab2.Tag.As(ASFlowTabMenu_Tab).Index
 	TabClickEvent
 	UpdateTabs(True)
 	End If
@@ -301,8 +301,8 @@ Private Sub TabClickEvent
 	End If
 End Sub
 
-Private Sub TabLongClick(xpnl_Tab As B4XView)
-	mLongClickIndex = xpnl_Tab.Tag.As(ASFlowTabMenu_Tab).Index
+Private Sub TabLongClick(xpnl_Tab2 As B4XView)
+	mLongClickIndex = xpnl_Tab2.Tag.As(ASFlowTabMenu_Tab).Index
 	TabLongClickEvent
 End Sub
 
@@ -310,6 +310,11 @@ Private Sub TabLongClickEvent
 	If xui.SubExists(mCallBack, mEventName & "_TabLongClick",1) Then
 		CallSub2(mCallBack, mEventName & "_TabLongClick",mLongClickIndex)
 	End If
+End Sub
+
+Public Sub GetTab(index As Int) As B4XView
+'	mCurrentIndex = xpnl_Tab2.Tag.As(ASFlowTabMenu_Tab).Index
+	Return xpnl_TabBackground.GetView(index)
 End Sub
 
 Private Sub CreateLabel(EventName As String) As B4XView

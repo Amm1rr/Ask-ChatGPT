@@ -107,6 +107,9 @@ Sub Class_Globals
 	Private TitleClickAnimation As Boolean = False
 	Private lblNewMSG As Label
 	Private btnClearTitles As Button
+	
+	Private tips As DOTips
+	
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -152,7 +155,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 '	General.Set_StatusBarColor(Colors.RGB(89,89,89))
 '	General.Set_StatusBarColor(Colors.RGB(51,129,232))
 	General.Set_StatusBarColor(0xFF74A5FF)
-	parent.LoadLayout("Chat")
+	parent.As(B4XView).LoadLayout("Chat")
 	
 	Drawer.Initialize(Me, "Drawer", parent, 300dip)
 	Drawer.CenterPanel.LoadLayout("Chat")
@@ -244,6 +247,10 @@ Public Sub Initialize(parent As B4XView, text As String)
 	General.sql.EndTransaction
 	
 	LoadCLVSetup
+	
+	tips.Initialize(Me, parent, "tips")
+	
+	If (General.FirstRUN) Then ShowTutorial
 	
 End Sub
 
@@ -1211,10 +1218,10 @@ Public Sub imgSend_Click
 			Dim questionHolder As String = res.Get("QuestionHolder")
 		
 		If (RetryCount > 1) Then
-			LogColor("Red", Colors.Red)
+'			LogColor("Red", Colors.Red)
 			Ask(sSystem, question, sAssistant, questionHolder)
 		Else
-			LogColor("Blue", Colors.Blue)
+'			LogColor("Blue", Colors.Blue)
 			WriteQuestion(questionHolder)
 			Ask(sSystem, question, sAssistant, questionHolder)
 			txtQuestion.Text = ""
@@ -1916,7 +1923,7 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 '	webAnswer.LoadHtml(md.mdTohtml(message, CreateMap("datetime":"today")))
 	
 	RemoveSeperator
-	LogColor("Question Index: " & QuestionIndex, Colors.Red)
+'	LogColor("Question Index: " & QuestionIndex, Colors.Red)
 	
 	' The meaning of -1 is that it comes from LoadMessage
 	' OR from: Main->Resume=>TextShared = "[NEW]"
@@ -1952,10 +1959,10 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	If save Then
 		If (questionHolder <> "") Then
 			If (questionHolder.Length > 80) Then
-				Log("Here: " & questionHolder.SubString2(0, 80))
+'				Log("Here: " & questionHolder.SubString2(0, 80))
 				SaveMessage(questionHolder.SubString2(0, 80))
 			Else
-				Log("Second: " & questionHolder)
+'				Log("Second: " & questionHolder)
 				SaveMessage(questionHolder)
 			End If
 		Else
@@ -2256,7 +2263,7 @@ Private Sub SimulateMessage
 End Sub
 
 Private Sub RemoveSeperator
-	Log("RemoveSeperator: " & clvMessages.Size)
+'	Log("RemoveSeperator: " & clvMessages.Size)
 	If (clvMessages.Size < 1) Then Return
 	If (clvMessages.GetValue(clvMessages.Size-1) = "SEPERATOR") Then
 		clvMessages.RemoveAt(clvMessages.Size-1)
@@ -2420,7 +2427,7 @@ Private Sub icMenuTopMenu_Click
 			
 			If (flowTabToolbar.Size = 5) Then
 				
-				Log("sec")
+'				Log("sec")
 				
 				'Second Language
 				Dim newsectab As ASFlowTabMenu_Tab
@@ -2455,7 +2462,7 @@ Private Sub icMenuTopMenu_Click
 				flowTabToolbar.SetTabProperties(4, newsectab)
 				
 			Else
-				Log("final")
+'				Log("final")
 				
 				'Second Language
 				Dim newsectab As ASFlowTabMenu_Tab
@@ -2591,9 +2598,31 @@ Private Sub lblTitleTopMenu_LongClick
 		lblTitleTopMenu.SetTextSizeAnimated(300/2,txt_size)
 	End If
 	
-'	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
-'	If (General.Pref.IsDevMode) Then SimulateMessage
-	SimulateMessage
+	ShowTutorial
+	
+''	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
+''	If (General.Pref.IsDevMode) Then SimulateMessage
+'	SimulateMessage
+	
+End Sub
+
+Private Sub ShowTutorial
+	
+	tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+	tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
+	If (flowTabToolbar.Size = 5) Then
+		tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+	Else
+		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+	End If
+	tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
+	tips.addTipForView(imgSend, "Voice", "If you choose a second language, you can simply hold down the Voice button to speak in that selected language." & CRLF & CRLF)
+	tips.addTipForView(lblTitleTopMenu, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
+	
+	tips.show
 	
 End Sub
 
