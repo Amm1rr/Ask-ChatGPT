@@ -1111,6 +1111,8 @@ Private Sub imgSend_LongClick
 	
 	If (General.Pref.SecondLang = "(None)") Or (General.Pref.SecondLang = "") Then Return
 	
+	If (IsWorking) Then Return
+	
 	VoiceLang(General.Pref.SecondLang)
 	Wait For (RecognizeVoice) Complete (Result As String)
 	If (Result <> "") Then
