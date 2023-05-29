@@ -43,7 +43,7 @@ Sub Class_Globals
 	Private m_BackgroundColor As Int
 	Private m_SelectorColor As Int
 	
-	Type ASFlowTabMenu_Tab (Index As Int,Icon As B4XBitmap,Text As String,TextColor As Int,xFont As B4XFont)
+	Type ASFlowTabMenu_Tab (Index As Int,Icon As B4XBitmap,Text As String,TextColor As Int,xFont As B4XFont, Tooltip As String)
 	
 	Private gTabProp As ASFlowTabMenu_Tab
 End Sub
@@ -67,7 +67,7 @@ Public Sub DesignerCreateView (Base As Object, Lbl As Label, Props As Map)
 
 	IniProps(Props)
 	
-	gTabProp = CreateASFlowTabMenu_Tab(-1,Null,"",xui.Color_White,xui.CreateDefaultFont(15))
+	gTabProp = CreateASFlowTabMenu_Tab(-1,Null,"",xui.Color_White,xui.CreateDefaultFont(15), Null)
 	
 	#If B4A
 	Base_Resize(mBase.width,mBase.height)
@@ -160,14 +160,25 @@ Private Sub UpdateTabs(Animated As Boolean)
 		
 	Next
 End Sub
+'on Android 8+, attaches a tooltip to the given view.
+Private Sub setTooltip(viewArg As View, textArg As String)
+	Dim p As Phone
+	If p.SdkVersion >= 26 Then
+		Dim viewJO As JavaObject = viewArg
+		viewJO.RunMethod("setOnLongClickListener", Array As Object(Null))   'remove any longClick listener
+		viewJO.RunMethod("setTooltip", Array As Object(textArg))
+	End If
+End Sub
 'Add a new tab
-Public Sub AddTab(Icon As B4XBitmap,Text As String)
+Public Sub AddTab(Icon As B4XBitmap,Text As String, Tooltip As String)
 	
 	Dim xpnl_Tab As B4XView = xui.CreatePanel("xpnl_Tab")
 		xpnl_Tab.SetLayoutAnimated(0,0,0,0,0)
 	'xpnl_Tab.Color = Rnd(xui.Color_Black,xui.Color_White)
 	Dim xlbl_Text As B4XView = CreateLabel("")
 	Dim xiv_Icon As B4XView = CreateImageView("")
+	
+	If (Tooltip <> Null) Or (Tooltip <> "") Then setTooltip(xpnl_Tab, Tooltip)
 	
 	xpnl_Tab.AddView(xlbl_Text,0,0,0,0)
 	xpnl_Tab.AddView(xiv_Icon,0,0,0,0)
@@ -178,7 +189,7 @@ Public Sub AddTab(Icon As B4XBitmap,Text As String)
 	xlbl_Text.Text = Text
 	xlbl_Text.Font = gTabProp.xFont
 	
-	xpnl_Tab.Tag = CreateASFlowTabMenu_Tab(xpnl_TabBackground.NumberOfViews,Icon,Text,gTabProp.TextColor,gTabProp.xFont)
+	xpnl_Tab.Tag = CreateASFlowTabMenu_Tab(xpnl_TabBackground.NumberOfViews,Icon,Text,gTabProp.TextColor,gTabProp.xFont, Tooltip)
 	
 	xpnl_TabBackground.AddView(xpnl_Tab,0,0,0,0)
 	
@@ -354,7 +365,7 @@ Private Sub MeasureTextWidth(Text As String, Font1 As B4XFont) As Int
 #End If
 End Sub
 
-Public Sub CreateASFlowTabMenu_Tab (Index As Int, Icon As B4XBitmap, Text As String, TextColor As Int, xFont As B4XFont) As ASFlowTabMenu_Tab
+Public Sub CreateASFlowTabMenu_Tab (Index As Int, Icon As B4XBitmap, Text As String, TextColor As Int, xFont As B4XFont, Tooltip As String) As ASFlowTabMenu_Tab
 	Dim t1 As ASFlowTabMenu_Tab
 	t1.Initialize
 	t1.Index = Index
@@ -362,5 +373,6 @@ Public Sub CreateASFlowTabMenu_Tab (Index As Int, Icon As B4XBitmap, Text As Str
 	t1.Text = Text
 	t1.TextColor = TextColor
 	t1.xFont = xFont
+	t1.Tooltip = Tooltip
 	Return t1
 End Sub

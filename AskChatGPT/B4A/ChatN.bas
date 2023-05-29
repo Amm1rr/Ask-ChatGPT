@@ -505,29 +505,29 @@ Private Sub LoadLangTabs
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
 		
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT, "Check Grammar")
 		If (General.Pref.FirstLang = "Persian") Then
-			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2), "Translate to " & General.Pref.FirstLang)
 		Else
-			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2), "Translate to " & General.Pref.FirstLang)
 		End If
 		If (General.Pref.SecondLang = "Persian") Then
-			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.SecondLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.SecondLang.SubString2(0, 2), "Translate to " & General.Pref.SecondLang)
 		Else
-			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.SecondLang, "🌐"),True,20,clr), General.Pref.SecondLang.SubString2(0, 2), "Translate to " & General.Pref.SecondLang)
 		End If
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT)
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT, "Conversation with Pook")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT, "Chat with AI" & CRLF & "Ask any question you have")
 		
 	Else
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT, "Check Grammar")
 		If (General.Pref.FirstLang = "Persian") Then
-			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "iran.png"), General.Pref.FirstLang.SubString2(0, 2), "Translate to " & General.Pref.FirstLang)
 		Else
-			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2))
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr),General.Pref.FirstLang.SubString2(0, 2), "Translate to " & General.Pref.FirstLang)
 		End If
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT)
-		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT)
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "man.png"), Starter.AIPOOK_TEXT, "Conversation with Pook")
+		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "chat1.png"), Starter.AICHAT_TEXT, "Ask any question you have")
 		
 	End If
 	
@@ -1043,7 +1043,7 @@ public Sub AdjustSize_Clv(height As Int, GotoEnd As Boolean)
 		panTextToolbar.SetLayout(txtQuestion.Width - 30%x, txtQuestion.Height - 5%x, 77%x, 11%y)
 		
 	Catch
-		MyLog("AdjustSize_Clv: " & height, ColorLog, True)
+'		MyLog("AdjustSize_Clv: " & height, ColorLog, True)
 		LogColor("AdjustSize_Clv:" & LastException, Colors.Red)
 	End Try
 End Sub
@@ -2417,7 +2417,7 @@ Private Sub icMenuTopMenu_Click
 			Else
 				Log("final")
 				
-				flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat")
+				flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat", "Ask any question you have")
 				
 				Dim newsectab As ASFlowTabMenu_Tab
 					newsectab.Initialize
@@ -2437,6 +2437,7 @@ Private Sub icMenuTopMenu_Click
 '					newsectab.Index = 3
 					newsectab.Text = "Pook"
 					newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
+					newsectab.Tooltip = "Conversation with Pook"
 				flowTabToolbar.SetTabProperties(3, newsectab)
 				
 			End If
@@ -2831,10 +2832,6 @@ Private Sub flowTabToolbar_TabClick(index As Int)
 	
 End Sub
 
-Private Sub flowTabToolbar_TabLongClick(index As Int)
-	
-End Sub
-
 Private Sub lblNewMSG_LongClick
 	
 	MyLog("btnNew_Click", ColorLog, True)
@@ -2845,6 +2842,6 @@ Private Sub lblNewMSG_LongClick
 	clvMessages.Clear
 	Starter.MessageList.Clear
 	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
-	ToastMessageShow("New Session", False)
+	ToastMessageShow("New", False)
 	
 End Sub
