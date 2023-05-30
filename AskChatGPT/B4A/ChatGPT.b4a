@@ -1,4 +1,4 @@
-﻿Build1=Default,com.ask.chatgpt,Premium
+﻿Build1=Default,com.amm1rr.chatgpt,Standard
 File1=Acme-Regular.ttf
 File10=Changelog.txt
 File11=Chat.bal
@@ -119,7 +119,7 @@ Version=12.2
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
 	#VersionCode: 1
-	#VersionName: Beta
+	#VersionName: beta
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False

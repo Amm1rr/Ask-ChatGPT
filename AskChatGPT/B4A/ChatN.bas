@@ -324,9 +324,9 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
 		csAppVersion.Color(Colors.RGB(89,46,121)).Size(18).Append(CRLF & CRLF & TAB & TAB & TAB & Application.LabelName & "  v" & Application.VersionCode & ".0").Pop
-		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($" ${Application.VersionName.ToLowerCase} ${CRLF}${CRLF}"$).Pop
-		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & TAB & "   Full Version").Pop
-		csAppVersion.Append(CRLF & CRLF & TAB & TAB & TAB).Color(Colors.DarkGray).Size(13).Append("🔗").Pop
+		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($" ${Application.VersionName} ${CRLF}${CRLF}"$).Pop
+		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & TAB & "   " & General.VERSION_LABEL).Pop
+		csAppVersion.Append(CRLF & CRLF & TAB & TAB & TAB).Color(Colors.DarkGray).Size(11).Append("🔗").Pop
 		csAppVersion.Color(Colors.RGB(48,84,187)).Size(11).Append("   github.com/Amm1rr").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB & TAB & TAB & TAB & TAB).Color(Colors.Gray).Size(8).Append("   Copyright (c) 2023" & CRLF & CRLF).Pop
 		csAppVersion.Color(Colors.LightGray).Size(9).Append(TAB & TAB & TAB & " MIT License - Freeware" & CRLF).Pop
@@ -2644,7 +2644,8 @@ Private Sub ShowTutorial
 	lblPaste.Visible = True
 	
 	If (General.FirstRUN) Then
-		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
+		General.FirstRUN = False
+'		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
 		
 		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
 		If (flowTabToolbar.Size = 5) Then
