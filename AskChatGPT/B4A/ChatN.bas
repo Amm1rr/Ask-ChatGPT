@@ -347,7 +347,7 @@ Private Sub SetupSettingDialog(parent As B4XView)
 		csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append(Application.LabelName).Pop
 		csAbout.PopAll
 	
-	prefdialog.AddExplanationItem("ABOUT", "Quick Tutorial", "")
+	prefdialog.AddExplanationItem("TUTORIAL", "Quick Tutorial", "")
 	prefdialog.AddExplanationItem("ABOUT", "About", csAppVersion)
 	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
 	
