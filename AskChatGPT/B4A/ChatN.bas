@@ -2764,7 +2764,6 @@ Private Sub clvTitles_ItemClick (Index As Int, Value As Object)
 		recsetJson.Close
 	End If
 	
-	
 End Sub
 
 Private Sub LoadMessage(Value As String)
@@ -2876,6 +2875,9 @@ End Sub
 
 Private Sub lblNewMSG_LongClick
 	
+	clvMessages.sv.SetColorAndBorder(Colors.Transparent, 2dip, Colors.White, 0)
+'	clvMessages.sv.SetColorAnimated(50, Colors.Transparent, Colors.White)
+	
 	MyLog("btnNew_Click", ColorLog, True)
 	
 	ClickSimulation
@@ -2883,7 +2885,19 @@ Private Sub lblNewMSG_LongClick
 	MessageIndex = -1
 	clvMessages.Clear
 	Starter.MessageList.Clear
-	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
-	ToastMessageShow("New", False)
 	
+	Sleep(50)
+	
+	clvMessages.sv.SetColorAndBorder(Colors.Transparent, 0, Colors.White, 0)
+'	clvMessages.sv.SetColorAnimated(75, Colors.White, Colors.Transparent)
+	
+'	ToastMessageShow("New Conversation", False)
+'	LogColor("MessageIndex: " & clvTitles.Size & "/" & MessageIndex, Colors.Red)
+	
+End Sub
+
+Private Sub lblNewMSG_Click
+	lblNewMSG.TextColor = Colors.Blue
+	Sleep(75)
+	lblNewMSG.TextColor = Colors.RGB(97,97,97)
 End Sub
