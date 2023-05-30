@@ -265,6 +265,7 @@ Private Sub lblShareMenuTopMenu_Click
 		Main.TextShared = SharedText
 		StartActivity (Intent1)
 		Activity.Finish
+		ExitApplication
 	End If
 	
 '	Main.TextShared = SharedText
