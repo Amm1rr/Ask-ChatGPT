@@ -435,7 +435,7 @@ Public Sub Query(system_string As String, _
 '			Exit
 		End If
 	Next
-		
+	
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
 	

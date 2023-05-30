@@ -347,7 +347,6 @@ End Sub
 
 Public Sub CheckMessageList
 	
-
 	Log("CheckMessageList: " & Starter.MessageList)
 
 	Try
@@ -448,7 +447,10 @@ End Sub
 'End Sub
 
 Private Sub Activity_KeyPress (KeyCode As Int) As Boolean 'Return True to consume the event
-	If KeyCode = KeyCodes.KEYCODE_BACK Then
+	If (ChatN1.tips.Visible = True) And (ChatN1.tips.CanSkip) Then
+		ChatN1.tips.hide(True)
+		Return True
+	else If KeyCode = KeyCodes.KEYCODE_BACK Then
 		If ChatN1.prefdialog.BackKeyPressed Then Return True
 	End If
 	Return False

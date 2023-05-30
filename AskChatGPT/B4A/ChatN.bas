@@ -108,8 +108,8 @@ Sub Class_Globals
 	Private lblNewMSG As Label
 	Private btnClearTitles As Button
 	
-	Private tips As DOTips
-	
+	Public tips As DOTips
+	Private lblTutorial As Label
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -543,7 +543,7 @@ Private Sub LoadLangTabs
 '	Log("Lang: " & General.Pref.FirstLang & " - Sec: " & General.Pref.SecondLang)
 	
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
-		LogColor(General.Pref.SecondLang, Colors.Red)
+'		LogColor(General.Pref.SecondLang, Colors.Red)
 		
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT, "Check Grammar")
 		If (General.Pref.FirstLang = "Persian") Then
@@ -2636,20 +2636,46 @@ End Sub
 
 Private Sub ShowTutorial
 	
-	If (General.FirstRUN) Then _
-		tips.addTipForView(lblTitleTopMenu, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
-	tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
-'	tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
-	If (flowTabToolbar.Size = 5) Then
-'		tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
-		tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
-		tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+	If (General.FirstRUN) Then
+		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
+		
+		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
+		If (flowTabToolbar.Size = 5) Then
+			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+'			tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
+'			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
+		Else
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+		End If
+		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+		
 	Else
-		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
-		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+		
+		tips.DescriptionColor = Colors.RGB(235,230,222)
+		tips.DescriptionSize = 18
+		tips.Spacer = 15
+		tips.TitleSize = 26
+		tips.clear
+		tips.addGeneralTip("Welcome", "Welcome to quick tutorial." & CRLF & CRLF)
+		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
+		tips.addTipForView(txtQuestion, "Text Tools", "Copy, Paste, and Delete make handling text easy." & CRLF & CRLF)
+		If (flowTabToolbar.Size = 5) Then
+			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
+		Else
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
+		End If
+		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+		tips.addTipForView(clvMessages.AsView, "Copy", "Hold messages to Copy" & CRLF & CRLF)
+		tips.addTipForView(icHistoryTopMenu, "History", "History of conversations" & CRLF & CRLF)
+		
+		
 	End If
-	tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
-	tips.addTipForView(imgSend, "Voice", "If you choose a second language, you can simply hold down the Voice button to speak in that selected language." & CRLF & CRLF)
 	
 	tips.show
 	
