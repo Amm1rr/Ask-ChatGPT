@@ -110,6 +110,10 @@ Sub Class_Globals
 	
 	Public tips As DOTips
 	Private lblTutorial As Label
+	
+	Private keepCopy 	As Boolean
+	Private keepPaste 	As Boolean
+	
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -206,24 +210,10 @@ Public Sub Initialize(parent As B4XView, text As String)
 	typeMSG.question = 1
 	typeMSG.waitingtxt = 3
 	
-	resetTextboxToolbar
-	
 	LoadLangTabs
 	LoadListDB
 	
 	SetupSettingDialog(parent)
-	
-'	If (General.Pref.SecondLang <> "" And General.Pref.SecondLang <> "(None)") Then
-'		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
-'		chkToFarsi.Text = General.Pref.SecondLang
-'		chkToFarsi.Visible = True
-'		chkTranslate.Visible = True
-'	Else
-'		LogColor(General.Pref.FirstLang & " : " & General.Pref.SecondLang, Colors.Red)
-'		chkTranslate.Text = General.Pref.FirstLang
-'		chkToFarsi.Visible = False
-'		chkTranslate.Visible = True
-'	End If
 	
 	DevModeCheck
 	
@@ -242,16 +232,18 @@ Public Sub Initialize(parent As B4XView, text As String)
 '		txtQuestion.Text = text
 ''		imgSend_Click
 '	End If
-
-	addAllTooltips
 	
-	General.sql.TransactionSuccessful
-	General.sql.EndTransaction
+	addAllTooltips
 	
 	LoadCLVSetup
 	
+	resetTextboxToolbar
+	
 	tips.Initialize(Me, parent, "tips")
 	If (General.FirstRUN) Then ShowTutorial
+	
+	General.sql.TransactionSuccessful
+	General.sql.EndTransaction
 	
 End Sub
 
@@ -2635,8 +2627,23 @@ Private Sub lblTitleTopMenu_LongClick
 '	SimulateMessage
 	
 End Sub
-
+Private Sub tips_OnHide(tipsSkipped As Int)
+	lblCopy.Visible 	= keepCopy
+	lblPaste.Visible 	= keepPaste
+End Sub
 Private Sub ShowTutorial
+	
+	keepCopy 	= lblCopy.Visible
+	keepPaste 	= lblPaste.Visible
+	
+	tips.DescriptionColor = Colors.RGB(235,230,222)
+	tips.DescriptionSize = 17
+	tips.Spacer = 15
+	tips.TitleSize = 25
+	tips.clear
+	
+	lblCopy.Visible = True
+	lblPaste.Visible = True
 	
 	If (General.FirstRUN) Then
 		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
@@ -2655,11 +2662,6 @@ Private Sub ShowTutorial
 		
 	Else
 		
-		tips.DescriptionColor = Colors.RGB(235,230,222)
-		tips.DescriptionSize = 18
-		tips.Spacer = 15
-		tips.TitleSize = 26
-		tips.clear
 		tips.addGeneralTip("Welcome", "Welcome to quick tutorial." & CRLF & CRLF)
 		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
 		tips.addTipForView(txtQuestion, "Text Tools", "Copy, Paste, and Delete make handling text easy." & CRLF & CRLF)
@@ -2675,7 +2677,6 @@ Private Sub ShowTutorial
 		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
 		tips.addTipForView(clvMessages.AsView, "Copy", "Hold messages to Copy" & CRLF & CRLF)
 		tips.addTipForView(icHistoryTopMenu, "History", "History of conversations" & CRLF & CRLF)
-		
 		
 	End If
 	
