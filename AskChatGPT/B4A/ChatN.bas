@@ -1154,13 +1154,13 @@ Private Sub imgSend_LongClick
 	
 	VoiceLang(General.Pref.SecondLang)
 	Wait For (RecognizeVoice) Complete (Result As String)
-	If (Result <> "") Then
+	If Not (General.IsNull(Result)) Then
 '		LogColor("Voice:" & Result, Colors.Blue)
 		txtQuestion.Text = Result
 		If (General.Pref.AutoSend) Then
 			imgSend_Click
 		Else
-'				txtQuestion.SelectAll
+'			txtQuestion.SelectAll
 		End If
 	End If
 	IME_HeightChanged(100%y, 0)
@@ -1265,13 +1265,15 @@ Public Sub imgSend_Click
 	Else If Main.voicer.IsSupported Then	
 		
 		ClickSimulation
-		Log("HERE")
+'		Log("HERE")
+
 		VoiceLang(General.Pref.FirstLang)
 		Wait For (RecognizeVoice) Complete (Result As String)
-		If (Result <> "") Then
+		If Not (General.IsNull(Result)) Then
 			LogColor("Voice:" & Result, Colors.Blue)
 			txtQuestion.Text = Result
 			If (General.Pref.AutoSend) Then
+				IsWorking = False
 				imgSend_Click
 			Else
 '				txtQuestion.SelectAll
