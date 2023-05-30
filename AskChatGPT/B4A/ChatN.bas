@@ -310,27 +310,24 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	
 	prefdialog.Initialize(parent, "Setting", parent.Width - 10%x, parent.Height / 2)
 	prefdialog.mBase.Top = 20%y
-'	prefdialog.Dialog.OverlayColor = xui.Color_ARGB(128, 0, 10, 40)
-'	prefdialog.Dialog.TitleBarColor = xui.Color_RGB(65, 105, 225)
-	prefdialog.Dialog.TitleBarHeight = 65dip
-'	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
 	prefdialog.LoadFromJson(File.ReadString(File.DirAssets, "PrefsJson.json"))
 	prefdialog.SetEventsListener(Me, "PrefDialog")
-	
-	
-	'// اگه این متن رو عوض کردیم باید تویه
-	'// و توی رویداد کلیک برای لیبل ها هم تغییر بدهیم PreferencesDialog
-	'// Label1_Click - بصورت متغیر قرارش دادم و این متن صرفا برای یادآوری است
-	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
-	'//
-	
-	prefdialog.Dialog.BackgroundColor = Colors.RGB(222,222,222)
-	prefdialog.Dialog.BorderColor = Colors.RGB(244,171,34)
-	prefdialog.Dialog.BorderCornersRadius = 3dip
-	prefdialog.Dialog.BorderWidth = 2dip
-	prefdialog.Dialog.BlurBackground = True
-	prefdialog.Dialog.VisibleAnimationDuration = 150
+	prefdialog.ItemsBackgroundColor = prefdialog.Dialog.BackgroundColor
 	prefdialog.SeparatorBackgroundColor = prefdialog.ItemsBackgroundColor
+	prefdialog.CustomListView1.DefaultTextBackgroundColor = prefdialog.ItemsBackgroundColor
+	prefdialog.SeparatorTextColor = Colors.Red
+	prefdialog.Theme = prefdialog.THEME_LIGHT
+	prefdialog.Dialog.BlurBackground = True
+'	prefdialog.Dialog.OverlayColor = Colors.DarkGray
+	prefdialog.Dialog.BorderWidth = 2dip
+	prefdialog.Dialog.TitleBarHeight = 65dip
+	prefdialog.Dialog.TitleBarColor = Colors.RGB(111,89,178)
+	prefdialog.Dialog.TitleBarTextColor = Colors.RGB(238,251,107)
+	prefdialog.Dialog.BackgroundColor = Colors.RGB(254,254,254)
+	prefdialog.Dialog.BorderColor = Colors.RGB(138,179,249)
+	prefdialog.Dialog.BorderCornersRadius = 3dip
+	prefdialog.Dialog.VisibleAnimationDuration = 150
+'	prefdialog.CustomListView1.sv.Height = prefdialog.CustomListView1.sv.ScrollViewInnerPanel.Height + 10dip
 	
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
@@ -346,10 +343,12 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	
 	Dim csAbout As CSBuilder
 		csAbout.Initialize
-		csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append("About " & Application.LabelName).Pop
+		csAbout.Color(Colors.RGB(130,0,0)).Size(12).Append(Application.LabelName).Pop
 		csAbout.PopAll
 	
-	prefdialog.AddExplanationItem("About", csAbout, csAppVersion)
+	prefdialog.AddExplanationItem("ABOUT", "Quick Tutorial", "")
+	prefdialog.AddExplanationItem("ABOUT", "About", csAppVersion)
+	prefdialog.AddApiKeyItem("APIKEY", "API", General.APIKeyLabel)
 	
 	Options.Initialize
 	Dim Options As Map = CreateMap()
@@ -360,7 +359,9 @@ Private Sub SetupSettingDialog(parent As B4XView)
 		Options.Put("APIKEY", General.Pref.APIKEY)
 	
 End Sub
-
+Private Sub Tutorial
+	ShowTutorial
+End Sub
 Private Sub SetChatBackground(fileName As String)
 	
 	MyLog("SetChatBackground", ColorLog, True)

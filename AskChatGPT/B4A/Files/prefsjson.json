@@ -109,15 +109,9 @@
             "required": false
         },
         {
-            "title": "AutoSend when use voice assistant",
+            "title": "AutoSend Voice",
             "type": "Boolean",
             "key": "AutoSend",
-            "required": false
-        },
-        {
-            "title": "",
-            "type": "Separator",
-            "key": "",
             "required": false
         }
     ]

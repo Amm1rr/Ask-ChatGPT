@@ -285,10 +285,10 @@ End Sub
 
 Private Sub CreatePrefItem(Title As Object, ItemType As Int, Key As String) As B4XPrefItem
 	Dim pi As B4XPrefItem
-	pi.Initialize
-	pi.Title = Title
-	pi.ItemType = ItemType
-	pi.Key = Key
+		pi.Initialize
+		pi.Title = Title
+		pi.ItemType = ItemType
+		pi.Key = Key
 	Return pi
 End Sub
 
@@ -930,10 +930,19 @@ Private Sub lblExplanation_Click
 #end if
 	NestedDialogItemIndex = CustomListView1.GetItemFromView(Sender)
 	Dim pref As B4XPrefItem = CustomListView1.GetValue(NestedDialogItemIndex)
-	Dialog.Title = pref.Title
-	LongTextTemplate.Text = pref.Extra.Get("text")
-	Template = LongTextTemplate
-	Dialog.Close(RESULT_SHOWING_NESTED_DIALOG)
+	If (pref.Title = "Quick Tutorial") Then
+		
+		If mEventName <> "" And  xui.SubExists(mCallback, "Tutorial", 1) Then
+			Dialog.Close(0)
+			CallSub2(mCallback, "Tutorial", Null)
+		End If
+		
+	Else
+		Dialog.Title = pref.Title
+		LongTextTemplate.Text = pref.Extra.Get("text")
+		Template = LongTextTemplate
+		Dialog.Close(RESULT_SHOWING_NESTED_DIALOG)
+	End If
 End Sub
 
 Private Sub CreateLabel(EventName As String) As B4XView
