@@ -91,7 +91,7 @@ Public Sub LoadSettingDB
 	Dim CurSettingSql As ResultSet = sql.ExecQuery("SELECT * FROM Config")
 '	Log(CurSettingSql)
 	
-	LogColor("Config Row Count: " & CurSettingSql.RowCount, Colors.Red)
+'	LogColor("Config Row Count: " & CurSettingSql.RowCount, Colors.Red)
 	If (CurSettingSql.RowCount < 1) Then
 		Pref.FirstLang 		= 	"English"
 		Pref.SecondLang 	= 	"(None)"
@@ -115,6 +115,7 @@ Public Sub LoadSettingDB
 		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
 		Pref.APIKEY = DecKey(CurSettingSql.GetString("APIKEY"))
 		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
+		
 		FirstRUN = False
 '		Log(Pref.APIKEY)
 	End If

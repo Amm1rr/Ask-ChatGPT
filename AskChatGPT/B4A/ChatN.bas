@@ -232,9 +232,11 @@ Public Sub Initialize(parent As B4XView, text As String)
 '	SetChatBackground("Bg-Chat03.jpg")
 	SetChatBackground("Bg-Chat01.jpg")
 	
-	ControlCheckBox
-'	LogColor("ChatN.Init text: " & text, Colors.Red)
 	txtQuestion.Text = text
+	flowTabToolbar.CurrentIndex = General.Pref.LastTypeModel
+	txtQuestion.Hint = Hint(General.Pref.LastTypeModel)
+	
+'	LogColor("ChatN.Init text: " & text, Colors.Red)
 '	If Not (text = "") Then
 '		LogColor("ChatN.Initialize.ReciveText: " & text, Colors.Blue)
 '		txtQuestion.Text = text
@@ -249,9 +251,40 @@ Public Sub Initialize(parent As B4XView, text As String)
 	LoadCLVSetup
 	
 	tips.Initialize(Me, parent, "tips")
-	
 	If (General.FirstRUN) Then ShowTutorial
 	
+End Sub
+
+Private Sub Hint(index As Int) As String
+	If (flowTabToolbar.Size = 5) Then
+		Select index
+			Case 0
+				Return "(Correct and Completed)"
+			Case 1
+				Return "(Translate to " & General.Pref.FirstLang & ")"
+			Case 2
+				Return "(Translate to " & General.Pref.SecondLang & ")"
+			Case 3
+				Return "(Correct and Reply to your question)"
+			Case 4
+				Return "(Just Ask...)"
+			Case Else
+				Return "Type Here"
+		End Select
+	Else
+		Select index
+			Case 0
+				Return "(Correct and Completed)"
+			Case 1
+				Return "(Translate to " & General.Pref.FirstLang & ")"
+			Case 2
+				Return "(Correct And Reply To your question)"
+			Case 3
+				Return "(Just Ask...)"
+			Case Else
+				Return "Type Here"
+		End Select
+	End If
 End Sub
 
 'in each activity, I use a single sub to add all the tooltips on that screen
@@ -507,7 +540,7 @@ Private Sub LoadLangTabs
 	
 	Dim clr As Int = Colors.RGB(13, 85, 25)
 	
-	Log("Lang: " & General.Pref.FirstLang & " - Sec: " & General.Pref.SecondLang)
+'	Log("Lang: " & General.Pref.FirstLang & " - Sec: " & General.Pref.SecondLang)
 	
 	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
 		LogColor(General.Pref.SecondLang, Colors.Red)
@@ -2144,15 +2177,6 @@ Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
 	If Not (HasFocus) Then HideKeyboard
 End Sub
 
-Private Sub ControlCheckBox
-	
-	MyLog("ControlCheckBox", ColorLog, False)
-	
-	flowTabToolbar.CurrentIndex = General.Pref.LastTypeModel
-	flowTabToolbar.RefreshTabProperties
-	
-End Sub
-
 Private Sub IsLangRTL(langname As String) As Boolean
 	If (langname = "Hebrew") Or (langname = "Arabic") Or (langname = "Persian") Then
 		AnswerRtl = True
@@ -2608,19 +2632,20 @@ End Sub
 
 Private Sub ShowTutorial
 	
+	If (General.FirstRUN) Then _
+		tips.addTipForView(lblTitleTopMenu, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
 	tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
-	tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
+'	tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
 	If (flowTabToolbar.Size = 5) Then
-		tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
-		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
-		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+'		tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
 	Else
 		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
 	End If
 	tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
 	tips.addTipForView(imgSend, "Voice", "If you choose a second language, you can simply hold down the Voice button to speak in that selected language." & CRLF & CRLF)
-	tips.addTipForView(lblTitleTopMenu, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
 	
 	tips.show
 	
@@ -2885,22 +2910,7 @@ End Sub
 Private Sub flowTabToolbar_TabClick(index As Int)
 	
 	General.Pref.LastTypeModel = index
-	
-'	Select index
-'		Case 0
-'			General.Pref.LastTypeModel = 0
-'		Case 1
-'			chkTranslate.Checked = True
-'		Case 2
-'			chkToFarsi.Checked = True
-'		Case 3
-'			chkChat.Checked = True
-'		Case 4
-'			chkGrammar.Checked = False
-'			chkTranslate.Checked = False
-'			chkToFarsi.Checked = False
-'			chkChat.Checked = False
-'	End Select
+	txtQuestion.Hint = Hint(index)
 	
 End Sub
 
