@@ -259,13 +259,13 @@ Private Sub Hint(index As Int) As String
 	If (flowTabToolbar.Size = 5) Then
 		Select index
 			Case 0
-				Return "(Correct and Completed)"
+				Return "(Correct and Complete)"
 			Case 1
 				Return "(Translate to " & General.Pref.FirstLang & ")"
 			Case 2
 				Return "(Translate to " & General.Pref.SecondLang & ")"
 			Case 3
-				Return "(Correct and Reply to your question)"
+				Return "(Correct and Reply to your ask)"
 			Case 4
 				Return "(Just Ask...)"
 			Case Else
@@ -274,11 +274,11 @@ Private Sub Hint(index As Int) As String
 	Else
 		Select index
 			Case 0
-				Return "(Correct and Completed)"
+				Return "(Correct and Complete)"
 			Case 1
 				Return "(Translate to " & General.Pref.FirstLang & ")"
 			Case 2
-				Return "(Correct And Reply To your question)"
+				Return "(Correct and Reply To your ask)"
 			Case 3
 				Return "(Just Ask...)"
 			Case Else
@@ -1243,6 +1243,8 @@ Public Sub imgSend_Click
 		If (questionHolder.Trim.Length < 1) Then Return
 		
 		ClickSimulation
+		
+		HideKeyboard
 		
 		Dim res As Map = CreatePrompt(questionHolder)
 			Dim sSystem As String = res.Get("System")
@@ -2663,78 +2665,6 @@ End Sub
 Private Sub panTextToolbar_Click
 	
 End Sub
-Private Sub SaveList_OLD
-	
-	Dim count 	As Int  = clvMessages.Size - 1
-	Dim map1 	As Map
-	Dim lst 	As List
-		lst.Initialize
-	
-	For i = 0 To count
-		Dim msg As textMessage = clvMessages.GetValue(i)
-		map1.Initialize
-		If (msg.msgtype <> typeMSG.waitingtxt) Then
-			map1.Put("assistant", msg.assistant)
-			map1.Put("message", msg.message)
-			map1.Put("msgtype", msg.msgtype)
-			lst.Add(map1)
-		End If
-	Next
-	
-	Dim jso As JSONGenerator
-		jso.Initialize2(lst)
-	
-	File.WriteString(File.DirInternal, General.SaveFileName, jso.ToString)
-	
-'	LogColor(jso.ToString, Colors.Red)
-	
-End Sub
-
-Private Sub LoadList_OLD
-	
-	
-	If Not (File.Exists(File.DirInternal, General.SaveFileName)) Then Return
-	
-	Dim txt As String = File.ReadString(File.DirInternal, General.SaveFileName)
-	
-	If (txt.Length < 1) Then Return
-	
-	imgSend.Enabled = False
-	
-	clvMessages.Clear
-	
-	Dim JSON As JSONParser
-		JSON.Initialize(txt)
-	
-	Dim lst As List = JSON.NextArray
-	
-	Dim count As Int = lst.Size - 1
-	
-	For i = 0 To count
-		
-		Dim m As Map = lst.Get(i)
-		Dim msg As textMessage
-			msg.Initialize
-'			msg.assistant = m.Get("assistant")
-			msg.message = m.Get("message")
-			msg.msgtype = m.Get("msgtype")
-		
-		Select msg.msgtype
-			
-			Case typeMSG.answer
-				WriteAnswer(msg.message, False, "", LastMsgIndex)
-				
-			Case typeMSG.question
-				WriteQuestion(msg.message)
-			
-		End Select
-		
-	Next
-	
-	imgSend.Enabled = True
-	
-End Sub
-
 
 Private Sub LoadListDB
 	
