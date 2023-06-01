@@ -81,6 +81,7 @@ Private Sub CreateDB
 	sql.ExecNonQuery(tblMessages)
 End Sub
 
+' Check if the month and year are between September 29, 2023.
 Public Sub ReturnBool
 	
 	Dim nowde As Long = DateTime.Now

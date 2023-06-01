@@ -2159,7 +2159,20 @@ Private Sub lblClearText_Click
 End Sub
 
 Private Sub lblClearText_LongClick
-	lblNewMSG_LongClick
+	If (clvMessages.Size > 0) Then
+		
+		Dim bcancel As Boolean
+		IsWorking = False: Main.GetIsWorking = False
+		
+		For i=0 To clvMessages.Size-1
+		Dim msg As textMessage = clvMessages.GetValue(i)
+			If (msg.msgtype = typeMSG.waitingtxt) Then
+				bcancel = True
+				clvMessages.RemoveAt(i)
+			End If
+		Next
+		If bcancel Then ToastMessageShow("Canceled", False)
+	End If
 End Sub
 
 Public Sub ResetAI
@@ -2666,6 +2679,7 @@ Private Sub ShowTutorial
 			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 		End If
 		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+		tips.addTipForView(lblClearText, "Cancel", "Clear the text OR If you want to cancel your commands or if it's taking a long time to answer, just hold down the Delete button to cancel the process." & CRLF & CRLF)
 		
 	Else
 		
@@ -2682,6 +2696,7 @@ Private Sub ShowTutorial
 			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
 		End If
 		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+		tips.addTipForView(lblClearText, "Cancel", "Clear the text OR If you want to cancel your commands or if it's taking a long time to answer, just hold down the Delete button to cancel the process." & CRLF & CRLF)
 		tips.addTipForView(clvMessages.AsView, "Copy", "Hold messages to Copy" & CRLF & CRLF)
 		tips.addTipForView(icHistoryTopMenu, "History", "History of conversations" & CRLF & CRLF)
 		

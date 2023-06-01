@@ -227,6 +227,7 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	Starter.APIValidate
 	
+	' Check if the month and year are between September 29, 2023.
 	General.ReturnBool
 	
 	CheckMessageTimer.Initialize("CheckMessageTimer", 1000)
