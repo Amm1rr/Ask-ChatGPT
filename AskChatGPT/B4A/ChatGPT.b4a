@@ -123,7 +123,7 @@ Version=12.2
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
 	#VersionCode: 1
-	#VersionName: beta
+	#VersionName: standard
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
@@ -135,7 +135,7 @@ Version=12.2
 	#IncludeTitle: False
 #End Region
 
-#BridgeLogger: True
+#BridgeLogger: False
 
 Sub Process_Globals
 	Private OldIntent 				As Intent

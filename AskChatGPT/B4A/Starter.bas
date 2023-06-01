@@ -20,7 +20,7 @@ Sub Process_Globals
 	Public ConnectException 	As String = $"Internet is unreachable${CRLF}Check you internet"$
 	Public InstructureError 	As String = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction."
 	Public ServerError 			As String = $"🤮 server (♻ try agian)"$ '🤢 '💩 '🚽 '👎 '🪫
-	Public APIError 			As String = $"API is not valid, check your free API in settings."$ '🤢 '💩 '🚽 '👎 '🪫
+	Public APIError 			As String = $"${Chr(0xF2BC)} The API is not valid. In the settings, make sure to get your free API and enter it there."$
 	
 	Private Const MAXTOKEN 		As Int	= 2000
 	Public	Const TIMEOUT		As Int 	= 90000

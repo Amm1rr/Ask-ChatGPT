@@ -12,12 +12,12 @@ Sub Process_Globals
 	Private 		xui 					As XUI
 	Private 		ColorLog				As Int 		= Colors.LightGray
 	Public 			Pref 					As Setting
-	Public  		IsDebug					As Boolean 	= True
+	Public  		IsDebug					As Boolean 	= False
 	Public 			SQLFileName				As String 	= "AskChatGPT.db"
 	Public 			sql						As SQL
 	Public 			APIKeyLabel				As String	= "Get your free OpenAI Key (Click Here)"
 	Public  		FirstRUN				As Boolean	= False
-	Public 	Const 	VERSION_LABEL			As String 	= "Standard"
+	Public 	Const 	VERSION_LABEL			As String 	= "Free"
 End Sub
 
 #Region Save and Load Settings
