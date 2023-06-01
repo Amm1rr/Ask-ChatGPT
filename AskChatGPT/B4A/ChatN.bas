@@ -330,7 +330,7 @@ Private Sub SetupSettingDialog(parent As B4XView)
 		csAppVersion.Color(Colors.RGB(89,46,121)).Size(16).Append(CRLF & CRLF & TAB & TAB & TAB & Application.LabelName).Pop
 		csAppVersion.color(Colors.RGB(170,119,63)).Size(12).Append("  Free").Pop
 		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($"${CRLF}${CRLF}"$).Pop
-		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & "   v" & Application.VersionName & "." & Application.VersionCode).Pop
+		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & "   v" & Application.VersionName & " (build " & Application.VersionCode & ")").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.DarkGray).Size(9).Append("🔗").Pop
 		csAppVersion.Color(Colors.RGB(48,84,187)).Size(10).Append("  github.com/amm1rr/ask-chatgpt").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright " & Chr(0xE90C) & " 2023").Pop
@@ -723,12 +723,16 @@ Private Sub LoadCLVSetup
 		myStrings.Add("Hi there, How are you?")
 		myStrings.Add($"Translate/Dictionary:${CRLF}-----${CRLF}   Translate all languages together${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 Or Just write a word for translation to see the pronunciation, similar to that in a dictionary."$)
 		If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
-			myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   زبان دوم رو انتخاب کنید و دکمه Voice رو نگه دارید :)"$)
-			myStrings.Add($"✔  Check:${CRLF}-----${CRLF}   اولین گزینه گرامر رو بررسی میکنه، یعنی هر چیزی که "فکر" میکنید درست است ارسال کنید تصحیح شده اش رو تحویل میده : )"$)
+			If (General.Pref.SecondLang = "Persian") Then
+				myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   دکمه Voice رو نگه دار تا فارسی صحبت کنی :)"$)
+			Else
+				myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   اگه "زبان خودتون" رو توی تنظیمات انتخاب کنی، با نگه داشتن دکمه Voice میتونی صحبت کنی :)"$)
+			End If
+			myStrings.Add($"✔  Check:${CRLF}-----${CRLF}   اولین گزینه گرامر رو بررسی میکنه، یعنی هر چیزی که "فکر" میکنید درستِ ارسال کنید تصحیح شده اش رو تحویل بگیرید : )"$)
 			myStrings.Add($" Woman, Life, Freedom...${CRLF}-----${CRLF}   با هر زبانی که میخوای ازم سوال بپرس"$)
-			myStrings.Add($"مترجم/دیکشنری:${CRLF}-----${CRLF}   همه زبان ها را ترجمه کنید${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 ${CRLF}اگه تنها یک کلمه برای ترجمه ارسال بشه، میشه دیکشنری :)"$)
+			myStrings.Add($"مترجم/دیکشنری:${CRLF}-----${CRLF}   همه زبان ها را ترجمه کنید${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 ${CRLF}اگه تنها یک کلمه برای Translate ارسال بشه، میشه دیکشنری :)"$)
 			myStrings.Add($"🕳️  Pook${CRLF}-----${CRLF}  برای حل مشکل و جواب سوال بی نظیره!"$)
-			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بدون نگرانی از حریم شخصی بپرسید."$)
+			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بدون نگرانی از حریم شخصی بپرسید"$)
 		Else
 '			myStrings.Add("💻")
 '			myStrings.Add("👩")
@@ -1659,6 +1663,7 @@ Private Sub SaveMessage(title As String)
 		
 		If (clvTitles.GetValue(clvTitles.Size-1) = "TITLE") Then
 			Dim count As Int = clvTitles.Size - 2
+			If (count < 1) Then count = 0
 		Else
 			Dim count As Int = clvTitles.Size - 1
 		End If
