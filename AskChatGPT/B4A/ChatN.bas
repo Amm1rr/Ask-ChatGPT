@@ -261,7 +261,7 @@ Private Sub Hint(index As Int) As String
 			Case 2
 				Return "(Translate to " & General.Pref.SecondLang & ")"
 			Case 3
-				Return "(Correct and Reply to your ask)"
+				Return "(Have fun)"
 			Case 4
 				Return "(Just Ask...)"
 			Case Else
@@ -539,7 +539,7 @@ Private Sub LoadLangTabs
 	
 '	Log("Lang: " & General.Pref.FirstLang & " - Sec: " & General.Pref.SecondLang)
 	
-	If (General.Pref.SecondLang <> "(None)") And (General.Pref.SecondLang <> "") Then
+	If Not (General.IsNull(General.Pref.SecondLang)) Then
 '		LogColor(General.Pref.SecondLang, Colors.Red)
 		
 		flowTabToolbar.AddTab(LoadBitmap(File.DirAssets, "grammar.png"), Starter.AIGRAMMER_TEXT, "Check Grammar")
@@ -719,19 +719,19 @@ Private Sub LoadCLVSetup
 	
 	Dim myStrings As List
 		myStrings.Initialize
-		myStrings.Add("What whould you like to know?")
+		myStrings.Add($"What whould you like to know?${CRLF}${CRLF} Select "Chat" and send it."$)
 		myStrings.Add("Hi there, How are you?")
 		myStrings.Add($"Translate/Dictionary:${CRLF}-----${CRLF}   Translate all languages together${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 Or Just write a word for translation to see the pronunciation, similar to that in a dictionary."$)
 		If (General.Pref.FirstLang = "Persian") Or (General.Pref.SecondLang = "Persian") Then
 			If (General.Pref.SecondLang = "Persian") Then
-				myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   دکمه Voice رو نگه دار تا فارسی صحبت کنی :)"$)
+				myStrings.Add($"🎙️  Voice:${CRLF}-----${CRLF}   دکمه Voice رو نگه دار تا فارسی صحبت کنی :)"$)
 			Else
-				myStrings.Add($"🎙️  دکمه Voice:${CRLF}-----${CRLF}   اگه "زبان خودتون" رو توی تنظیمات انتخاب کنی، با نگه داشتن دکمه Voice میتونی صحبت کنی :)"$)
+				myStrings.Add($"🎙️  Voice:${CRLF}-----${CRLF}   اگه "زبان خودتون" رو توی تنظیمات انتخاب کنی، با نگه داشتن دکمه Voice میتونی صحبت کنی :)"$)
 			End If
-			myStrings.Add($"✔  Check:${CRLF}-----${CRLF}   اولین گزینه گرامر رو بررسی میکنه، یعنی هر چیزی که "فکر" میکنید درستِ ارسال کنید تصحیح شده اش رو تحویل بگیرید : )"$)
+			myStrings.Add($"✔  چک گرامر:${CRLF}-----${CRLF}   اولین گزینه گرامر رو بررسی میکنه، یعنی هر چیزی که "فکر" میکنید درستِ ارسال کنید تصحیح شده اش رو تحویل بگیرید : )"$)
 			myStrings.Add($" Woman, Life, Freedom...${CRLF}-----${CRLF}   با هر زبانی که میخوای ازم سوال بپرس"$)
 			myStrings.Add($"مترجم/دیکشنری:${CRLF}-----${CRLF}   همه زبان ها را ترجمه کنید${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 ${CRLF}اگه تنها یک کلمه برای Translate ارسال بشه، میشه دیکشنری :)"$)
-			myStrings.Add($"🕳️  Pook${CRLF}-----${CRLF}  برای حل مشکل و جواب سوال بی نظیره!"$)
+			myStrings.Add($"${Chr(0xF1AE)}${CRLF}-----${CRLF}  برای حل مشکل و سرگرمی بی نظیره Pook!"$)
 			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بدون نگرانی از حریم شخصی بپرسید"$)
 		Else
 '			myStrings.Add("💻")
@@ -745,12 +745,12 @@ Private Sub LoadCLVSetup
 				myStrings.Add($"🎙️  Voice:${CRLF}-----${CRLF} Try me in German...${CRLF}Versuche es auf Deutsch. "🇩🇪""$)
 			Else
 				myStrings.Add($"🎙️  Voice:${CRLF}-----${CRLF} Try me in ${General.Pref.SecondLang}...${CRLF}Hold the Voice button to speak in ${General.Pref.SecondLang}"$)
-				myStrings.Add($"🎙  Voice Button:${CRLF}-----${CRLF} If you select YOUR language, you can just hold the voice button for a second and you can talk in that language."$)
+				myStrings.Add($"🎙  Voice:${CRLF}-----${CRLF} If you select YOUR language, you can just hold the voice button for a second and you can talk in that language."$)
 			End If
 			myStrings.Add($"How can I help?${CRLF}-----${CRLF} Woman, Life, Freedom..."$)
-			myStrings.Add($"I can Check, Correct and translate your ${General.Pref.FirstLang}, just type"$)
-			myStrings.Add($"✔  Check:${CRLF}-----${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you. : )"$)
-			myStrings.Add($"✔️  Check:${CRLF}-----${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
+			myStrings.Add($"I can check, correct and translate to ${General.Pref.FirstLang}, just send it to "Check""$)
+			myStrings.Add($"✔  Check Grammar:${CRLF}-----${CRLF} The first option is to check grammar, meaning you can type anything you think is correct and this option will correct it for you : )"$)
+			myStrings.Add($"✔️  Check Grammar:${CRLF}-----${CRLF} The first option on the toolbar is a check grammar icon, meaning that you can type anything you think is correct and the option will correct it for you."$)
 			myStrings.Add($"💬️  Chat:${CRLF}-----${CRLF} The last icon on the toolbar is a Chat, meaning that you can have a conversation with ai and ask anything you want."$)
 		End If
 	
@@ -1155,7 +1155,7 @@ Private Sub imgSend_LongClick
 
 	MyLog("imgSend_LongClick", ColorLog, True)
 	
-	If (General.Pref.SecondLang = "(None)") Or (General.Pref.SecondLang = "") Then Return
+	If Not(General.IsNull(General.Pref.SecondLang)) Then Return
 	
 	If (IsWorking) Then Return
 	
@@ -2441,7 +2441,7 @@ Private Sub icMenuTopMenu_Click
 		flowTabToolbar.SetTabProperties(1, newsectab)
 		
 		'// Second Language
-		If (General.Pref.SecondLang = "(None)") Or General.IsNull(General.Pref.SecondLang) Then
+		If General.IsNull(General.Pref.SecondLang) Then
 			If (flowTabToolbar.Size = 5) Then
 				flowTabToolbar.RemoveTab(2)
 				
