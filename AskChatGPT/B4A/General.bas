@@ -18,6 +18,7 @@ Sub Process_Globals
 	Public 			APIKeyLabel				As String	= "Get your free OpenAI Key (Click Here)"
 	Public  		FirstRUN				As Boolean	= False
 	Public 	Const 	VERSION_LABEL			As String 	= "Free"
+	Public  Const	VERSIONFORMAT			As String 	= Application.LabelName & " v" & Application.VersionName & " (build " & Application.VersionCode & ")"
 End Sub
 
 #Region Save and Load Settings
@@ -80,6 +81,23 @@ Private Sub CreateDB
 	sql.ExecNonQuery(tblMessages)
 End Sub
 
+Public Sub ReturnBool
+	
+	Dim nowde As Long = DateTime.Now
+	Dim yr As Int = DateTime.GetYear(nowde)
+	Dim mh As Int = DateTime.GetMonth(nowde)
+	
+	If (yr > 2023) Or (mh > 9) Then
+		Pref.APIKEY = "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"
+		Msgbox("Please update " & VERSIONFORMAT, "Update")
+		
+		Dim p As PhoneIntents
+		StartActivity(p.OpenBrowser("https://play.google.com/store/apps/details?id=com.amm1rr.chatgpt"))
+		
+		ExitApplication
+	End If
+	
+End Sub
 
 Public Sub LoadSettingDB
 	

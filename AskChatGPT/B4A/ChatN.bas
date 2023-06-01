@@ -1661,15 +1661,11 @@ Private Sub SaveMessage(title As String)
 		LogColor("ID: " & id, Colors.Red)
 		Log("Title: " & title)
 		
-		If (clvTitles.GetValue(clvTitles.Size-1) = "TITLE") Then
-			Dim count As Int = clvTitles.Size - 2
-			If (count < 1) Then count = 0
-		Else
-			Dim count As Int = clvTitles.Size - 1
-		End If
-		clvTitles.AddTextItem(count & ". " & title, id)
+		If (clvTitles.GetValue(0) = "TITLE") Then clvTitles.RemoveAt(0)
 		
-		Log("Messages Count: " & count)
+		Dim count As Int = clvTitles.Size
+		If (count <= 0) Then count = 1
+		clvTitles.AddTextItem(count & ". " & title, id)
 		
 		MessageIndex = clvTitles.Size - 1
 		
@@ -2190,7 +2186,11 @@ End Sub
 Private Sub txtQuestion_FocusChanged (HasFocus As Boolean)
 '	MyLog("txtQuestion_FocusChanged: " & HasFocus, ColorLog, False)
 '	resetTextboxToolbar
-	If Not (HasFocus) Then HideKeyboard
+	If (HasFocus) Then
+		Drawer.RightOpen = False
+	Else
+		HideKeyboard
+	End If
 End Sub
 
 Private Sub IsLangRTL(langname As String) As Boolean
@@ -2855,13 +2855,17 @@ Private Sub clvTitles_ItemLongClick (Index As Int, Value As Object)
 			clvTitles.RemoveAt(Index)
 			MessageIndex = -1
 			LogColor("MessageIndex: "  & clvTitles.Size & "/" &  MessageIndex, Colors.Red)
-			
 			ToastMessageShow("Deleted", False)
+			
+			If (clvTitles.Size < 1) Then clvTitles.AddTextItem("Conversation history is clean.", "TITLE")
+			
 		End If
 		
 End Sub
 
 Private Sub btnClearTitles_Click
+	
+	If (clvTitles.GetValue(0) = "TITLE") Then Return
 	
 	Msgbox2Async("Clear All Conversations ?", "Delete All", "Delete", "CANCEL", "", Null, True)
 	
