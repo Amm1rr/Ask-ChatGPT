@@ -131,7 +131,7 @@ Version=12.2
 	#IncludeTitle: False
 #End Region
 
-#BridgeLogger: True
+'#BridgeLogger: True
 
 Sub Process_Globals
 	Private OldIntent 				As Intent
