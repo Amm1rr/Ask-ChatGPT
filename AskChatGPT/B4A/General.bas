@@ -12,7 +12,7 @@ Sub Process_Globals
 	Private 		xui 					As XUI
 	Private 		ColorLog				As Int 		= Colors.LightGray
 	Public 			Pref 					As Setting
-	Public  		IsDebug					As Boolean 	= False
+	Public  		IsDebug					As Boolean 	= True
 	Public 			SQLFileName				As String 	= "AskChatGPT.db"
 	Public 			sql						As SQL
 	Public 			APIKeyLabel				As String	= "Get your free OpenAI Key (Click Here)"
@@ -111,7 +111,7 @@ Public Sub LoadSettingDB
 		Pref.Creativity = CurSettingSql.GetInt("Creativity")
 		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
 		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
-		Pref.IsDevMode = ValToBool(CurSettingSql.GetInt("IsDevMode"))
+		Pref.IsDevMode = IsDebug 'ValToBool(CurSettingSql.GetInt("IsDevMode"))
 		Pref.APIKEY = DecKey(CurSettingSql.GetString("APIKEY"))
 		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
 		

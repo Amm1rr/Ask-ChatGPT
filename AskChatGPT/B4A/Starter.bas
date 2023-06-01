@@ -112,6 +112,12 @@ Public Sub Query(system_string As String, _
 				 AI_Type As Int, _
 				 QuestionIndex As Int) As ResumableSub
 	Try
+		
+		'//#############
+		'//############# FORCE DISABLE MEMORY
+		Dim Const tagMemory As Boolean = General.Pref.Memory
+		General.Pref.Memory = False
+		
 		' Create a JSON object
 		Dim json As Map
 		Dim IsWord As Boolean
@@ -279,6 +285,9 @@ Public Sub Query(system_string As String, _
 '		LogColor(req, Colors.Blue)
 		
 		If Not (Main.GetIsWorking) Then
+			'//#############
+			'//############# FORCE RESET MEMORY TO DEFAULT
+			General.Pref.Memory = tagMemory
 			Dim resobj 		As Map
 				resobj.Initialize
 			Log("End Query")
@@ -438,6 +447,10 @@ Public Sub Query(system_string As String, _
 	
 	LogColor("Worked: " & MessageList, Colors.Magenta)
 	LogColor("Worked: " & resobj, Colors.Blue)
+	
+	'//#############
+	'//############# FORCE RESET MEMORY TO DEFAULT
+	General.Pref.Memory = tagMemory
 	
 '	StartActivity(Main)
 	If (Main.GetIsWorking) Then

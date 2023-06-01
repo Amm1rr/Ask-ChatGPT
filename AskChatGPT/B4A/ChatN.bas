@@ -93,7 +93,6 @@ Sub Class_Globals
 	
 	Private mainparent As B4XView
 	Private imgBrain As ImageView
-	Private lblWaitingText As ResizingTextComponent
 	Private panWaitingText As Panel
 	Private lblSample As Label
 	Private panRightMainDrawer As Panel
@@ -114,6 +113,8 @@ Sub Class_Globals
 	Private keepCopy 	As Boolean
 	Private keepPaste 	As Boolean
 	
+	Private prgWaiting As DilatingDotsProgressBar
+	
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -121,18 +122,21 @@ Private Sub WaitingTimer_Tick
 	Try
 		Dim msg As textMessage = clvMessages.GetValue(clvMessages.Size-1)
 		If (msg.msgtype = typeMSG.waitingtxt) Then
-			Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
-			Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
-		
+			
 			If (Starter.WaitCount > Starter.WaitTimeout) Then
 				Starter.WaitCount = 0
 				Starter.WaitingTimer.Enabled = False
 				WaitingTimer.Enabled = False
+				prgWaiting.Enabled = False
 				WriteAnswer("Timeout (try again)", False, "", clvMessages.Size - 2)
 			End If
-		
-			lblTimer.Text = WaitingText & " (" & Starter.WaitCount & " sec)"
-		
+			
+'			Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
+'			Dim lblTimer As ResizingTextComponent = dd.GetViewByName(pnl, "lblWaitingText").Tag
+'			lblTimer.Text = WaitingText & " (" & Starter.WaitCount & " sec)"
+			
+'			prgWaiting2.IncrementProgressBy(1)
+			
 		Else
 			Starter.WaitCount = 0
 			Starter.WaitingTimer.Enabled = False
@@ -187,7 +191,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 	lblTitleTopMenu.Text = csTitle
 	icMenuTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "settings.png", icMenuTopMenu.Width, icMenuTopMenu.Height, True)).Gravity = Gravity.CENTER
 	icHistoryTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icHistoryTopMenu.Width, icHistoryTopMenu.Height, True)).Gravity = Gravity.CENTER
-	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "brain.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
+	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "chatbot4.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
 	
 	MemoryChanged
 	
@@ -283,7 +287,7 @@ End Sub
 Sub addAllTooltips
 	setTooltip(icMenuTopMenu, "Setting")
 	setTooltip(icHistoryTopMenu, "Conversation History")
-	setTooltip(imgBrain, "Active/Deactive Memory (default Deactive)")
+	setTooltip(imgBrain, "Hii...こんにちは : )")
 	setTooltip(btnClearTitles, "Clear All History")
 End Sub
 
@@ -382,7 +386,7 @@ Public Sub DevModeCheck
 	If General.Pref.IsDevMode Then
 		Dim csTitle As CSBuilder
 			csTitle.Initialize
-			csTitle.Color(Colors.White).Append("Dev Chat").Color(Colors.Yellow).Append("GPT").PopAll
+			csTitle.Color(Colors.White).Append("Ask Chat").Color(Colors.Yellow).Append("DEV").PopAll
 	Else
 		Dim csTitle As CSBuilder
 			csTitle.Initialize
@@ -1841,19 +1845,19 @@ Private Sub WriteWait
 	p.RemoveViewFromParent
 	p.Tag = WaitingText
 	
-	lblWaitingText.SetPadding(2%x, 1%x, 2%x, 1%x)
-	lblWaitingText.Text = m.message
-	panWaitingText.Height = lblWaitingText.GetHeight
-	lblWaitingText.FallbackLineSpacing = False
+	prgWaiting.DotColor = Colors.RGB(Rnd(0, 150), Rnd(60, 130), Rnd(0, 160))
+	prgWaiting.GrowthSpeed = 250
+	prgWaiting.DotSpacing = 10
+	prgWaiting.DotScaleMultiplier = 1.9
+	prgWaiting.NumberOfDots = 10
+	prgWaiting.DotRadius = 6
+	prgWaiting.Enabled = True
+	
+	p.SetLayoutAnimated(200,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
 	
 	Starter.WaitCount = 0
 	Starter.WaitingTimer.Enabled = True
 	WaitingTimer.Enabled = True
-	
-'	dd.GetViewByName(p, "lblAppTitle").Text = Text.Trim
-'	webQuestion.LoadHtml(md.mdTohtml(m.message, CreateMap("datetime":"today")))
-	
-	p.SetLayoutAnimated(200,0,0, clvMessages.AsView.Width, panWaitingText.Height + 2%y)
 	
 	RemoveSeperator
 	clvMessages.Add(p, m)
@@ -2266,6 +2270,9 @@ Private Sub SimulateMessage
 '		Dim index As Int
 '			index = Rnd(0, myStrings.Size - 1)
 		
+		WriteWait
+		Return
+		
 		If Rnd(0, 2) = 1 Then
 			If Rnd(0, 2) Mod 2 = 1 Then
 				WriteAnswer(myStrings.Get(index), True, "", clvMessages.Size - 1)
@@ -2533,19 +2540,6 @@ Private Sub lblCopy_Click
 	End If
 End Sub
 
-Private Sub chkAutoSendDrawer_CheckedChange(Checked As Boolean)
-	General.Pref.AutoSend = Checked
-	General.SaveSettingDB
-End Sub
-
-
-Private Sub lblVersionNameDrawer_LongClick
-	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
-	DevModeCheck
-	General.SaveSettingDB
-	ToastMessageShow("IsDevMode: " & General.Pref.IsDevMode, False)
-End Sub
-
 'Private Sub lblAnswer_Click
 '	
 '	LogColor(AnswerRtl, Colors.Red)
@@ -2618,11 +2612,12 @@ Private Sub lblTitleTopMenu_LongClick
 		lblTitleTopMenu.SetTextSizeAnimated(300/2,txt_size)
 	End If
 	
-	ShowTutorial
-	
-''	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
-''	If (General.Pref.IsDevMode) Then SimulateMessage
-'	SimulateMessage
+'	General.Pref.IsDevMode = Not(General.Pref.IsDevMode)
+	If (General.Pref.IsDevMode) Then
+		SimulateMessage
+	Else
+		ShowTutorial
+	End If
 	
 End Sub
 Private Sub tips_OnHide(tipsSkipped As Int)
