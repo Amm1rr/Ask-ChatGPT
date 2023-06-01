@@ -327,9 +327,10 @@ Private Sub SetupSettingDialog(parent As B4XView)
 	
 	Dim csAppVersion As CSBuilder
 		csAppVersion.Initialize
-		csAppVersion.Color(Colors.RGB(89,46,121)).Size(13).Append(CRLF & CRLF & TAB & TAB & Application.LabelName & "  v1" & ".0." & Application.VersionCode).Pop
-		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($" ${Application.VersionName} ${CRLF}${CRLF}"$).Pop
-		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & "   " & General.VERSION_LABEL).Pop
+		csAppVersion.Color(Colors.RGB(89,46,121)).Size(16).Append(CRLF & CRLF & TAB & TAB & TAB & Application.LabelName).Pop
+		csAppVersion.color(Colors.RGB(170,119,63)).Size(12).Append("  Free").Pop
+		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($"${CRLF}${CRLF}"$).Pop
+		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & "   v" & Application.VersionName & "." & Application.VersionCode).Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.DarkGray).Size(9).Append("🔗").Pop
 		csAppVersion.Color(Colors.RGB(48,84,187)).Size(10).Append("  github.com/amm1rr/ask-chatgpt").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright " & Chr(0xE90C) & " 2023").Pop
@@ -1657,9 +1658,9 @@ Private Sub SaveMessage(title As String)
 		Log("Title: " & title)
 		
 		If (clvTitles.GetValue(clvTitles.Size-1) = "TITLE") Then
-			Dim count As Int = clvTitles.Size + 2
+			Dim count As Int = clvTitles.Size - 2
 		Else
-			Dim count As Int = clvTitles.Size + 1
+			Dim count As Int = clvTitles.Size - 1
 		End If
 		clvTitles.AddTextItem(count & ". " & title, id)
 		
