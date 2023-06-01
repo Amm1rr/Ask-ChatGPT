@@ -261,9 +261,9 @@ Private Sub Hint(index As Int) As String
 			Case 2
 				Return "(Translate to " & General.Pref.SecondLang & ")"
 			Case 3
-				Return "(Have fun)"
+				Return "have fun..."
 			Case 4
-				Return "(Just Ask...)"
+				Return "(Just ask...)"
 			Case Else
 				Return "Type Here"
 		End Select
@@ -274,9 +274,9 @@ Private Sub Hint(index As Int) As String
 			Case 1
 				Return "(Translate to " & General.Pref.FirstLang & ")"
 			Case 2
-				Return "(Correct and Reply To your ask)"
+				Return "have fun..."
 			Case 3
-				Return "(Just Ask...)"
+				Return "(Just ask...)"
 			Case Else
 				Return "Type Here"
 		End Select
@@ -731,7 +731,7 @@ Private Sub LoadCLVSetup
 			myStrings.Add($"✔  چک گرامر:${CRLF}-----${CRLF}   اولین گزینه گرامر رو بررسی میکنه، یعنی هر چیزی که "فکر" میکنید درستِ ارسال کنید تصحیح شده اش رو تحویل بگیرید : )"$)
 			myStrings.Add($" Woman, Life, Freedom...${CRLF}-----${CRLF}   با هر زبانی که میخوای ازم سوال بپرس"$)
 			myStrings.Add($"مترجم/دیکشنری:${CRLF}-----${CRLF}   همه زبان ها را ترجمه کنید${CRLF}${CRLF} 🏳‍🌈️ 🇬🇧 🇷🇺 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇹🇷 🇨🇳 🇦🇪 ${CRLF}اگه تنها یک کلمه برای Translate ارسال بشه، میشه دیکشنری :)"$)
-			myStrings.Add($"${Chr(0xF1AE)}${CRLF}-----${CRLF}  برای حل مشکل و سرگرمی بی نظیره Pook!"$)
+			myStrings.Add($"🕳️ Pook${CRLF}-----${CRLF}  برای حل مشکل و سرگرمی بی نظیره Pook!"$)
 			myStrings.Add($"💬  Chat:${CRLF}-----${CRLF}   با انتخاب Chat به راحتی با هوش مصنوعی صحبت کنید و هر نوع سئوالی رو که میخواهید بدون نگرانی از حریم شخصی بپرسید"$)
 		Else
 '			myStrings.Add("💻")

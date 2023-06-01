@@ -17,3 +17,6 @@ you can manually get an accessToken by logging in to the ChatGPT webapp and then
 
 Backend-api:
 https://github.com/terminalcommandnewsletter/everything-chatgpt
+
+API Services:
+https://rapidapi.com/collection/grammar-spellcheck-api
