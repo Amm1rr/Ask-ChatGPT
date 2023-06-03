@@ -14,7 +14,6 @@ Create Token:
 -----
 you can manually get an accessToken by logging in to the ChatGPT webapp and then opening https://chat.openai.com/api/auth/session, which will return a JSON object containing your accessToken string.
 
-
 Backend-api:
 https://github.com/terminalcommandnewsletter/everything-chatgpt
 
@@ -26,3 +25,12 @@ https://screenlane.com/
 https://pagecollective.com/
 https://pageflows.com/
 https://www.b4x.com/android/forum/threads/b4x-ui-finding-design-inspiration-tips.121403/
+
+Adaptive Icons:
+https://easyappicon.com/
+https://icon.kitchen/
+https://www.b4x.com/android/forum/threads/adaptive-icons-simple-instructions-and-tips.123843/
+
+Create Header:
+https://www.norio.be/graphic-generator
+https://hotpot.ai/design/google-play-feature-graphic?id=BkvC5ErVaRUM_1024_500

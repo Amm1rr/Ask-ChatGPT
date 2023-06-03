@@ -157,7 +157,7 @@ Public Sub Query(system_string As String, _
 				json.Put("model", "text-davinci-edit-001")
 				json.Put("input", question_string)
 				json.Put("instruction", system_string)
-				json.Put("temperature", 0)
+				json.Put("temperature", 1)
 				json.Put("top_p", 1)
 				
 			End If

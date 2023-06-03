@@ -9,33 +9,34 @@ File15=clvAnswerRow.bal
 File16=clvQuestionRow.bal
 File17=clvWaitingText.bal
 File18=coloritem.bal
-File19=grammar.png
+File19=compiletime.txt
 File2=angry2.png
-File20=gray-tipped.png
-File21=iran.png
-File22=LeftDrawer.bal
-File23=man.png
-File24=menu.png
-File25=Message.png
-File26=montserrat-medium.ttf
-File27=Notice.mp3
-File28=numericrange.bal
-File29=passworditem.bal
+File20=grammar.png
+File21=gray-tipped.png
+File22=iran.png
+File23=LeftDrawer.bal
+File24=man.png
+File25=menu.png
+File26=Message.png
+File27=montserrat-medium.ttf
+File28=Notice.mp3
+File29=numericrange.bal
 File3=apikeyitem.bal
-File30=PrefsJson.json
-File31=PROMPTS.md
-File32=puton.png
-File33=RightDrawer.bal
-File34=roboto-regular.ttf
-File35=settings.png
-File36=Share.bal
-File37=shortoptions.bal
-File38=textitem.bal
-File39=textitemmulti.bal
+File30=passworditem.bal
+File31=PrefsJson.json
+File32=PROMPTS.md
+File33=puton.png
+File34=RightDrawer.bal
+File35=roboto-regular.ttf
+File36=settings.png
+File37=Share.bal
+File38=shortoptions.bal
+File39=textitem.bal
 File4=Bg-Chat01.jpg
-File40=timeitem.bal
-File41=timeitem24.bal
-File42=voice.png
+File40=textitemmulti.bal
+File41=timeitem.bal
+File42=timeitem24.bal
+File43=voice.png
 File5=Bg-Chat03.jpg
 File6=Bg-Chat05.jpg
 File7=Bg-Chat09.jpg
@@ -51,33 +52,34 @@ FileGroup15=Default Group\Designers
 FileGroup16=Default Group\Designers
 FileGroup17=Default Group\Designers
 FileGroup18=Default Group\Designers\PreferenceDialog
-FileGroup19=Default Group\Images
+FileGroup19=Default Group
 FileGroup2=Default Group\Images
 FileGroup20=Default Group\Images
 FileGroup21=Default Group\Images
-FileGroup22=Default Group\Designers
-FileGroup23=Default Group\Images
+FileGroup22=Default Group\Images
+FileGroup23=Default Group\Designers
 FileGroup24=Default Group\Images
 FileGroup25=Default Group\Images
-FileGroup26=Default Group\Fonts
-FileGroup27=Default Group
-FileGroup28=Default Group\Designers\PreferenceDialog
+FileGroup26=Default Group\Images
+FileGroup27=Default Group\Fonts
+FileGroup28=Default Group
 FileGroup29=Default Group\Designers\PreferenceDialog
 FileGroup3=Default Group\Designers\PreferenceDialog
-FileGroup30=Default Group
+FileGroup30=Default Group\Designers\PreferenceDialog
 FileGroup31=Default Group
-FileGroup32=Default Group\Images
-FileGroup33=Default Group\Designers
-FileGroup34=Default Group\Fonts
-FileGroup35=Default Group\Images
-FileGroup36=Default Group\Designers
-FileGroup37=Default Group\Designers\PreferenceDialog
+FileGroup32=Default Group
+FileGroup33=Default Group\Images
+FileGroup34=Default Group\Designers
+FileGroup35=Default Group\Fonts
+FileGroup36=Default Group\Images
+FileGroup37=Default Group\Designers
 FileGroup38=Default Group\Designers\PreferenceDialog
 FileGroup39=Default Group\Designers\PreferenceDialog
 FileGroup4=Default Group\Images
 FileGroup40=Default Group\Designers\PreferenceDialog
 FileGroup41=Default Group\Designers\PreferenceDialog
-FileGroup42=Default Group\Images
+FileGroup42=Default Group\Designers\PreferenceDialog
+FileGroup43=Default Group\Images
 FileGroup5=Default Group\Images
 FileGroup6=Default Group\Images
 FileGroup7=Default Group\Images
@@ -115,7 +117,7 @@ Module6=CLVNested
 Module7=DOTips
 Module8=General
 Module9=PreferencesDialog
-NumberOfFiles=42
+NumberOfFiles=43
 NumberOfLibraries=19
 NumberOfModules=11
 Version=12.2
@@ -128,7 +130,10 @@ Version=12.2
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
 	#IgnoreWarnings: 12, 16
-	#BridgeLogger: False
+	#BridgeLogger: True
+	#If RELEASE
+	#CustomBuildAction: folders ready, %JAVABIN%\java.exe, -jar "C:\Program Files\Anywhere Software\B4A\Additional-Lib\compiletime.jar"
+	#End If
 #End Region
 
 #Region Activity Attributes
@@ -219,9 +224,36 @@ Public Sub ConvertTicks(t As Long) As Int
 	
 End Sub
 
+' این تابع با هر بار اجرا یه ورژن به فایلی که میسازه اضافه میکنه
+' میشه بعنوان مثال از این فرایند برای چک کردن آپدیت روی سرور
+' استفاده کرد: compiletime.txt
+Private Sub Compile
+	Dim m As Map
+	Dim path As String = File.DirAssets & "/Files/compiletime.txt"
+	If File.Exists(path, "") Then
+		m = File.ReadMap(path, "")
+	Else
+		m.Initialize
+	End If
+	Dim var As String = m.GetDefault("autoversion", 0)
+	m.Put("autoversion", var)
+	m.Put("time", DateTime.Now)
+	File.WriteMap(path, "", m)
+	
+'	'// Read File Data
+'	Dim compiledata As Map = File.ReadMap(File.DirAssets, "compiletime.txt")
+'	Log($"autoversion: ${compiledata.Get("autoversion")}"$)
+'	Log($"compilation time: $DateTime{compiledata.Get("time")}"$)
+	
+End Sub
+
 Sub Activity_Create(FirstTime As Boolean)
 	
 	MyLog("Activity_Create: " & FirstTime & ", " & TextShared, ColorLog, True)
+	
+'	If FirstTime Then
+'		Compile
+'	End If
 	
 	General.LoadSettingDB
 	
