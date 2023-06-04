@@ -153,15 +153,6 @@ Sub Process_Globals
 	Public 	GetIsWorking 			As Boolean
 	Public 	CheckMessageTimer		As Timer
 	Private CheckMessageTimeOut		As Long	= -1
-	
-	Type Setting(FirstLang 		As String, _
-				 SecondLang 	As String, _
-				 Creativity 	As Int, _
-				 AutoSend 		As Boolean, _
-				 Memory 		As Boolean, _
-				 APIKEY			As String, _
-				 IsDevMode 		As Boolean, _ 'If its in Debug Mode, just for MySelf
-				 LastTypeModel	As Int)
 End Sub
 
 Sub Globals

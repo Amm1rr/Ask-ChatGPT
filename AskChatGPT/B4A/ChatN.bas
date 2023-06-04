@@ -193,8 +193,6 @@ Public Sub Initialize(parent As B4XView, text As String)
 	icHistoryTopMenu.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "menu.png", icHistoryTopMenu.Width, icHistoryTopMenu.Height, True)).Gravity = Gravity.CENTER
 	imgBrain.SetBackgroundImage(LoadBitmapResize(File.DirAssets, "chatbot4.png", imgBrain.Width, imgBrain.Height, True)).Gravity = Gravity.CENTER
 	
-	MemoryChanged
-	
 	Dim cc As ColorDrawable
 		cc.Initialize2(Colors.RGB(250,250,250),10,2,Colors.LightGray)
 	panBottom.Background = cc
@@ -2603,13 +2601,6 @@ End Sub
 
 Private Sub lblTitleTopMenu_Click
 	
-	TitleClickAnimation = Not (TitleClickAnimation)
-	If (TitleClickAnimation) Then
-		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize + 2)
-	Else
-		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize - 2)
-	End If
-	
 	If (General.Pref.Memory) Then
 		General.Pref.Memory = False
 '		ToastMessageShow("Memory Deactivated", False)
@@ -2617,7 +2608,16 @@ Private Sub lblTitleTopMenu_Click
 		General.Pref.Memory = True
 '		ToastMessageShow("Memory Activated", True)
 	End If
+	
+	TitleClickAnimation = General.Pref.Memory
+	If (TitleClickAnimation) Then
+		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize - 2)
+	Else
+		lblTitleTopMenu.SetTextSizeAnimated(300, lblTitleTopMenu.TextSize + 2)
+	End If
+	
 	MemoryChanged
+	
 	General.SaveSettingDB
 End Sub
 
@@ -2666,16 +2666,17 @@ Private Sub ShowTutorial
 	
 	If (General.FirstRUN) Then
 		General.FirstRUN = False
+		
 '		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
 		
 		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
 		If (flowTabToolbar.Size = 5) Then
-			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 '			tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
 '			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
 		Else
-			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 		End If
 		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
@@ -2685,13 +2686,13 @@ Private Sub ShowTutorial
 		
 		tips.addGeneralTip("Welcome", "Welcome to quick tutorial." & CRLF & CRLF)
 		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
-		tips.addTipForView(txtQuestion, "Text Tools", "Copy, Paste, and Delete make handling text easy." & CRLF & CRLF)
+		tips.addTipForView(txtQuestion, "Write Here", "Type your question here and send it." & CRLF & CRLF)
 		If (flowTabToolbar.Size = 5) Then
-			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Select Chat to ask any question you can think of right here! ; )" & CRLF & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
 		Else
-			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Ask any question you can think of right here! ; )" & CRLF & CRLF)
+			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Select Chat to ask any question you can think of right here! ; )" & CRLF & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
 			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
 		End If

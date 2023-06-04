@@ -1,70 +1,10 @@
-Build 16 Dev
------ 00/00/2023
-+ Added background service
-+ Added sound notification on result
-
-Build 15 Dev
------ 05/17/2023
-+ Added Setting Page
-+ Added Message list, now all messages save.
-+ Added OpenAI API user key
-+ Added New Conversation button
-+ Automatic width and heigh for conversations
-* Improve Translate/Grammar/Chat
-* Improve UI
-* Improve UX
-- Removed Right2Left checkbox
-
-Build 10 Dev
+v1.0
 -----
-+ Added Drawer
-+ Added Creativity Options
-+ First Stable Release
-+ Added Second Language Support Option
-+ Added Setting Feature
-* Rechange about page
++ Add Optional Choose for AI Model gpt-4 and gpt-3.5
+* Change Title Click Icon
+* Change Tutorial
 
-Build 9 Dev
------
-+ Added Paste button
-+ Change background color
-+ Change UI
-+ Solve height issue
 
-Build 8 Dev
+v1.0 Beta
 -----
-+ Rollback to use label to show results
-
-Build 7 Dev
------
-+ Added support of HTML and MD just to core
-
-Build 6 Dev
------
-+ Added remember conversation
-* Improve Ask Method
-
-Build 5 Dev
------
-+ Added Translate to Farsi
-+ Added Toolbar
-* Improve UI
-
-Build 4 Dev
------
-* Fixed send multiple time isse
-
-Build 3 Dev
------
-* Solve buggy new features
-* Incress response to 4092 that support log text in farsi and arabic
-
-Build 2 Dev
------
-+ Added Translate to English
-+ Added Correct English
-* Added Auto-Send Enable/Disable Option
-
-Build 1 Dev
------
-First Release
+- First Release

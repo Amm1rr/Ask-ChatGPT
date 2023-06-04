@@ -67,8 +67,19 @@ Sub Service_Create
 	WaitingTimer.Initialize("WaitingTimer", 1000)
 	WaitingTimer.Enabled = False
 	
+	'Initialize the AIModel array with values
+	General.AIModel = Array As TYPE_Model(CreateModel(0, "gpt-3.5-turbo"), CreateModel(1, "gpt-4"))
+	
 '	LogColor("Initialize:" & dec, Colors.Red)
 
+End Sub
+
+'Helper function to create a new TYPE_Model object
+Sub CreateModel(id As Int, name As String) As TYPE_Model
+	Dim model As TYPE_Model
+		model.id = id
+		model.name = name
+	Return model
 End Sub
 
 Public Sub APIValidate
@@ -129,7 +140,9 @@ Public Sub Query(system_string As String, _
 			If (IsWord) Then
 				
 				json.Initialize
-				json.Put("model", "gpt-3.5-turbo")
+'				json.Put("model", "gpt-3.5-turbo")
+'				json.Put("model", "gpt-4")
+				json.Put("model", General.GetAIModelDB(General.Pref.AIModel.id).name)
 				json.Put("n", 1)
 				json.Put("stop", "stop")
 				json.Put("max_tokens", 244)
@@ -164,7 +177,9 @@ Public Sub Query(system_string As String, _
 		
 		Else If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Then
 			json.Initialize
-			json.Put("model", "gpt-3.5-turbo")
+'			json.Put("model", "gpt-3.5-turbo")
+'			json.Put("model", "gpt-4")
+			json.Put("model", General.GetAIModelDB(General.Pref.AIModel.id).name)
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)
@@ -189,8 +204,9 @@ Public Sub Query(system_string As String, _
 			
 		Else ' Chat - Pook
 			json.Initialize
-			json.Put("model", "gpt-3.5-turbo")
+'			json.Put("model", "gpt-3.5-turbo")
 '			json.Put("model", "gpt-4")
+			json.Put("model", General.GetAIModelDB(General.Pref.AIModel.id).name)
 			json.Put("n", 1)
 			json.Put("stop", "stop")
 			json.Put("max_tokens", MAXTOKEN)

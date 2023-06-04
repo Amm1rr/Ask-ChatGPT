@@ -19,6 +19,19 @@ Sub Process_Globals
 	Public  		FirstRUN				As Boolean	= False
 	Public 	Const 	VERSION_LABEL			As String 	= "Free"
 	Public  Const	VERSIONFORMAT			As String 	= Application.LabelName & " v" & Application.VersionName & " (build " & Application.VersionCode & ")"
+	
+	Type TYPE_Model (id As Int, name As String)
+	Public AIModel() As TYPE_Model
+	
+	Type Setting(FirstLang 		As String, _
+				 SecondLang 	As String, _
+				 Creativity 	As Int, _
+				 AutoSend 		As Boolean, _
+				 Memory 		As Boolean, _
+				 APIKEY			As String, _
+				 IsDevMode 		As Boolean, _ 'If its in Debug Mode, just for MySelf
+				 LastTypeModel	As Int, _
+				 AIModel 		As TYPE_Model)
 End Sub
 
 #Region Save and Load Settings
@@ -50,8 +63,22 @@ Private Sub CreateDB
 '	File.Delete(File.DirInternal, SQLFileName)
 	
 	If File.Exists(File.DirInternal, SQLFileName) Then
+		
+		Dim query As String = $"SELECT COUNT(*)
+								FROM sqlite_master
+								WHERE Type 	= 'table'
+								And name 	= 'Config'
+								And sql LIKE '%AIModel%';"$
+		
 		sql.Initialize(File.DirInternal, SQLFileName, False)
+		Dim aimodelexist As Int = sql.ExecQuerySingleResult(query)
+		
 		sql.BeginTransaction
+		If (aimodelexist < 1) Then
+			Dim sql_createAIModel As String = "ALTER TABLE Config ADD AIModel INT DEFAULT 0;"
+			sql.ExecNonQuery(sql_createAIModel)
+		End If
+		
 		Return
 	End If
 	
@@ -65,7 +92,8 @@ Private Sub CreateDB
 	"Memory"	INTEGER DEFAULT 0,
 	"APIKEY"	TEXT,
 	"IsDevMode"	INTEGER DEFAULT 0,
-	"LastTypeModel"	INTEGER DEFAULT 0
+	"LastTypeModel"	INTEGER DEFAULT 0,
+	"AIModel"   INT DEFAULT 0
 	);"$
 	
 	Dim tblMessages As String = $"CREATE TABLE "Messages" (
@@ -119,20 +147,22 @@ Public Sub LoadSettingDB
 		Pref.IsDevMode 		= 	IsDebug
 		Pref.APIKEY 		= 	""
 		Pref.LastTypeModel 	= 	0
+		Pref.AIModel 		= 	AIModel(0)		'0: gpt-3.5-turbo 	1: gpt-4
 		
 		FirstRUN = True
 		
 		SaveSettingDB
 	Else
 		CurSettingSql.Position = 0
-		Pref.FirstLang = CurSettingSql.GetString("FirstLang")
-		Pref.SecondLang =  CurSettingSql.GetString("SecondLang")
-		Pref.Creativity = CurSettingSql.GetInt("Creativity")
-		Pref.AutoSend = ValToBool(CurSettingSql.GetInt("AutoSend"))
-		Pref.Memory = ValToBool(CurSettingSql.GetInt("Memory"))
-		Pref.IsDevMode = IsDebug 'ValToBool(CurSettingSql.GetInt("IsDevMode"))
-		Pref.APIKEY = DecKey(CurSettingSql.GetString("APIKEY"))
-		Pref.LastTypeModel = CurSettingSql.GetInt("LastTypeModel")
+		Pref.FirstLang 		= CurSettingSql.GetString("FirstLang")
+		Pref.SecondLang 	=  CurSettingSql.GetString("SecondLang")
+		Pref.Creativity 	= CurSettingSql.GetInt("Creativity")
+		Pref.AutoSend 		= ValToBool(CurSettingSql.GetInt("AutoSend"))
+		Pref.Memory 		= ValToBool(CurSettingSql.GetInt("Memory"))
+		Pref.IsDevMode 		= IsDebug 'ValToBool(CurSettingSql.GetInt("IsDevMode"))
+		Pref.APIKEY 		= DecKey(CurSettingSql.GetString("APIKEY"))
+		Pref.LastTypeModel 	= CurSettingSql.GetInt("LastTypeModel")
+		Pref.AIModel 		= GetAIModelDB(CurSettingSql.GetInt("AIModel"))
 		
 		FirstRUN = False
 '		Log(Pref.APIKEY)
@@ -140,6 +170,21 @@ Public Sub LoadSettingDB
 	
 	CurSettingSql.Close
 	
+End Sub
+
+Public Sub GetAIModelDB(AIindex As Int) As TYPE_Model
+	Dim model As TYPE_Model
+		model.Initialize
+		model.id = AIindex
+	Select AIindex
+		Case 0		'gpt-3.5-turbo
+			model.name = "gpt-3.5-turbo"
+		Case 1		'gpt-4
+			model.name = "gpt-4"
+		Case Else
+			model.name = "gpt-3.5-turbo"
+	End Select
+	Return model
 End Sub
 
 Public Sub SaveSettingDB
@@ -150,8 +195,8 @@ Public Sub SaveSettingDB
 	
 	sql.ExecNonQuery("DELETE FROM Config")
 	
-	Dim query 		As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode, LastTypeModel) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
-	Dim Args(8) 	As Object
+	Dim query 		As String = "INSERT INTO Config(FirstLang, SecondLang, Creativity, AutoSend, Memory, APIKEY, IsDevMode, LastTypeModel, AIModel) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	Dim Args(9) 	As Object
 		Args(0) 	= Pref.FirstLang
 		Args(1) 	= Pref.SecondLang
 		Args(2) 	= Pref.Creativity
@@ -166,6 +211,7 @@ Public Sub SaveSettingDB
 		End If
 		Args(6) 	= Pref.IsDevMode
 		Args(7) 	= Pref.LastTypeModel
+		Args(8) 	= Pref.AIModel.id
 	
 '	Log(query)
 	
