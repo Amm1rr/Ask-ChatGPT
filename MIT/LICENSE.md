@@ -7,13 +7,13 @@ __________
 
 [Google Play](https://play.google.com/store/apps/details?id=com.amm1rr.chatgpt)
 
-[Website](https://github.com/amm1rr/ask-chatgpt)
+[Website](https://amm1rr.com/)
 __________
 
 ### PRIVACY POLICY
 Last updated June 03, 2023
 
-This privacy notice for developer Amm1rr username on Github ("Company," "we," "us," or "our"), describes how and why we might collect, store, use, and/or share ("process") your information when you use our services ("Services"), such as when you:
+This privacy notice for developer Amm1rr's username on Github ("Company," "we," "us," or "our"), describes how and why we might collect, store, use, and/or share ("process") your information when you use our services ("Services"), such as when you:
 
 *	Download and use our mobile application (Ask ChatGPT), or any other application of ours that links to this privacy notice
 
