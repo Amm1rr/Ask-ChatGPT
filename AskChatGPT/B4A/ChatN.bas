@@ -246,7 +246,7 @@ Public Sub Initialize(parent As B4XView, text As String)
 	resetTextboxToolbar
 	
 	tips.Initialize(Me, parent, "tips")
-	General.FirstRUN = True
+	
 	If (General.FirstRUN) Then
 		panChooseLang.Visible = True
 		ShowTutorial
@@ -340,7 +340,7 @@ Private Sub SetupSettingDialog(parent As B4XView)
 		csAppVersion.Color(Colors.RGB(170,119,63)).Size(14).Append($"${CRLF}${CRLF}"$).Pop
 		csAppVersion.Color(Colors.RGB(25,126,40)).Size(11).Append(TAB & TAB & TAB & TAB & TAB & "   v" & Application.VersionName & " (build " & Application.VersionCode & ")").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.DarkGray).Size(9).Append("🔗").Pop
-		csAppVersion.Color(Colors.RGB(48,84,187)).Size(10).Append("  github.com/amm1rr/ask-chatgpt").Pop
+		csAppVersion.Color(Colors.RGB(48,84,187)).Size(10).Append("  amm1rr.com/").Pop
 		csAppVersion.Append(CRLF & CRLF & TAB & TAB).Color(Colors.Gray).Size(8).Append("Copyright " & Chr(0xE90C) & " 2023").Pop
 		csAppVersion.Color(Colors.LightGray).Size(8).Append(TAB & "- MIT License" & CRLF).Pop
 		csAppVersion.PopAll
