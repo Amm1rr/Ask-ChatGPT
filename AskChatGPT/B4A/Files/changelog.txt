@@ -1,8 +1,10 @@
 v1.0
 -----
 + Add Optional Choose for AI Model gpt-4 and gpt-3.5
-* Change Title Click Icon
-* Change Tutorial
+* Change title label click icon
+* The tutorial has been changed and updated.
+* Fix mirror bug in Second language voice.
+* The mirror update has been fixed.
 
 
 v1.0 Beta

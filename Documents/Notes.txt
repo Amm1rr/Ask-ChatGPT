@@ -34,3 +34,6 @@ https://www.b4x.com/android/forum/threads/adaptive-icons-simple-instructions-and
 Create Header:
 https://www.norio.be/graphic-generator
 https://hotpot.ai/design/google-play-feature-graphic?id=BkvC5ErVaRUM_1024_500
+
+Create SVG:
+https://app.recraft.ai/project/6e0bd29d-c1f8-4b32-b761-c206bc154cc5

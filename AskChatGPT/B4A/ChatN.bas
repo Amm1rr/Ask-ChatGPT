@@ -254,6 +254,9 @@ Public Sub Initialize(parent As B4XView, text As String)
 		panChooseLang.Visible = False
 	End If
 	
+	VoiceLang(General.Pref.FirstLang)
+	VoiceLang(General.Pref.SecondLang)
+	
 	General.sql.TransactionSuccessful
 	General.sql.EndTransaction
 	
@@ -1165,11 +1168,10 @@ Private Sub imgSend_LongClick
 
 	MyLog("imgSend_LongClick", ColorLog, True)
 	
-	If Not(General.IsNull(General.Pref.SecondLang)) Then Return
+	If (General.IsNull(General.Pref.SecondLang)) Then Return
 	
 	If (IsWorking) Then Return
 	
-	VoiceLang(General.Pref.SecondLang)
 	Wait For (RecognizeVoice) Complete (Result As String)
 	If Not (General.IsNull(Result)) Then
 '		LogColor("Voice:" & Result, Colors.Blue)
@@ -1283,8 +1285,7 @@ Public Sub imgSend_Click
 		
 		ClickSimulation
 '		Log("HERE")
-
-		VoiceLang(General.Pref.FirstLang)
+		
 		Wait For (RecognizeVoice) Complete (Result As String)
 		If Not (General.IsNull(Result)) Then
 			LogColor("Voice:" & Result, Colors.Blue)
@@ -2437,10 +2438,14 @@ Private Sub icMenuTopMenu_Click
 	If Result = xui.DialogResponse_Positive Then
 		LogColor(Options, Colors.Blue)
 		
+		
 		General.Pref.Creativity = Options.Get("Creativity")
 		General.Pref.FirstLang 	= Options.Get("FirstLang")
 		General.Pref.SecondLang = Options.Get("SecondLang")
 		General.Pref.APIKEY 	= Options.Get("APIKEY").As(String).Trim
+		
+		VoiceLang(General.Pref.FirstLang)
+		VoiceLang(General.Pref.SecondLang)
 		
 		If General.IsNull(Options.Get("AutoSend")) Then
 			General.Pref.AutoSend = False
