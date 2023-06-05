@@ -124,13 +124,13 @@ Version=12.2
 @EndOfDesignText@
 #Region Project Attributes
 	#ApplicationLabel: Ask ChatGPT
-	#VersionCode: 3
+	#VersionCode: 4
 	#VersionName: 1.0
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
 	#IgnoreWarnings: 12, 16
-	#BridgeLogger: True
+	#BridgeLogger: False
 	#If RELEASE
 	#CustomBuildAction: folders ready, %JAVABIN%\java.exe, -jar "C:\Program Files\Anywhere Software\B4A\Additional-Lib\compiletime.jar"
 	#End If
