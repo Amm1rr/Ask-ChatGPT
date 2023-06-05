@@ -115,6 +115,10 @@ Sub Class_Globals
 	
 	Private prgWaiting As DilatingDotsProgressBar
 	
+	Private cmbFirst As B4XComboBox
+	Private cmbSecond As B4XComboBox
+	Private btnOkChooseLanguage As Button
+	Private panChooseLang As Panel
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -242,7 +246,13 @@ Public Sub Initialize(parent As B4XView, text As String)
 	resetTextboxToolbar
 	
 	tips.Initialize(Me, parent, "tips")
-	If (General.FirstRUN) Then ShowTutorial
+	General.FirstRUN = True
+	If (General.FirstRUN) Then
+		panChooseLang.Visible = True
+		ShowTutorial
+	Else
+		panChooseLang.Visible = False
+	End If
 	
 	General.sql.TransactionSuccessful
 	General.sql.EndTransaction
@@ -409,6 +419,8 @@ Private Sub LoadLangTabs
 							   	"Danish", "Finnish", "Slovak", "Bulgarian", "Serbian", _
 							   	"Norwegian", "Croatian", "Lithuanian", "Slovenian", _
 							   	"Estonian", "Latvian", "Hindi"))
+	
+	LanguageList.Sort(True)
 	
 	flags.Initialize
 	flags.Put("(None)", "🌐")
@@ -2667,20 +2679,7 @@ Private Sub ShowTutorial
 	If (General.FirstRUN) Then
 		General.FirstRUN = False
 		
-'		tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
-		
-		tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
-		If (flowTabToolbar.Size = 5) Then
-			tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
-			tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
-'			tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
-'			tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
-		Else
-			tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
-			tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
-		End If
-		tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
-		tips.addTipForView(lblClearText, "Cancel", "Clear the text OR If you want to cancel your commands or if it's taking a long time to answer, just hold down the Delete button to cancel the process." & CRLF & CRLF)
+		FirstTimeRun		
 		
 	Else
 		
@@ -2701,7 +2700,114 @@ Private Sub ShowTutorial
 		tips.addTipForView(clvMessages.AsView, "Copy", "Hold messages to Copy" & CRLF & CRLF)
 		tips.addTipForView(icHistoryTopMenu, "History", "History of conversations" & CRLF & CRLF)
 		
+		tips.show
 	End If
+	
+	
+End Sub
+
+Private Sub FirstTimeRun
+	
+	cmbSecond.SetItems(LanguageList)
+	cmbSecond.cmbBox.SelectedIndex = 0
+	
+	cmbFirst.SetItems(LanguageList)
+	cmbFirst.cmbBox.RemoveAt(0)
+	For i=0 To LanguageList.Size-1
+		If (LanguageList.Get(i) = "English") Then
+			cmbFirst.SelectedIndex = i-1
+			Exit
+		End If
+	Next
+	
+	panMain.BringToFront
+	panChooseLang.BringToFront
+	panChooseLang.Visible = True
+	
+End Sub
+
+Private Sub btnOkChooseLanguage_Click
+	
+	panMain.SendToBack
+	panChooseLang.Visible = False
+	
+	Dim sec As String = cmbSecond.cmbBox.GetItem(cmbSecond.SelectedIndex)
+	Dim first As String = cmbFirst.cmbBox.GetItem(cmbFirst.SelectedIndex)
+	
+	Dim clr As Int = Colors.RGB(13, 85, 25)
+		
+	'// First Language
+	Dim newsectab As ASFlowTabMenu_Tab
+		newsectab.Initialize
+'		newsectab.Index = 1
+		newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
+		newsectab.Tooltip = "Translate to " & General.Pref.FirstLang
+	If (General.Pref.FirstLang = "Persian") Then
+		newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+	Else
+		newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr)
+	End If
+	flowTabToolbar.SetTabProperties(1, newsectab)
+	
+	'// Second Language
+	If (sec <> "(None)") Then
+		
+'			Log("final")
+			
+			'Second Language
+			Dim newsectab As ASFlowTabMenu_Tab
+				newsectab.Initialize
+'				newsectab.Index = 2
+				newsectab.Text = sec.SubString2(0, 2)
+				newsectab.Tooltip = "Translate to " & sec
+			
+			If (sec = "Persian") Then
+				newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+			Else
+				newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(sec, "🌐"),True,20,clr)
+			End If
+			flowTabToolbar.SetTabProperties(2, newsectab)
+			
+			'Pook
+			Dim newsectab As ASFlowTabMenu_Tab
+				newsectab.Initialize
+'				newsectab.Index = 3
+				newsectab.Text = "Pook"
+				newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
+				newsectab.Tooltip = "Conversation with Pook"
+			flowTabToolbar.SetTabProperties(3, newsectab)
+			
+			'Chat
+			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat", "Ask any question you have")
+			
+			General.Pref.SecondLang = sec
+			General.Pref.FirstLang = first
+			
+			flowTabToolbar.RefreshTabProperties
+			flowTabToolbar.CurrentIndex = 4
+			General.Pref.LastTypeModel = 4
+	Else
+		flowTabToolbar.CurrentIndex = 3
+		General.Pref.LastTypeModel = 3
+	End If
+	
+	General.SaveSettingDB
+	
+	
+'	tips.addTipForView(lblTutorial, "Quick Help", "If whould you like see me again, Hold me." & CRLF & CRLF)
+	
+	tips.addTipForView(lblNewMSG, "New Chat", "To create a New Conversation, simply Hold Down this icon." & CRLF & CRLF)
+	If (flowTabToolbar.Size = 5) Then
+		tips.addTipForView(flowTabToolbar.GetTab(4), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(3), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+'				tips.addTipForView(flowTabToolbar.GetTab(2), "to " & General.Pref.SecondLang, "Translate to " & General.Pref.SecondLang & CRLF & CRLF)
+'				tips.addTipForView(flowTabToolbar.GetTab(1), "to " & General.Pref.FirstLang, "Translate to " & General.Pref.FirstLang & CRLF & CRLF)
+	Else
+		tips.addTipForView(flowTabToolbar.GetTab(3), "Chat", "Select chat to ask any question you can think of right here ; )" & CRLF & CRLF)
+		tips.addTipForView(flowTabToolbar.GetTab(2), "Conversation Practice", "Pook will support you in having actual conversations for practice." & CRLF & CRLF & "Pook will first correct your sentence structure, and then respond to your question." & CRLF)
+	End If
+	tips.addTipForView(flowTabToolbar.GetTab(0), "Check Grammar", "Type anything you think is correct, and Voila! It will be completed and grammatically correct." & CRLF & CRLF)
+	tips.addTipForView(lblClearText, "Cancel", "Clear the text OR If you want to cancel your commands or if it's taking a long time to answer, just hold down the Delete button to cancel the process." & CRLF & CRLF)
 	
 	tips.show
 	
@@ -2937,4 +3043,17 @@ Private Sub lblNewMSG_Click
 	lblNewMSG.TextColor = Colors.Blue
 	Sleep(75)
 	lblNewMSG.TextColor = Colors.RGB(97,97,97)
+End Sub
+
+
+Private Sub cmbSecond_SelectedIndexChanged (Index As Int)
+	If (cmbSecond.cmbBox.GetItem(Index) = cmbFirst.cmbBox.GetItem(cmbFirst.SelectedIndex)) Then
+		Msgbox("It is not recommended to choose the same language. It is better to change one of your languages.", "Notice")
+	End If
+End Sub
+
+Private Sub cmbFirst_SelectedIndexChanged (Index As Int)
+	If (cmbFirst.cmbBox.GetItem(Index) = cmbSecond.cmbBox.GetItem(cmbSecond.SelectedIndex)) Then
+		Msgbox("It is not recommended to choose the same language. It is better to change one of your languages.", "Notice")
+	End If
 End Sub
