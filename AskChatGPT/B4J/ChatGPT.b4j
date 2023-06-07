@@ -6,11 +6,10 @@ Group=Default Group
 Library1=jcore
 Library2=jfx
 Library3=b4xpages
-Module1=|relative|..\B4XMainPage
 NumberOfFiles=1
 NumberOfLibraries=3
-NumberOfModules=1
-Version=8.31
+NumberOfModules=0
+Version=9.8
 @EndOfDesignText@
 #Region Project Attributes 
 	#MainFormWidth: 600

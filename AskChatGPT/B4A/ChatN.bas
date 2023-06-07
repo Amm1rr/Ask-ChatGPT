@@ -2739,58 +2739,60 @@ Private Sub btnOkChooseLanguage_Click
 	Dim sec As String = cmbSecond.cmbBox.GetItem(cmbSecond.SelectedIndex)
 	Dim first As String = cmbFirst.cmbBox.GetItem(cmbFirst.SelectedIndex)
 	
+	General.Pref.SecondLang = sec
+	General.Pref.FirstLang = first
+	
 	Dim clr As Int = Colors.RGB(13, 85, 25)
 		
 	'// First Language
 	Dim newsectab As ASFlowTabMenu_Tab
 		newsectab.Initialize
 '		newsectab.Index = 1
-		newsectab.Text = General.Pref.FirstLang.SubString2(0, 2)
-		newsectab.Tooltip = "Translate to " & General.Pref.FirstLang
-	If (General.Pref.FirstLang = "Persian") Then
+		newsectab.Text = first.SubString2(0, 2)
+		newsectab.Tooltip = "Translate to " & first
+	If (first = "Persian") Then
 		newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
 	Else
-		newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(General.Pref.FirstLang, "🌐"),True,20,clr)
+		newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(first, "🌐"),True,20,clr)
 	End If
 	flowTabToolbar.SetTabProperties(1, newsectab)
+	
 	
 	'// Second Language
 	If (sec <> "(None)") Then
 		
-'			Log("final")
-			
-			'Second Language
-			Dim newsectab As ASFlowTabMenu_Tab
-				newsectab.Initialize
+'		Log("final")
+		
+		
+		'Second Language
+		Dim newsectab As ASFlowTabMenu_Tab
+			newsectab.Initialize
 '				newsectab.Index = 2
-				newsectab.Text = sec.SubString2(0, 2)
-				newsectab.Tooltip = "Translate to " & sec
-			
-			If (sec = "Persian") Then
-				newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
-			Else
-				newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(sec, "🌐"),True,20,clr)
-			End If
-			flowTabToolbar.SetTabProperties(2, newsectab)
-			
-			'Pook
-			Dim newsectab As ASFlowTabMenu_Tab
-				newsectab.Initialize
+			newsectab.Text = sec.SubString2(0, 2)
+			newsectab.Tooltip = "Translate to " & sec
+		
+		If (sec = "Persian") Then
+			newsectab.Icon = LoadBitmap(File.DirAssets, "iran.png")
+		Else
+			newsectab.Icon = flowTabToolbar.FontToBitmap(flags.GetDefault(sec, "🌐"),True,20,clr)
+		End If
+		flowTabToolbar.SetTabProperties(2, newsectab)
+		
+		'Pook
+		Dim newsectab As ASFlowTabMenu_Tab
+			newsectab.Initialize
 '				newsectab.Index = 3
-				newsectab.Text = "Pook"
-				newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
-				newsectab.Tooltip = "Conversation with Pook"
-			flowTabToolbar.SetTabProperties(3, newsectab)
-			
-			'Chat
-			flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat", "Ask any question you have")
-			
-			General.Pref.SecondLang = sec
-			General.Pref.FirstLang = first
-			
-			flowTabToolbar.RefreshTabProperties
-			flowTabToolbar.CurrentIndex = 4
-			General.Pref.LastTypeModel = 4
+			newsectab.Text = "Pook"
+			newsectab.Icon = LoadBitmap(File.DirAssets, "man.png")
+			newsectab.Tooltip = "Conversation with Pook"
+		flowTabToolbar.SetTabProperties(3, newsectab)
+		
+		'Chat
+		flowTabToolbar.AddTab(flowTabToolbar.FontToBitmap(Chr(0xE8AF),True,20,clr),"Chat", "Ask any question you have")
+		
+		flowTabToolbar.RefreshTabProperties
+		flowTabToolbar.CurrentIndex = 4
+		General.Pref.LastTypeModel = 4
 	Else
 		flowTabToolbar.CurrentIndex = 3
 		General.Pref.LastTypeModel = 3
