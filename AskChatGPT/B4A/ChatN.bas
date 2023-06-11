@@ -1765,6 +1765,10 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 '	Dim txtnew As String = txtQuestion.Text
 	
 	Select responsetext
+		
+		Case "{{STREAM}}"
+			Return
+		
 		Case Starter.TimeoutText:
 			If (txtQuestion.Text.Length < 1) Then
 				txtQuestion.Text = questionHolder

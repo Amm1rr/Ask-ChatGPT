@@ -32,6 +32,9 @@ Sub Process_Globals
 	Public ChatHistoryList 	As List
 	Public MessageList 		As List
 	
+	Private httpClient 		As OkHttpClient
+	Private sb 				As StringBuilder
+	
 	Public Const TYPE_Grammar 		As Int = 0
 	Public Const TYPE_Translate 	As Int = 1
 	Public Const TYPE_Second		As Int = 2
@@ -54,7 +57,7 @@ Private Sub WaitingTimer_Tick
 	End If
 	WaitCount = WaitCount + 1
 	
-	 
+
 End Sub
 
 Sub Service_Create
@@ -69,6 +72,8 @@ Sub Service_Create
 	
 	'Initialize the AIModel array with values
 	General.AIModel = Array As TYPE_Model(CreateModel(0, "gpt-3.5-turbo"), CreateModel(1, "gpt-4"))
+	
+	sb.Initialize
 	
 '	LogColor("Initialize:" & dec, Colors.Red)
 
@@ -129,9 +134,13 @@ Public Sub Query(system_string As String, _
 		Dim Const tagMemory As Boolean = General.Pref.Memory
 		General.Pref.Memory = False
 		
-		' Create a JSON object
+		' Create a JSON Parameters object
 		Dim json As Map
 		Dim IsWord As Boolean
+		
+		'https://chat.openai.com/backend-api/conversation
+		Dim url		 As String 	= "https://api.openai.com/v1/chat/completions"
+		Dim isStream As Boolean = True
 		
 		If (AI_Type = TYPE_Grammar) Then
 			
@@ -166,6 +175,9 @@ Public Sub Query(system_string As String, _
 				json.Put("messages", messages)
 				
 			Else
+				isStream = False
+				url = "https://api.openai.com/v1/edits"
+				
 				json.Initialize
 				json.Put("model", "text-davinci-edit-001")
 				json.Put("input", question_string)
@@ -259,169 +271,183 @@ Public Sub Query(system_string As String, _
 		
 		'Raw JSON String Generated
 		LogColor("Param: " & js.ToString, Colors.Magenta)
- 		
-		Dim response 	As String
-		Dim resobj 		As Map
-			resobj.Initialize
- 		
-		Dim req 		As HttpJob
-			req.Initialize("", Me)
 		
-		'https://chat.openai.com/backend-api/conversation
-		Select AI_Type
+		If isStream Then
 			
-			Case TYPE_Grammar
-				If (IsWord) Then
-					req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
-				Else
-					req.PostString("https://api.openai.com/v1/edits", js.ToString)
-				End If
-			Case TYPE_Chat, TYPE_Pook, TYPE_Translate, TYPE_Second
-				req.PostString("https://api.openai.com/v1/chat/completions", js.ToString)
+			Dim httpRequest As OkHttpRequest
 			
-		End Select
-		
-		'You can quite easily generate your own account API key by following
-		'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
-		'under heading [Getting a GPT-3 API Key]
-		req.GetRequest.SetHeader("Authorization", API_KEY)
-'		LogColor("API Key: " & API_KEY, Colors.Magenta)
- 		
-'		req.GetRequest.SetHeader("OpenAI-Organization", "org-XXXXXXXXXXXXXXXXXXXXXX")
- 		
-		'If your account default organisation is "Personal" then you can supply
-		'a blank organisation key - or just comment this line out
-		req.GetRequest.SetHeader("OpenAI-Organization", "")
-		req.GetRequest.SetContentType("application/json")
-		req.GetRequest.SetContentEncoding("UTF8")
-		req.GetRequest.Timeout = TIMEOUT
-		
-		Wait For (req) JobDone(req As HttpJob)
-		
-'		LogColor(req, Colors.Blue)
-		
-		If Not (Main.GetIsWorking) Then
-			'//#############
-			'//############# FORCE RESET MEMORY TO DEFAULT
-			General.Pref.Memory = tagMemory
-			Dim resobj 		As Map
+			httpRequest.InitializePost2(url, js.ToString.GetBytes("UTF-8"))
+			
+			'You can quite easily generate your own account API key by following
+			'https://accessibleai.dev/post/generating_text_with_gpt_and_python/
+			'under heading [Getting a GPT-3 API Key]
+'			LogColor("API Key: " & API_KEY, Colors.Magenta)
+			httpRequest.SetHeader("Authorization", API_KEY)
+ 			
+'			httpRequest.SetHeader("OpenAI-Organization", "org-XXXXXXXXXXXXXXXXXXXXXX")
+			'If your account default organisation is "Personal" then you can supply
+			'a blank organisation key - or just comment this line out
+			httpRequest.SetHeader("OpenAI-Organization", "")
+			
+			httpRequest.SetContentType("application/json")
+			httpRequest.SetContentEncoding("UTF-8")
+			httpRequest.Timeout = TIMEOUT
+			
+			httpClient.Initialize("httpClient")
+			httpClient.Execute(httpRequest, 0)
+			
+			Dim resobj As Map
 				resobj.Initialize
-			Log("End Query")
+				resobj.Put("response", "{{STREAM}}")
+				resobj.Put("continue", False)
+				resobj.Put("QuestionIndex", QuestionIndex)
+			
 			Return resobj
-		End If
-		
-		If req.Success Then
-			
-			'Raw JSON Response
-			LogColor("Respose: " & req.GetString, Colors.Blue)
-			
-'			conversationId = ParseJson(req.GetString, False, True)
-			
-			Dim parser As JSONParser
-				parser.Initialize(req.GetString)
-			
-			If (AI_Type = TYPE_Grammar) Then
-				
-				If (IsWord) Then
-				
-					Dim text 		As String  	= ParseJson(req.GetString, False, False)
-'					LogColor("--------------------- LOG HERE: text" & text, Colors.Magenta)
-					response = text
-					resobj.Put("response", response)
-					resobj.Put("continue", False)
-					resobj.Put("QuestionIndex", QuestionIndex)
-					
-				Else
-					Dim text 		As String  	= ParseJSONEditMode(req.GetString)
-					If (text.Trim = "") Then response = "(try agian)"
-'					LogColor("+++++++++++++++++++++ LOG HERE: text" & text, Colors.Magenta)
-					response = text
-					resobj.Put("response", response)
-					resobj.Put("continue", False)
-					resobj.Put("QuestionIndex", QuestionIndex)
-					
-				End If
-				
-			Else If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Then
-				Dim text 		As String  	= ParseJson(req.GetString, False, False)
-				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
-				If (response <> "") Then response = response & CRLF
-				response = response & text.Trim
-				
-				If (endofconv <> "stop") Then
-					response = response & CRLF & "»»"
-					resobj.Put("response", response)
-					resobj.Put("continue", True)
-					resobj.Put("QuestionIndex", QuestionIndex)
-				Else
-					resobj.Put("response", response)
-					resobj.Put("continue", False)
-					resobj.Put("QuestionIndex", QuestionIndex)
-				End If
-			Else ' Chat and Pook
-				Dim text 		As String  	= ParseJson(req.GetString, False, False)
-				Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
-				If (response <> "") Then response = response & CRLF
-				response = response & text.Trim
-				
-				If (endofconv <> "stop") Then
-					response = response & CRLF & "»»"
-					resobj.Put("response", response)
-					resobj.Put("continue", True)
-					resobj.Put("QuestionIndex", QuestionIndex)
-				Else
-					resobj.Put("response", response)
-					resobj.Put("continue", False)
-					resobj.Put("QuestionIndex", QuestionIndex)
-				End If
-				
-				'اگه جواب قبلی که بهمون داده رو بهش ارسال نکنیم، توی توکن خیلی صرفه جویی میشه
-				'ولی خب مثلا یک سوال رو اگه پشت سر هم ازش بپرسی بازم همون جواب و میده
-				If (General.Pref.Memory) Then
-					Dim assistantMessage As Map
-						assistantMessage.Initialize
-						assistantMessage.Put("role", "assistant")
-						assistantMessage.Put("content", response)
-					ChatHistoryList.Add(assistantMessage)
-				End If
-			End If
 			
 		Else
 			
-			If req.ErrorMessage.Contains("java.net.SocketTimeoutException") Then
-				response = TimeoutText
-			Else If (req.ErrorMessage.Contains("java.net.UnknownHostException")) Then
-				response = OpenApiHostError
-			Else If (req.ErrorMessage.Contains("java.net.ConnectException")) Then
-				response = OpenApiHostError
-			Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
-				response = InstructureError
-			Else
-				
-				Dim json_error As JSONParser
-					json_error.Initialize(req.ErrorMessage)
-				
-				Dim errorroot As Map = json_error.NextObject
-				Dim err_child As Map = errorroot.Get("error")
-				Dim typ As String = err_child.Get("type")
-				Dim errcode As String = err_child.Get("code")
-				
-				If (typ = "server_error") Then
-					response = ServerError
-				Else If errcode ="invalid_api_key" Then
-					response = APIError
-				Else
-					response = "ChatGPT:Query-> Unsuccess: " & req.ErrorMessage
-				End If
+			Dim req As HttpJob
+			
+			req.PostString(url, js.ToString)
+			req.GetRequest.SetHeader("Authorization", API_KEY)
+			req.GetRequest.SetHeader("OpenAI-Organization", "")
+			
+			req.GetRequest.SetContentType("application/json")
+			req.GetRequest.SetContentEncoding("UTF-8")
+			req.GetRequest.Timeout = TIMEOUT
+			
+			
+			Wait For (req) JobDone(req As HttpJob)
+			
+	'		LogColor(req, Colors.Blue)
+			
+			If Not (Main.GetIsWorking) Then
+				'//#############
+				'//############# FORCE RESET MEMORY TO DEFAULT
+				General.Pref.Memory = tagMemory
+				Dim resobj 		As Map
+					resobj.Initialize
+				Log("End Query")
+				Return resobj
 			End If
 			
-			resobj.Put("response", response)
-			resobj.Put("continue", False)
-			resobj.Put("QuestionIndex", QuestionIndex)
+			Dim response 	As String
+			Dim resobj 		As Map
+				resobj.Initialize
+				
+			If req.Success Then
+				
+				'Raw JSON Response
+				LogColor("Respose: " & req.GetString, Colors.Blue)
+				
+	'			conversationId = ParseJson(req.GetString, False, True)
+				
+				Dim parser As JSONParser
+					parser.Initialize(req.GetString)
+				
+				If (AI_Type = TYPE_Grammar) Then
+					
+					If (IsWord) Then
+					
+						Dim text 		As String  	= ParseJson(req.GetString, False, False)
+	'					LogColor("--------------------- LOG HERE: text" & text, Colors.Magenta)
+						response = text
+						resobj.Put("response", response)
+						resobj.Put("continue", False)
+						resobj.Put("QuestionIndex", QuestionIndex)
+						
+					Else
+						Dim text 		As String  	= ParseJSONEditMode(req.GetString)
+						If (text.Trim = "") Then response = "(try agian)"
+	'					LogColor("+++++++++++++++++++++ LOG HERE: text" & text, Colors.Magenta)
+						response = text
+						resobj.Put("response", response)
+						resobj.Put("continue", False)
+						resobj.Put("QuestionIndex", QuestionIndex)
+						
+					End If
+					
+				Else If (AI_Type = TYPE_Translate) Or (AI_Type = TYPE_Second) Then
+					Dim text 		As String  	= ParseJson(req.GetString, False, False)
+					Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
+					If (response <> "") Then response = response & CRLF
+					response = response & text.Trim
+					
+					If (endofconv <> "stop") Then
+						response = response & CRLF & "»»"
+						resobj.Put("response", response)
+						resobj.Put("continue", True)
+						resobj.Put("QuestionIndex", QuestionIndex)
+					Else
+						resobj.Put("response", response)
+						resobj.Put("continue", False)
+						resobj.Put("QuestionIndex", QuestionIndex)
+					End If
+				Else ' Chat and Pook
+					Dim text 		As String  	= ParseJson(req.GetString, False, False)
+					Dim endofconv 	As String 	= ParseJson(req.GetString, True, False)
+					If (response <> "") Then response = response & CRLF
+					response = response & text.Trim
+					
+					If (endofconv <> "stop") Then
+						response = response & CRLF & "»»"
+						resobj.Put("response", response)
+						resobj.Put("continue", True)
+						resobj.Put("QuestionIndex", QuestionIndex)
+					Else
+						resobj.Put("response", response)
+						resobj.Put("continue", False)
+						resobj.Put("QuestionIndex", QuestionIndex)
+					End If
+					
+					'اگه جواب قبلی که بهمون داده رو بهش ارسال نکنیم، توی توکن خیلی صرفه جویی میشه
+					'ولی خب مثلا یک سوال رو اگه پشت سر هم ازش بپرسی بازم همون جواب و میده
+					If (General.Pref.Memory) Then
+						Dim assistantMessage As Map
+							assistantMessage.Initialize
+							assistantMessage.Put("role", "assistant")
+							assistantMessage.Put("content", response)
+						ChatHistoryList.Add(assistantMessage)
+					End If
+				End If
+				
+			Else
+				
+				If req.ErrorMessage.Contains("java.net.SocketTimeoutException") Then
+					response = TimeoutText
+				Else If (req.ErrorMessage.Contains("java.net.UnknownHostException")) Then
+					response = OpenApiHostError
+				Else If (req.ErrorMessage.Contains("java.net.ConnectException")) Then
+					response = OpenApiHostError
+				Else if (req.ErrorMessage = "Could not edit text. Please sample again or try with a different temperature setting, input, or instruction.") Then
+					response = InstructureError
+				Else
+					
+					Dim json_error As JSONParser
+						json_error.Initialize(req.ErrorMessage)
+					
+					Dim errorroot As Map = json_error.NextObject
+					Dim err_child As Map = errorroot.Get("error")
+					Dim typ As String = err_child.Get("type")
+					Dim errcode As String = err_child.Get("code")
+					
+					If (typ = "server_error") Then
+						response = ServerError
+					Else If errcode ="invalid_api_key" Then
+						response = APIError
+					Else
+						response = "ChatGPT:Query-> Unsuccess: " & req.ErrorMessage
+					End If
+				End If
+				
+				resobj.Put("response", response)
+				resobj.Put("continue", False)
+				resobj.Put("QuestionIndex", QuestionIndex)
+				
+			End If
 			
+			req.Release
 		End If
-		
-		req.Release
 		
 	Catch
 		
@@ -436,47 +462,118 @@ Public Sub Query(system_string As String, _
 			
 	End Try
 	
-	Dim count As Int = MessageList.Size - 1
+	If Not(isStream) Then
 	
-'	Log("response: " & response)
-	
-	For i = 0 To count
+		Dim count As Int = MessageList.Size - 1
 		
-		Dim stack As Map = MessageList.Get(i)
-		Dim indx As Int = stack.Get("QuestionIndex")
+	'	Log("response: " & response)
 		
-'		Log("MessageList: " & MessageList)
-'		Log(QuestionIndex & " : "  & stack & " : " & indx)
-'		Log("-----")
-		If (indx = QuestionIndex) Then
-'			Log("indx = QuestionIndex")
-			MessageList.RemoveAt(i)
+		For i = 0 To count
 			
-			stack.Initialize
-			stack.Put("QuestionIndex", indx)
-			stack.Put("Response", response)
-'			Log("Stack => " & stack)
-			MessageList.Add(stack)
-'			Exit
+			Dim stack As Map = MessageList.Get(i)
+			Dim indx As Int = stack.Get("QuestionIndex")
+			
+	'		Log("MessageList: " & MessageList)
+	'		Log(QuestionIndex & " : "  & stack & " : " & indx)
+	'		Log("-----")
+			If (indx = QuestionIndex) Then
+	'			Log("indx = QuestionIndex")
+				MessageList.RemoveAt(i)
+				
+				stack.Initialize
+				stack.Put("QuestionIndex", indx)
+				stack.Put("Response", response)
+	'			Log("Stack => " & stack)
+				MessageList.Add(stack)
+	'			Exit
+			End If
+		Next
+		
+		LogColor("Worked: " & MessageList, Colors.Magenta)
+		LogColor("Worked: " & resobj, Colors.Blue)
+		
+		'//#############
+		'//############# FORCE RESET MEMORY TO DEFAULT
+		General.Pref.Memory = tagMemory
+		
+	'	StartActivity(Main)
+		If (Main.GetIsWorking) Then
+			General.PlaySound
+			
+			If Not (IsPaused(Main)) Then CallSub2(Main, "StreamCallMain", response)
+			
+			Return resobj
 		End If
-	Next
-	
-	LogColor("Worked: " & MessageList, Colors.Magenta)
-	LogColor("Worked: " & resobj, Colors.Blue)
-	
-	'//#############
-	'//############# FORCE RESET MEMORY TO DEFAULT
-	General.Pref.Memory = tagMemory
-	
-'	StartActivity(Main)
-	If (Main.GetIsWorking) Then
-		General.PlaySound
-		Return resobj
 	End If
 	
 	Dim resobj 		As Map
 		resobj.Initialize
 	Return resobj
+	
+End Sub
+
+Private Sub httpClient_ResponseError (Response As OkHttpResponse, Reason As String, StatusCode As Int, TaskId As Int)
+	
+End Sub
+
+Private Sub httpClient_ResponseSuccess (Response As OkHttpResponse, TaskId As Int)
+	
+'	Response.GetString("UTF8")
+	Log("################ Success")
+	Dim out As JavaObject
+		out.InitializeNewInstance($"${Application.PackageName}.main$MyOutputStream"$, Array(Main))
+'	Log("Wait")
+	Response.GetAsynchronously("req", out, False, 0)
+	Wait For req_StreamFinish (Success As Boolean, TaskId As Int)
+	Log("Stream finish")
+	
+End Sub
+
+Private Sub Data_Available (Buffer() As Byte)
+	
+	Dim newDataStart As Int = sb.Length
+	sb.Append(BytesToString(Buffer, 0, Buffer.Length, "UTF-8"))
+	Dim s As String = sb.ToString
+	Dim start As Int = 0
+	Dim check As Boolean
+	For i = newDataStart To s.Length - 1
+		Dim c As Char = s.CharAt(i)
+		If i = 0 And c = Chr(10) Then '\n...
+			start = 1 'might be a broken end of line character
+			Continue
+		End If
+		If c = Chr(10) Then '\n
+			If Not (check) Then
+				Dim data As String = s.SubString2(6, i)
+				'			Log(data)
+				Dim json As JSONParser
+				json.Initialize(data)
+				'			Log(json)
+				Dim message As Map = json.NextObject
+				Dim choices As List = message.Get("choices")
+				Dim sub_choices As Map = choices.Get(0)
+				Dim content As Map = sub_choices.Get("delta")
+				Dim text As String = content.Get("content")
+'				If Not (text = Null) Then Log(text)
+				Log(text)
+				CallSub2(Main, "StreamCallMain", text)
+				start = i + 1
+			End If
+			check = True
+		Else If c = Chr(13) Then '\r
+			Dim data As String = s.SubString2(6, i)
+'			If Not (data = Null) Then
+			Log(data) 'Data  {"id:"xxxxxx"..}
+			CallSub2(Main, "StreamCallMain", text)
+			check = True
+			If i < s.Length - 1 And s.CharAt(i + 1) = Chr(10) Then '\r\n
+				i = i + 1
+			End If
+			start = i + 1
+		End If
+	Next
+	check = False
+	If start > 0 Then sb.Remove(0, start)
 	
 End Sub
 
@@ -590,3 +687,7 @@ End Sub
 '	'    Return parsedData
 '	Return text
 'End Sub
+
+#If Java
+
+#End If

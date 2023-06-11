@@ -98,7 +98,6 @@ Library17=viewsex
 Library18=xcustomlistview
 Library19=xui views
 Library2=asnumberprogressbar
-Library20=gsse
 Library3=b4xdraweradvanced
 Library4=byteconverter
 Library5=clipboard
@@ -119,7 +118,7 @@ Module7=DOTips
 Module8=General
 Module9=PreferencesDialog
 NumberOfFiles=43
-NumberOfLibraries=20
+NumberOfLibraries=19
 NumberOfModules=11
 Version=12.45
 @EndOfDesignText@
@@ -131,7 +130,7 @@ Version=12.45
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
 	#IgnoreWarnings: 12, 16
-	#BridgeLogger: False
+	#BridgeLogger: True
 	#If RELEASE
 	#CustomBuildAction: folders ready, %JAVABIN%\java.exe, -jar "C:\Program Files\Anywhere Software\B4A\Additional-Lib\compiletime.jar"
 	#End If
@@ -421,61 +420,10 @@ Public Sub CheckMessageList
 	
 End Sub
 
-
-'Public Sub CheckMessageList
-'	
-'	Dim count As Int = Starter.MessageList.Size - 1
-'	Dim lstDelete As List
-'		lstDelete.Initialize
-'	
-'	Log("CheckMessageList: " & Starter.MessageList)
-'	
-''	Try
-'		For i = 0 To count
-''			Log("Here " & i & "/" & count)
-'			
-'			Dim stack As Map = Starter.MessageList.Get(i)
-''			Log(stack)
-'			Dim indx As Int = stack.GetDefault("QuestionIndex", 0)
-''			Log(indx)
-'			Dim resp As String = stack.GetDefault("Response", "")
-''			Log(resp)
-'			
-'			If (resp <> "") Then
-'				
-'				LogColor("Inside IF", Colors.Red)
-'				
-'				Dim ques As textMessage = ChatN1.clvMessages.GetValue(indx)
-'				Log("Question: " & ques)
-'				
-'				Dim answ As textMessage = ChatN1.clvMessages.GetValue(ChatN1.clvMessages.Size-1)
-'				Log("Answer: " & answ)
-'				If (answ.msgtype = 3) Then '// 0: Answer 1: Question 3: WaitingText
-'					
-'					lstDelete.Add(i)
-'					
-'					ChatN1.WriteAnswer(resp, True, ques.Message, indx)
-'					
-'					ChatN1.AddtoHistory(ques.Message, resp)
-'				End If
-'				
-'			End If
-'		Next
-'		
-'		For i = 0 To lstDelete.Size - 1
-'			Log(lstDelete.Get(i) & "/" & lstDelete.Size)
-'			Starter.MessageList.RemoveAt(lstDelete.Get(i))
-'		Next
-'		
-'		
-''	Catch
-''		Log(Starter.MessageList)
-''		Log(Starter.MessageList.Size)
-''		Log(LastException)
-'''		CheckMessageTimer.Enabled = True
-''	End Try
-'	
-'End Sub
+Public Sub StreamCallMain(text As String)
+	Log(text)
+'	ChatN1.txtQuestion.Text = ChatN1.txtQuestion.Text & text
+End Sub
 
 Private Sub Activity_KeyPress (KeyCode As Int) As Boolean 'Return True to consume the event
 	If (ChatN1.tips.Visible = True) And (ChatN1.tips.CanSkip) Then
@@ -559,7 +507,32 @@ public boolean _onCreateOptionsMenu(android.view.Menu menu) {
 	 return true;
 	
 }
-#End If
-#End Region
+
+import java.io.*;
+import anywheresoftware.b4a.B4AClass;
+public static class MyOutputStream extends OutputStream {
+	B4AClass cls;
+	private boolean closed;
+	public MyOutputStream (B4AClass cls) {
+		this.cls = cls;
+	}
+	
+	public void write(int b) throws IOException {
+		if (closed)
+			throw new IOException("closed");
+		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {new byte[] {(byte)b}});
+	}
+	public void write(byte b[], int off, int len) throws IOException {
+		if (closed)
+			throw new IOException("closed");
+		byte[] bb = new byte[len];
+		System.arraycopy(b, off, bb, 0, len);
+		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {bb});
+	}
+	public void close() {
+		closed = true;
+	}
+}
+#End if
 
 'Program code should go into B4XMainPage and other pages.
