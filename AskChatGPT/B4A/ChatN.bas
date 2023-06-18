@@ -74,7 +74,7 @@ Sub Class_Globals
 '	Private webQuestion As WebView
 '	Private btnMore As Button
 	Private AnswerRtl As Boolean = False
-	Private dd 	As DDD
+	Public dd 	As DDD
 	Private Drawer As B4XDrawerAdvanced
 	Private Temperature As Double = 1 '0.99
 	
@@ -119,6 +119,19 @@ Sub Class_Globals
 	Private cmbSecond As B4XComboBox
 	Private btnOkChooseLanguage As Button
 	Private panChooseLang As Panel
+End Sub
+
+Public Sub StreamCall(text As String)
+	
+	Log("StreamCall : " & text)
+	
+	Dim pnl As B4XView = clvMessages.GetPanel(clvMessages.Size-1)
+	Dim lbl As ResizingTextComponent = dd.GetViewByName(pnl, "lblAnswer").Tag
+	lbl.Text = text
+	
+'	pnl.Height = lbl.GetHeight
+'	clvMessages.ResizeItem(clvMessages.Size-1,pnl.Height)
+	
 End Sub
 
 Private Sub WaitingTimer_Tick
@@ -1767,6 +1780,8 @@ Public Sub Ask(system As String,question As String, assistant As String, questio
 	Select responsetext
 		
 		Case "{{STREAM}}"
+			If Not (IsWorking) Then Return
+			WriteAnswer(responsetext, True, questionHolder, QuestionIndex)
 			Return
 		
 		Case Starter.TimeoutText:
@@ -1931,7 +1946,14 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 '	lblAnswer.SetTextFont(xui.CreateFont(Typeface.LoadFromAssets("montserrat-medium.ttf"), 12))
 	lblAnswer.Text = message
 	p.Height = lblAnswer.GetHeight
-	pnlAnswer.Height = p.Height
+	
+	If (message = "{{STREAM}}") Then
+		pnlAnswer.Height = p.Height + 200dip
+		pnlAnswer.Width = pnlAnswer.Width + 250dip
+	Else
+		pnlAnswer.Height = p.Height
+	End If
+	
 	
 	'##########################
 	'#						  #
@@ -1997,7 +2019,7 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 			If (clvMessages.Size-1) < (QuestionIndex+1) Then
 				clvMessages.Add(p, m)
 			Else
-				clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height,m)
+				clvMessages.ReplaceAt(QuestionIndex + 1, p, pnlAnswer.Height, m)
 			End If
 		Else
 			'It's the first message in clvMessage
@@ -2014,7 +2036,7 @@ Sub WriteAnswer(message As String, save As Boolean, questionHolder As String, Qu
 	
 	AdjustSize_Clv(0, True)
 	
-	Log(questionHolder)
+'	Log(questionHolder)
 	
 	If save Then
 		If (questionHolder <> "") Then

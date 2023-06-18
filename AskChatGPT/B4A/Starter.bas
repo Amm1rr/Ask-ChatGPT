@@ -307,15 +307,13 @@ Public Sub Query(system_string As String, _
 		Else
 			
 			Dim req As HttpJob
-			
-			req.PostString(url, js.ToString)
-			req.GetRequest.SetHeader("Authorization", API_KEY)
-			req.GetRequest.SetHeader("OpenAI-Organization", "")
-			
-			req.GetRequest.SetContentType("application/json")
-			req.GetRequest.SetContentEncoding("UTF-8")
-			req.GetRequest.Timeout = TIMEOUT
-			
+				req.PostString(url, js.ToString)
+				req.GetRequest.SetHeader("Authorization", API_KEY)
+				req.GetRequest.SetHeader("OpenAI-Organization", "")
+				
+				req.GetRequest.SetContentType("application/json")
+				req.GetRequest.SetContentEncoding("UTF-8")
+				req.GetRequest.Timeout = TIMEOUT
 			
 			Wait For (req) JobDone(req As HttpJob)
 			
@@ -520,70 +518,23 @@ Private Sub httpClient_ResponseSuccess (Response As OkHttpResponse, TaskId As In
 	
 '	Response.GetString("UTF8")
 	Log("################ Success")
+	Dim cls As StreamClass
+		cls.Initialize
 	Dim out As JavaObject
-		out.InitializeNewInstance($"${Application.PackageName}.main$MyOutputStream"$, Array(Main))
-'	Log("Wait")
+		out.InitializeNewInstance($"${Application.PackageName}.starter$MyOutputStream"$, Array(cls))
 	Response.GetAsynchronously("req", out, False, 0)
 	Wait For req_StreamFinish (Success As Boolean, TaskId As Int)
 	Log("Stream finish")
 	
 End Sub
 
-Private Sub Data_Available (Buffer() As Byte)
-	
-	Dim newDataStart As Int = sb.Length
-	sb.Append(BytesToString(Buffer, 0, Buffer.Length, "UTF-8"))
-	Dim s As String = sb.ToString
-	Dim start As Int = 0
-	Dim check As Boolean
-	For i = newDataStart To s.Length - 1
-		Dim c As Char = s.CharAt(i)
-		If i = 0 And c = Chr(10) Then '\n...
-			start = 1 'might be a broken end of line character
-			Continue
-		End If
-		If c = Chr(10) Then '\n
-			If Not (check) Then
-				Dim data As String = s.SubString2(6, i)
-				'			Log(data)
-				Dim json As JSONParser
-				json.Initialize(data)
-				'			Log(json)
-				Dim message As Map = json.NextObject
-				Dim choices As List = message.Get("choices")
-				Dim sub_choices As Map = choices.Get(0)
-				Dim content As Map = sub_choices.Get("delta")
-				Dim text As String = content.Get("content")
-'				If Not (text = Null) Then Log(text)
-				Log(text)
-				CallSub2(Main, "StreamCallMain", text)
-				start = i + 1
-			End If
-			check = True
-		Else If c = Chr(13) Then '\r
-			Dim data As String = s.SubString2(6, i)
-'			If Not (data = Null) Then
-			Log(data) 'Data  {"id:"xxxxxx"..}
-			CallSub2(Main, "StreamCallMain", text)
-			check = True
-			If i < s.Length - 1 And s.CharAt(i + 1) = Chr(10) Then '\r\n
-				i = i + 1
-			End If
-			start = i + 1
-		End If
-	Next
-	check = False
-	If start > 0 Then sb.Remove(0, start)
-	
-End Sub
-
 Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolean) As String
 	Dim parser As JSONParser
-	parser.Initialize(json)
+		parser.Initialize(json)
 	Dim root As Map
-	root = parser.NextObject
+		root = parser.NextObject
 	Dim id As String
-	id = root.Get("id")
+		id = root.Get("id")
 '	Dim object_string As String
 '		object_string = root.Get("object")
 '	Dim created As Long
@@ -604,9 +555,9 @@ Private Sub ParseJson(json As String, CheckEndOfConv As Boolean, getID As Boolea
 	Dim content As String
 	For choiceIndex = 0 To choices.Size - 1
 		Dim choice As Map
-		choice = choices.Get(choiceIndex)
+			choice = choices.Get(choiceIndex)
 		Dim message As Map
-		message = choice.Get("message")
+			message = choice.Get("message")
 '		Dim role As String
 '		role = message.Get("role")
 		If content <> "" Then content = content & CRLF
@@ -689,5 +640,30 @@ End Sub
 'End Sub
 
 #If Java
+import java.io.*;
+import anywheresoftware.b4a.B4AClass;
 
+public static class MyOutputStream extends OutputStream {
+	B4AClass cls;
+	private boolean closed;
+	public MyOutputStream (B4AClass cls) {
+		this.cls = cls;
+	}
+	
+	public void write(int b) throws IOException {
+		if (closed)
+			throw new IOException("closed");
+		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {new byte[] {(byte)b}});
+	}
+	public void write(byte b[], int off, int len) throws IOException {
+		if (closed)
+			throw new IOException("closed");
+		byte[] bb = new byte[len];
+		System.arraycopy(b, off, bb, 0, len);
+		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {bb});
+	}
+	public void close() {
+		closed = true;
+	}
+}
 #End If

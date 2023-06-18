@@ -109,6 +109,7 @@ ManifestCode='This code will be applied to the manifest file during compilation.
 Module1=ACTION_PROCESS_TEXT
 Module10=ResizingTextComponent
 Module11=Starter
+Module12=StreamClass
 Module2=Animation
 Module3=ASFlowTabMenu
 Module4=Bart
@@ -119,7 +120,7 @@ Module8=General
 Module9=PreferencesDialog
 NumberOfFiles=43
 NumberOfLibraries=19
-NumberOfModules=11
+NumberOfModules=12
 Version=12.45
 @EndOfDesignText@
 #Region Project Attributes
@@ -153,6 +154,7 @@ Sub Process_Globals
 	Public 	GetIsWorking 			As Boolean
 	Public 	CheckMessageTimer		As Timer
 	Private CheckMessageTimeOut		As Long	= -1
+	Private sb 	As StringBuilder
 End Sub
 
 Sub Globals
@@ -285,6 +287,7 @@ Sub Activity_Create(FirstTime As Boolean)
 	
 	ime.Initialize("ime")
 	ime.AddHeightChangedEvent
+	sb.Initialize
 	
 End Sub
 
@@ -421,7 +424,9 @@ Public Sub CheckMessageList
 End Sub
 
 Public Sub StreamCallMain(text As String)
-	Log(text)
+	
+	ChatN1.StreamCall(text)
+	
 '	ChatN1.txtQuestion.Text = ChatN1.txtQuestion.Text & text
 End Sub
 
@@ -501,37 +506,14 @@ Private Sub SendToTwitter(text As String)
 	Next
 End Sub
 
-#if Java
+
+
+
+#If Java
 public boolean _onCreateOptionsMenu(android.view.Menu menu) {
 	 processBA.raiseEvent(null, "create_menu", menu);
 	 return true;
 	
-}
-
-import java.io.*;
-import anywheresoftware.b4a.B4AClass;
-public static class MyOutputStream extends OutputStream {
-	B4AClass cls;
-	private boolean closed;
-	public MyOutputStream (B4AClass cls) {
-		this.cls = cls;
-	}
-	
-	public void write(int b) throws IOException {
-		if (closed)
-			throw new IOException("closed");
-		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {new byte[] {(byte)b}});
-	}
-	public void write(byte b[], int off, int len) throws IOException {
-		if (closed)
-			throw new IOException("closed");
-		byte[] bb = new byte[len];
-		System.arraycopy(b, off, bb, 0, len);
-		cls.getBA().raiseEventFromDifferentThread (null, null, 0, "data_available", true, new Object[] {bb});
-	}
-	public void close() {
-		closed = true;
-	}
 }
 #End if
 
